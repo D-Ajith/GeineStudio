@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaPodcast, FaArrowLeft, FaCheckCircle, FaWhatsapp } from 'react-icons/fa';
 
-const PodcastShoots = () => {
+const Podcastshoots = () => {
   const navigate = useNavigate();
   const heroRef = useRef(null);
 
@@ -137,4 +137,4 @@ const PodcastShoots = () => {
   );
 };
 
-export default PodcastShoots;
+export default Podcastshoots;

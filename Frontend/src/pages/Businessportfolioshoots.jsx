@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaBriefcase, FaArrowLeft, FaCheckCircle, FaWhatsapp } from 'react-icons/fa';
 
-const BusinessPortfolioShoots = () => {
+const Businessportfolioshoots = () => {
   const navigate = useNavigate();
   const heroRef = useRef(null);
 
@@ -137,4 +137,4 @@ const BusinessPortfolioShoots = () => {
   );
 };
 
-export default BusinessPortfolioShoots;
+export default Businessportfolioshoots;

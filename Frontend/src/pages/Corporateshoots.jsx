@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaBuilding, FaArrowLeft, FaCheckCircle, FaWhatsapp } from 'react-icons/fa';
 
-const CorporateShoots = () => {
+const Corporateshoots = () => {
   const navigate = useNavigate();
   const heroRef = useRef(null);
 
@@ -136,4 +136,4 @@ const CorporateShoots = () => {
   );
 };
 
-export default CorporateShoots;
+export default Corporateshoots;

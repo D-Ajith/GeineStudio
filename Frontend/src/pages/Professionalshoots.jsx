@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaUserTie, FaArrowLeft, FaCheckCircle, FaWhatsapp } from 'react-icons/fa';
 
-const ProfessionalShoots = () => {
+const Professionalshoots = () => {
   const navigate = useNavigate();
   const heroRef = useRef(null);
 
@@ -139,4 +139,4 @@ const ProfessionalShoots = () => {
   );
 };
 
-export default ProfessionalShoots;
+export default Professionalshoots;

@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaCalendarCheck, FaArrowLeft, FaCheckCircle, FaWhatsapp } from 'react-icons/fa';
 
-const EventShoots = () => {
+const Eventshoots = () => {
   const navigate = useNavigate();
   const heroRef = useRef(null);
 
@@ -138,4 +138,4 @@ const EventShoots = () => {
   );
 };
 
-export default EventShoots;
+export default Eventshoots;

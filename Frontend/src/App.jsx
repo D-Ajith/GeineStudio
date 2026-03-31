@@ -12,12 +12,12 @@ import Contact from "./pages/Contact";
 import SplashCursor from "@/components/SplashCursor";
 import Gallery from "./pages/Gallery";
 import Services from './pages/Services';
-import CorporateShoots from './pages/Corporateshoots';
-import EventShoots from './pages/Eventshoots';
-import ProductShoots from './pages/Productshoots';
-import PodcastShoots from './pages/Podcastshoots';
-import ProfessionalShoots from './pages/Professionalshoots';
-import BusinessPortfolioShoots from './pages/BusinessportfolioShoots';
+import Corporateshoots from './pages/Corporateshoots';
+import Eventshoots from './pages/Eventshoots';
+import Productshoots from './pages/Productshoots';
+import Podcastshoots from './pages/Podcastshoots';
+import Professionalshoots from './pages/Professionalshoots';
+import Businessportfolioshoots from './pages/Businessportfolioshoots';
 import "aos/dist/aos.css";
 function App() {
   const location = useLocation();
@@ -51,12 +51,12 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/services" element={<Services />} />
           <Route path="/services" element={<Services />} />
-          <Route path="/services/corporate-shoots" element={<CorporateShoots />} />
-          <Route path="/services/event-shoots" element={<EventShoots />} />
-          <Route path="/services/product-shoots" element={<ProductShoots />} />
-          <Route path="/services/podcast-shoots" element={<PodcastShoots />} />
-          <Route path="/services/professional-shoots" element={<ProfessionalShoots />} />
-          <Route path="/services/business-portfolio-shoots" element={<BusinessPortfolioShoots />} />
+          <Route path="/services/corporate-shoots" element={<Corporateshoots />} />
+          <Route path="/services/event-shoots" element={<Eventshoots />} />
+          <Route path="/services/product-shoots" element={<Productshoots />} />
+          <Route path="/services/podcast-shoots" element={<Podcastshoots />} />
+          <Route path="/services/professional-shoots" element={<Professionalshoots />} />
+          <Route path="/services/business-portfolio-shoots" element={<Businessportfolioshoots />} />
         </Routes>
       </main>
       <FloatingSocial />
