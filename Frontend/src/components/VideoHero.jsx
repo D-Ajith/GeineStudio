@@ -5,21 +5,21 @@ const slides = [
   {
     id: 1,
     video:
-      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+      "https://www.pexels.com/download/video/9034534/",
     title: "Corporate Showcase",
     desc: "Professional videography for modern brands",
   },
   {
     id: 2,
     video:
-      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+      "https://www.pexels.com/download/video/7667432/",
     title: "Creative Vision",
     desc: "Turning ideas into cinematic experiences",
   },
   {
     id: 3,
     video:
-      "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+      "https://www.pexels.com/download/video/31540263/",
     title: "Event Coverage",
     desc: "Capturing moments that truly matter",
   },
