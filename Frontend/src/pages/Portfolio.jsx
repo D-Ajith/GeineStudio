@@ -280,7 +280,7 @@ const Portfolio = () => {
 
               className={`px-5 py-2 rounded-lg text-sm font-medium transition ${activeCategory === cat.id
                 ? "bg-[#6B4A2D] text-white"
-                : "bg-[#F7F6F3] hover:bg-slate-200"
+                : "bg-[#F7F6F3] text-black hover:bg-[#EDE3D9]"
                 }`}
             >
               {cat.name}
@@ -323,13 +323,13 @@ const Portfolio = () => {
 
 
       <section className="py-14 bg-white text-center">
-        <h2 className="text-3xl font-bold mb-4">Want to See More?</h2>
+        <h2 className="text-3xl font-bold mb-4 text-black">Want to See More?</h2>
         <p className="text-slate-600 mb-6">
           Visit our studio or schedule a consultation
         </p>
         <a
           href="/contact"
-          className="inline-block px-7 py-3 bg-[#6B4A2D] text-white rounded-xl hover:bg-slate-800"
+          className="inline-block px-7 py-3 bg-[#6B4A2D] text-white rounded-xl hover:bg-[#EDE3D9] hover:text-black"
         >
           Schedule a Consultation
         </a>

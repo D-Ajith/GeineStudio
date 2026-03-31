@@ -46,58 +46,63 @@ const Home = () => {
       image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1920&h=1080&fit=crop&q=80",
     },
   ];
-
-  const services = [
-    {
-      icon: Briefcase,
-      title: "Corporate Shoots",
-      description: "Professional headshots, team photos, and corporate events that reflect your company's culture and values.",
-      features: ["Executive Portraits", "Team Photography", "Office Culture", "Annual Reports"],
-      color: "from-blue-500 to-cyan-500",
-    },
-    {
-      icon: Calendar,
-      title: "Event Shoots",
-      description: "Comprehensive event coverage from conferences to galas, capturing every significant moment.",
-      features: ["Conferences", "Galas & Awards", "Product Launches", "Networking Events"],
-      color: "from-purple-500 to-pink-500",
-    },
-    {
-      icon: Package,
-      title: "Product Shoots",
-      description: "Stunning product photography that showcases details and drives customer engagement.",
-      features: ["E-commerce Photos", "Catalog Shots", "Lifestyle Products", "360° Photography"],
-      color: "from-orange-500 to-red-500",
-    },
-    {
-      icon: Mic,
-      title: "Podcast Shoots",
-      description: "Professional video and photography for podcasts that engage your audience.",
-      features: ["Studio Setup", "Multi-Camera", "Thumbnail Creation", "Behind-the-Scenes"],
-      color: "from-green-500 to-teal-500",
-    },
-    {
-      icon: User,
-      title: "Professional Shoots",
-      description: "Personal branding photography for entrepreneurs, executives, and professionals.",
-      features: ["Personal Branding", "LinkedIn Profiles", "Speaker Photos", "Author Headshots"],
-      color: "from-indigo-500 to-purple-500",
-    },
-    {
-      icon: TrendingUp,
-      title: "Business Portfolio",
-      description: "Complete visual documentation of your business journey and achievements.",
-      features: ["Brand Story", "Process Documentation", "Testimonial Videos", "Social Media Content"],
-      color: "from-pink-500 to-rose-500",
-    },
-  ];
+const services = [
+  {
+    icon: Briefcase,
+    title: "Corporate Shoots",
+    link: "/services/corporate-shoots",
+    description: "Professional headshots...",
+    features: ["Executive Portraits", "Team Photography", "Office Culture", "Annual Reports"],
+    color: "from-blue-500 to-cyan-500",
+  },
+  {
+    icon: Calendar,
+    title: "Event Shoots",
+    link: "/services/event-shoots",
+    description: "Comprehensive event coverage...",
+    features: ["Conferences", "Galas & Awards", "Product Launches", "Networking Events"],
+    color: "from-purple-500 to-pink-500",
+  },
+  {
+    icon: Package,
+    title: "Product Shoots",
+    link: "/services/product-shoots",
+    description: "Stunning product photography...",
+    features: ["E-commerce Photos", "Catalog Shots", "Lifestyle Products", "360° Photography"],
+    color: "from-orange-500 to-red-500",
+  },
+  {
+    icon: Mic,
+    title: "Podcast Shoots",
+    link: "/services/podcast-shoots",
+    description: "Professional video...",
+    features: ["Studio Setup", "Multi-Camera", "Thumbnail Creation", "Behind-the-Scenes"],
+    color: "from-green-500 to-teal-500",
+  },
+  {
+    icon: User,
+    title: "Professional Shoots",
+    link: "/services/professional-shoots",
+    description: "Personal branding photography...",
+    features: ["Personal Branding", "LinkedIn Profiles", "Speaker Photos", "Author Headshots"],
+    color: "from-indigo-500 to-purple-500",
+  },
+  {
+    icon: TrendingUp,
+    title: "Business Portfolio",
+    link: "/services/business-portfolio-shoots",
+    description: "Complete visual documentation...",
+    features: ["Brand Story", "Process Documentation", "Testimonial Videos", "Social Media Content"],
+    color: "from-pink-500 to-rose-500",
+  },
+];
 
   const equipment = [
     {
       icon: Camera,
       title: "Professional Cameras",
       description: "Canon EOS R5, Sony A7R IV, Nikon Z9 for stunning 45MP+ resolution",
-      image: "https://res.cloudinary.com/dcnwphnzn/image/upload/v1766472598/podcast-cameras_mzeqzl.jpg"
+      image: "https://i.pinimg.com/1200x/e0/aa/57/e0aa57a9941e93208a544dd6106d701a.jpg"
     },
     {
       icon: Aperture,
@@ -109,13 +114,13 @@ const Home = () => {
       icon: Lightbulb,
       title: "Studio Lighting",
       description: "Profoto and Godox strobe systems with modifiers for perfect illumination",
-      image: "https://res.cloudinary.com/dcnwphnzn/image/upload/v1766472603/StudioNightView-min_qhb4dq.jpg"
+      image: "https://i.pinimg.com/736x/4c/bc/7c/4cbc7c70ec76df186826ad302a470083.jpg"
     },
     {
       icon: Film,
       title: "Video Equipment",
       description: "4K/8K cinema cameras, gimbals, and professional audio gear",
-      image: "https://res.cloudinary.com/dcnwphnzn/image/upload/v1766472605/podcast-output_jfrcba.jpg"
+      image: "https://i.pinimg.com/736x/f6/a3/87/f6a387f7561a4b9bdb0e9f8d31b64797.jpg"
     }
   ];
 
@@ -323,10 +328,10 @@ const Home = () => {
 
 
               <p className="text-gray-700 text-sm sm:text-base md:text-lg leading-relaxed max-w-xl">
-                Genie Studio is a full-service creative studio specializing in
-                <br className="block md:hidden" /> Corporate Shoots, Event Coverage, Product
-                <br className="block md:hidden" /> Photography, Podcast Production,
-                Professional Portraits, and Business
+                Genie Studio is a full-service creative studio
+                <br className="block md:hidden" />specializing in Corporate Shoots, Event Coverage
+                <br className="block md:hidden" />, Product, Photography, Podcast Production,
+                <br className="block md:hidden" />Professional Portraits, and Business
                 <br className="block md:hidden" /> Portfolio Shoots. We help brands,
                 professionals,
                 <br className="block md:hidden" /> and businesses visually communicate
@@ -676,7 +681,7 @@ const Home = () => {
 
                   <button
                     className={` relative z-10 mt-auto sm:mt-6 flex text-xs sm:text-sm ${scheme.text} group-hover:text-white font-semibold items-center gap-1.5 sm:gap-2 lg:group-hover:gap-3 transition-all duration-300 `}
-                    onClick={() => navigate("/services")}
+                  onClick={() => navigate(service.link)}
                   >
                     Explore more
                     <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -826,7 +831,7 @@ const Home = () => {
                     <Icon className="w-6 h-6 sm:w-8 sm:h-8 lg:w-10 lg:h-10" />
                   </div>
 
-                  <h3 className="relative z-10 text-sm sm:text-base lg:text-xl font-bold text-gray-900 group-hover:text-white mb-1 sm:mb-2 lg:mb-3 transition-colors duration-300">
+                  <h3 className="relative z-10 text-base sm:text-lg lg:text-2xl font-bold text-gray-800 group-hover:text-white mb-2 sm:mb-3 lg:mb-4 transition-colors duration-300">
                     {item.title}
                   </h3>
 
@@ -917,7 +922,7 @@ const Home = () => {
                       {step.step}
                     </div>
 
-                    <h3 className=" relative z-10 text-sm sm:text-base lg:text-xl font-bold text-gray-900 group-hover:text-white mb-2 sm:mb-3 transition-colors duration-300">
+                    <h3 className="relative z-10 text-base sm:text-lg lg:text-2xl font-bold text-gray-800 group-hover:text-white mb-2 sm:mb-3 lg:mb-4 transition-colors duration-300">
                       {step.title}
                     </h3>
 

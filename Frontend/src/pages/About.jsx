@@ -508,16 +508,8 @@ const About = () => {
                     />
                   </div>
 
-                  <h3 className="
-          relative z-10
-          text-base sm:text-xl md:text-2xl 
-          font-bold 
-          text-slate-900 
-          group-hover:text-white
-          mb-2 sm:mb-3 md:mb-4 
-          tracking-tight
-          transition-colors duration-300
-        ">
+                  <h3 className="relative z-10 text-base sm:text-lg lg:text-2xl font-bold text-gray-800 group-hover:text-white mb-2 sm:mb-3 lg:mb-4 transition-colors duration-300">
+
                     {value.title}
                   </h3>
 
@@ -594,7 +586,7 @@ const About = () => {
                 </div>
 
                 <div className="p-3 sm:p-4 md:p-5">
-                  <h3 className="text-sm sm:text-base md:text-xl font-semibold text-slate-900 mb-1.5 sm:mb-2">
+                  <h3 className="relative z-10 text-base sm:text-lg lg:text-2xl font-bold text-gray-800 group-hover:text-black mb-2 sm:mb-3 lg:mb-4 transition-colors duration-300">
                     {service.title}
                   </h3>
                   <p className="text-xs sm:text-sm text-slate-600 leading-relaxed line-clamp-2">
@@ -777,7 +769,7 @@ const About = () => {
         </div>
       </section>
 
-      <section className="py-12 sm:py-14 md:py-16 ">
+      <section className="py-12 sm:py-14 md:py-16 bg-white">
         <div
           className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center"
           data-aos="zoom-in"

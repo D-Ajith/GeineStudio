@@ -17,12 +17,12 @@
 @layer base {
   html {
     font-family: "Brockmann", sans-serif;
-    font-size: 14px;
+    font-size: 15px;
     overflow-x: hidden;
   }
 
   @media (min-width: 640px) {
-    html { font-size: 14px; }
+    html { font-size: 20px; }
   }
 
   @media (min-width: 1024px) {

@@ -65,19 +65,19 @@ const Contact = () => {
     {
       icon: Phone,
       title: 'Phone',
-      details: '+91 7207883871',
-      link: 'tel:+917207883871',
+      details: '+91 9032845433',
+      link: 'tel:+919032845433',
     },
     {
       icon: Mail,
       title: 'Email',
-      details: 'info@photostudio.com',
-      link: 'mailto:info@photostudio.com',
+      details: 'contact@kkdigitalgrowth.com',
+      link: 'mailto:contact@kkdigitalgrowth.com',
     },
     {
       icon: MapPin,
       title: 'Address',
-      details: '123 Photography Lane, vizag,Yendada',
+      details: '5A-2, Kp Icon, Yendada, Vishakapatanam, near to MK gold cost, Yendada, Endada, Andhra Pradesh 530045',
       link: 'https://maps.google.com',
     },
     {
@@ -91,7 +91,7 @@ const Contact = () => {
     <main className="w-full overflow-x-hidden">
 
 
-      <section className="relative min-h-[50vh] md:min-h-[60vh] lg:min-h-[55vh] xl:min-h-[50vh] text-white overflow-hidden flex items-center">
+      <section className="relative min-h-[50vh] md:min-h-[60vh] lg:min-h-[55vh] xl:min-h-[50vh] text-white overflow-hidden flex items-center bg-white">
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
@@ -116,7 +116,7 @@ const Contact = () => {
       </section>
 
 
-      <section className="py-12 sm:py-16 md:py-20 lg:py-24">
+      <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10 xl:gap-12">
 
@@ -142,8 +142,7 @@ const Contact = () => {
                       onChange={handleChange}
                       placeholder="Enter your Name"
                       required
-                      className="w-full px-4 py-3 text-sm sm:text-base border-2 border-slate-200 rounded-xl focus:border-slate-900 focus:ring-4 focus:ring-slate-100 outline-none transition-all duration-300 placeholder:text-slate-400"
-                    />
+                      className="w-full px-4 py-3 text-sm sm:text-base border-2 border-slate-200 rounded-xl focus:border-slate-900 focus:ring-4 focus:ring-slate-100 outline-none transition-all duration-300 bg-white cursor-pointer caret-black" />
                   </div>
 
                   <div className="group">
@@ -157,8 +156,7 @@ const Contact = () => {
                       placeholder="Enter your Email"
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-3 text-sm sm:text-base border-2 border-slate-200 rounded-xl focus:border-slate-900 focus:ring-4 focus:ring-slate-100 outline-none transition-all duration-300 placeholder:text-slate-400"
-                    />
+                      className="w-full px-4 py-3 text-sm sm:text-base border-2 border-slate-200 rounded-xl focus:border-slate-900 focus:ring-4 focus:ring-slate-100 outline-none transition-all duration-300 bg-white cursor-pointer caret-black" />
                   </div>
                 </div>
 
@@ -173,8 +171,7 @@ const Contact = () => {
                       placeholder="Enter your Phone number"
                       value={formData.phone}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 text-sm sm:text-base border-2 border-slate-200 rounded-xl focus:border-slate-900 focus:ring-4 focus:ring-slate-100 outline-none transition-all duration-300 placeholder:text-slate-400"
-                      required
+                      className="w-full px-4 py-3 text-sm sm:text-base border-2 border-slate-200 rounded-xl focus:border-slate-900 focus:ring-4 focus:ring-slate-100 outline-none transition-all duration-300 bg-white cursor-pointer caret-black" required
                     />
                   </div>
 
@@ -187,9 +184,7 @@ const Contact = () => {
                       value={formData.service}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-3 text-sm sm:text-base border-2 border-slate-200 rounded-xl focus:border-slate-900 focus:ring-4 focus:ring-slate-100 outline-none transition-all duration-300 bg-white cursor-pointer"
-                    >
-                      <option value="">Select a service</option>
+                      className="w-full px-4 py-3 text-sm sm:text-base border-2 border-slate-200 rounded-xl bg-white text-black cursor-pointer focus:border-slate-900 focus:ring-4 focus:ring-slate-100 outline-none transition-all duration-300">                      <option value="">Select a service</option>
                       <option value="Wedding Photography">Wedding Photography</option>
                       <option value="Portrait Session">Portrait Session</option>
                       <option value="Event Coverage">Event Coverage</option>
@@ -198,22 +193,28 @@ const Contact = () => {
                     </select>
                   </div>
                 </div>
-
                 <div className="group">
-                  <label className="block text-sm font-semibold mb-1.5 text-slate-700 group-focus-within:text-slate-900 transition-colors">
+                  <label className="block text-sm font-semibold mb-2 text-slate-700 group-focus-within:text-slate-900 transition-colors">
                     Booking Date *
                   </label>
-                  <input
-                    type="date"
-                    name="bookingDate"
-                    value={formData.bookingDate}
-                    onChange={handleChange}
-                    required
-                    min={new Date().toISOString().split('T')[0]}
-                    className="w-full px-4 py-3 text-sm sm:text-base border-2 border-slate-200 rounded-xl focus:border-slate-900 focus:ring-4 focus:ring-slate-100 outline-none transition-all duration-300"
-                  />
-                </div>
 
+                  <div className="relative">
+                    <input
+                      type="date"
+                      name="bookingDate"
+                      value={formData.bookingDate}
+                      onChange={handleChange}
+                      required
+                      min={new Date().toISOString().split('T')[0]}
+                      className="w-full px-4 py-3 text-sm sm:text-base border-2 border-slate-200 rounded-xl bg-white text-slate-900 cursor-pointer caret-black focus:border-slate-900 focus:ring-4 focus:ring-slate-100 outline-none transition-all duration-300 appearance-none shadow-sm hover:border-slate-300"
+                    />
+
+                    {/* Custom Calendar Icon */}
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
+                      📅
+                    </div>
+                  </div>
+                </div>
                 <div className="group">
                   <label className="block text-sm font-semibold mb-1.5 text-slate-700 group-focus-within:text-slate-900 transition-colors">
                     Message
@@ -224,7 +225,7 @@ const Contact = () => {
                     placeholder="Enter your Message"
                     onChange={handleChange}
                     rows={4}
-                    className="w-full px-4 py-3 text-sm sm:text-base border-2 border-slate-200 rounded-xl focus:border-slate-900 focus:ring-4 focus:ring-slate-100 outline-none transition-all duration-300 resize-none placeholder:text-slate-400"
+                    className="w-full px-4 py-3 text-sm sm:text-base border-2 border-slate-200 rounded-xl focus:border-slate-900 focus:ring-4 focus:ring-slate-100 outline-none transition-all duration-300 bg-white cursor-pointer"
                   />
                 </div>
 
@@ -357,7 +358,7 @@ const Contact = () => {
         </div>
       </section>
 
-      <section className="py-12 sm:py-16 md:py-20 bg-gradient-to-br from-slate-90 to-white">
+      <section className="py-12 sm:py-16 md:py-20 bg-gradient-to-br from-slate-100 to-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 sm:mb-5 md:mb-6 text-slate-900" data-aos="fade-left">
             Ready to Get Started?
@@ -366,7 +367,7 @@ const Contact = () => {
             Let’s create impactful visuals together. Get in touch with us today.          </p>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4" >
             <a
-              href="tel:+917207883871"
+              href="tel:+919032845433"
               className="inline-flex items-center justify-center gap-3 px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-base bg-[#6B4A2D] to-slate-700 text-white rounded-xl font-semibold hover:shadow-2xl hover:shadow-slate-900/30 transition-all duration-300 transform hover:scale-105"
               data-aos="fade-right"
             >

@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+
+# Disallow admin or private pages (edit if needed)
+Disallow: /admin/
+Disallow: /login/
+Disallow: /dashboard/
+Disallow: /private/
+
+# Allow important resources
+Allow: /assets/
+Allow: /images/
+
+# Sitemap location
+Sitemap: https://www.geinestudio.com/sitemap.xml

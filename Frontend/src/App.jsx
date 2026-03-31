@@ -7,11 +7,17 @@ import FloatingSocial from "./components/FloatingSocial";
 import ScrollToTop from "./components/ScrollToTop";
 import Home from "./pages/Home";
 import About from "./pages/About";
-import Services from "./pages/Services";
 import Portfolio from "./pages/Portfolio";
 import Contact from "./pages/Contact";
 import SplashCursor from "@/components/SplashCursor";
 import Gallery from "./pages/Gallery";
+import Services from './pages/Services';
+import CorporateShoots from './pages/CorporateShoots';
+import EventShoots from './pages/EventShoots';
+import ProductShoots from './pages/ProductShoots';
+import PodcastShoots from './pages/PodcastShoots';
+import ProfessionalShoots from './pages/ProfessionalShoots';
+import BusinessPortfolioShoots from './pages/BusinessPortfolioShoots';
 import "aos/dist/aos.css";
 function App() {
   const location = useLocation();
@@ -43,6 +49,14 @@ function App() {
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/services" element={<Services />} />
+          <Route path="/services" element={<Services />} />
+          <Route path="/services/corporate-shoots" element={<CorporateShoots />} />
+          <Route path="/services/event-shoots" element={<EventShoots />} />
+          <Route path="/services/product-shoots" element={<ProductShoots />} />
+          <Route path="/services/podcast-shoots" element={<PodcastShoots />} />
+          <Route path="/services/professional-shoots" element={<ProfessionalShoots />} />
+          <Route path="/services/business-portfolio-shoots" element={<BusinessPortfolioShoots />} />
         </Routes>
       </main>
       <FloatingSocial />

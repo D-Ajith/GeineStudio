@@ -10,12 +10,12 @@ const Footer = () => {
             <div className="flex items-center gap-3">
               <img
                 src="/GenieStudio.png"
-                alt="Geine Studio"
+                alt="Genie Studio"
                 className="h-8 sm:h-9 w-cover"
               />
               <span className="text-base sm:text-xl lg:text-2xl xl:text-3xl font-semibold">
 
-                Geine
+                Genie
                 <span className="text-[var(--accent-color)]">Studio</span>
               </span>
             </div>
@@ -54,17 +54,17 @@ const Footer = () => {
               </h4>
               <div className="space-y-1 text-xs sm:text-sm lg:text-base text-[#555]">
                 <a
-                  href="tel:+919966888428"
+                  href="tel:+919032845433"
                   className="block hover:text-[#111] transition-colors"
                 >
-                  +91 9966888428
+                  +91 9032845433
                 </a>
 
                 <a
-                  href="mailto:info@geinestudio.com"
+                  href="mailto:contact@kkdigitalgrowth.com"
                   className="block hover:text-[#111] transition-colors"
                 >
-                  info@geinestudio.com
+                  contact@kkdigitalgrowth.com
                 </a>
               </div>
 
@@ -91,11 +91,14 @@ const Footer = () => {
                 Services
               </h4>
               <ul className="space-y-2 text-xs sm:text-sm lg:text-base text-[#555]">
-                <li>Corporate Shoots</li>
-                <li>Event Shoots</li>
-                <li>Product Shoots</li>
-                <li>Podcast Shoots</li>
-                <li>Business Portfolio Shoots</li>
+                <ul>
+                  <li><a href="/services/corporate-shoots">Corporate Shoots</a></li>
+                  <li><a href="/services/event-shoots">Event Shoots</a></li>
+                  <li><a href="/services/product-shoots">Product Shoots</a></li>
+                  <li><a href="/services/podcast-shoots">Podcast Shoots</a></li>
+                  <li><a href="/services/professional-shoots">Professional Shoots</a></li>
+                  <li><a href="/services/business-portfolio-shoots">Business Portfolio Shoots</a></li>
+                </ul>
               </ul>
             </div>
           </div>
@@ -104,7 +107,7 @@ const Footer = () => {
           <div
             className=" flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6">
             <p className="text-xs sm:text-sm text-[#555] text-center md:text-left">
-              © {new Date().getFullYear()} Geine Studio. All rights reserved.
+              © {new Date().getFullYear()} Genie Studio. All rights reserved.
             </p>
 
             <div className="flex gap-2 sm:gap-3">
