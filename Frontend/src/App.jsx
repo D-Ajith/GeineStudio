@@ -12,12 +12,12 @@ import Contact from "./pages/Contact";
 import SplashCursor from "@/components/SplashCursor";
 import Gallery from "./pages/Gallery";
 import Services from './pages/Services';
-import CorporateShoots from './pages/CorporateShoots';
-import EventShoots from './pages/EventShoots';
-import ProductShoots from './pages/ProductShoots';
-import PodcastShoots from './pages/PodcastShoots';
-import ProfessionalShoots from './pages/ProfessionalShoots';
-import BusinessPortfolioShoots from './pages/BusinessPortfolioShoots';
+import CorporateShoots from './pages/Corporateshoots';
+import EventShoots from './pages/Eventshoots';
+import ProductShoots from './pages/Productshoots';
+import PodcastShoots from './pages/Podcastshoots';
+import ProfessionalShoots from './pages/Professionalshoots';
+import BusinessPortfolioShoots from './pages/BusinessportfolioShoots';
 import "aos/dist/aos.css";
 function App() {
   const location = useLocation();
