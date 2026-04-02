@@ -18,6 +18,11 @@ import Productshoots from './pages/Productshoots';
 import Podcastshoots from './pages/Podcastshoots';
 import Professionalshoots from './pages/Professionalshoots';
 import Businessportfolioshoots from './pages/Businessportfolioshoots';
+import AdminBlogs from "./pages/AdminBlogs";
+import Blogs from "./pages/Blogs";
+import BlogDetail from "./pages/BlogDetail";
+import AdminLogin from "./pages/AdminLogin";
+import ProtectedRoute from "./components/ProtectedRoute";
 import "aos/dist/aos.css";
 function App() {
   const location = useLocation();
@@ -49,14 +54,23 @@ function App() {
           <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/services" element={<Services />} />
-          <Route path="/services" element={<Services />} />
           <Route path="/services/corporate-shoots" element={<Corporateshoots />} />
           <Route path="/services/event-shoots" element={<Eventshoots />} />
           <Route path="/services/product-shoots" element={<Productshoots />} />
           <Route path="/services/podcast-shoots" element={<Podcastshoots />} />
           <Route path="/services/professional-shoots" element={<Professionalshoots />} />
           <Route path="/services/business-portfolio-shoots" element={<Businessportfolioshoots />} />
+          <Route
+            path="/admin/blogs"
+            element={
+              <ProtectedRoute>
+                <AdminBlogs />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/admin" element={<AdminLogin />} />
+          <Route path="/blogs" element={<Blogs />} />
+          <Route path="/blog/:id" element={<BlogDetail />} />
         </Routes>
       </main>
       <FloatingSocial />

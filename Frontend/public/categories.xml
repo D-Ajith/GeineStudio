@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<categories>
+  <category>
+    <name>Corporate Shoots</name>
+    <slug>corporate-shoots</slug>
+  </category>
+  <category>
+    <name>Event Shoots</name>
+    <slug>event-shoots</slug>
+  </category>
+  <category>
+    <name>Product Shoots</name>
+    <slug>product-shoots</slug>
+  </category>
+  <category>
+    <name>Podcast Shoots</name>
+    <slug>podcast-shoots</slug>
+  </category>
+  <category>
+    <name>Professional Shoots</name>
+    <slug>professional-shoots</slug>
+  </category>
+  <category>
+    <name>Business Portfolio</name>
+    <slug>business-portfolio</slug>
+  </category>
+</categories>

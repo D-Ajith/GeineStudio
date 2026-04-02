@@ -46,56 +46,56 @@ const Home = () => {
       image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1920&h=1080&fit=crop&q=80",
     },
   ];
-const services = [
-  {
-    icon: Briefcase,
-    title: "Corporate Shoots",
-    link: "/services/corporate-shoots",
-    description: "Professional headshots...",
-    features: ["Executive Portraits", "Team Photography", "Office Culture", "Annual Reports"],
-    color: "from-blue-500 to-cyan-500",
-  },
-  {
-    icon: Calendar,
-    title: "Event Shoots",
-    link: "/services/event-shoots",
-    description: "Comprehensive event coverage...",
-    features: ["Conferences", "Galas & Awards", "Product Launches", "Networking Events"],
-    color: "from-purple-500 to-pink-500",
-  },
-  {
-    icon: Package,
-    title: "Product Shoots",
-    link: "/services/product-shoots",
-    description: "Stunning product photography...",
-    features: ["E-commerce Photos", "Catalog Shots", "Lifestyle Products", "360° Photography"],
-    color: "from-orange-500 to-red-500",
-  },
-  {
-    icon: Mic,
-    title: "Podcast Shoots",
-    link: "/services/podcast-shoots",
-    description: "Professional video...",
-    features: ["Studio Setup", "Multi-Camera", "Thumbnail Creation", "Behind-the-Scenes"],
-    color: "from-green-500 to-teal-500",
-  },
-  {
-    icon: User,
-    title: "Professional Shoots",
-    link: "/services/professional-shoots",
-    description: "Personal branding photography...",
-    features: ["Personal Branding", "LinkedIn Profiles", "Speaker Photos", "Author Headshots"],
-    color: "from-indigo-500 to-purple-500",
-  },
-  {
-    icon: TrendingUp,
-    title: "Business Portfolio",
-    link: "/services/business-portfolio-shoots",
-    description: "Complete visual documentation...",
-    features: ["Brand Story", "Process Documentation", "Testimonial Videos", "Social Media Content"],
-    color: "from-pink-500 to-rose-500",
-  },
-];
+  const services = [
+    {
+      icon: Briefcase,
+      title: "Corporate Shoots",
+      link: "/services/corporate-shoots",
+      description: "Professional headshots...",
+      features: ["Executive Portraits", "Team Photography", "Office Culture", "Annual Reports"],
+      color: "from-blue-500 to-cyan-500",
+    },
+    {
+      icon: Calendar,
+      title: "Event Shoots",
+      link: "/services/event-shoots",
+      description: "Comprehensive event coverage...",
+      features: ["Conferences", "Galas & Awards", "Product Launches", "Networking Events"],
+      color: "from-purple-500 to-pink-500",
+    },
+    {
+      icon: Package,
+      title: "Product Shoots",
+      link: "/services/product-shoots",
+      description: "Stunning product photography...",
+      features: ["E-commerce Photos", "Catalog Shots", "Lifestyle Products", "360° Photography"],
+      color: "from-orange-500 to-red-500",
+    },
+    {
+      icon: Mic,
+      title: "Podcast Shoots",
+      link: "/services/podcast-shoots",
+      description: "Professional video...",
+      features: ["Studio Setup", "Multi-Camera", "Thumbnail Creation", "Behind-the-Scenes"],
+      color: "from-green-500 to-teal-500",
+    },
+    {
+      icon: User,
+      title: "Professional Shoots",
+      link: "/services/professional-shoots",
+      description: "Personal branding photography...",
+      features: ["Personal Branding", "LinkedIn Profiles", "Speaker Photos", "Author Headshots"],
+      color: "from-indigo-500 to-purple-500",
+    },
+    {
+      icon: TrendingUp,
+      title: "Business Portfolio",
+      link: "/services/business-portfolio-shoots",
+      description: "Complete visual documentation...",
+      features: ["Brand Story", "Process Documentation", "Testimonial Videos", "Social Media Content"],
+      color: "from-pink-500 to-rose-500",
+    },
+  ];
 
   const equipment = [
     {
@@ -555,7 +555,7 @@ const services = [
           </div>
         </div>
 
-        <style jsx>{`
+        <style>{`
     @keyframes scroll-carousel {
       0% {
         transform: translateX(0);
@@ -681,7 +681,7 @@ const services = [
 
                   <button
                     className={` relative z-10 mt-auto sm:mt-6 flex text-xs sm:text-sm ${scheme.text} group-hover:text-white font-semibold items-center gap-1.5 sm:gap-2 lg:group-hover:gap-3 transition-all duration-300 `}
-                  onClick={() => navigate(service.link)}
+                    onClick={() => navigate(service.link)}
                   >
                     Explore more
                     <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -697,7 +697,10 @@ const services = [
       <section className="bg-gradient-to-b from-white via-slate-50 to-white">
         <div className="py-8 sm:py-20 text-center px-4 relative overflow-hidden">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-900 mb-4">
-            We are a professional photography<h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-900 mb-4">house</h2>
+            We are a professional photography{" "}
+            <span className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-900">
+              house
+            </span>
           </h2>
 
         </div>
@@ -1059,7 +1062,7 @@ const services = [
       </section>
 
 
-      <style jsx>{`
+      <style>{`
         @keyframes ken-burns {
           0% {
             transform: scale(1);/@itsgeniemedia_official

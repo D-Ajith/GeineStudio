@@ -1,0 +1,191 @@
+import { useState } from "react";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../lib/firebase";
+import { useNavigate } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
+import { useEffect } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+
+export default function AdminLogin() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+
+    try {
+      setLoading(true);
+      await signInWithEmailAndPassword(auth, email, password);
+      navigate("/admin/blogs");
+    } catch (err) {
+      setError("Invalid credentials");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        navigate("/admin/blogs");
+      }
+    });
+
+    return () => unsubscribe();
+  }, [navigate]);
+
+  return (
+    <main className="w-full min-h-screen bg-white overflow-x-hidden">
+
+      <section className="relative min-h-[50vh] md:min-h-[60vh] lg:min-h-[55vh] xl:min-h-[50vh] text-white overflow-hidden flex items-center">
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{
+            backgroundImage:
+              "url('https://images.unsplash.com/39/lIZrwvbeRuuzqOoWJUEn_Photoaday_CSD%20%281%20of%201%29-5.jpg?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
+          }}
+        />
+
+        <div className="absolute inset-0 bg-black/60"></div>
+
+        <div
+          className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center"
+          data-aos="fade-up"
+        >
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6">
+            Admin Portal
+          </h1>
+
+          <p className="text-lg md:text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
+            Secure access to manage your Geine Studio content and operations      </p>
+        </div>
+      </section>
+      <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 px-3 sm:px-4 md:px-6 py-6 sm:py-8 md:py-12 lg:py-16">
+        <div className="w-full max-w-sm md:max-w-md lg:max-w-md">
+          <div className="bg-white p-5 sm:p-6 md:p-8 lg:p-10 rounded-2xl shadow-lg md:shadow-xl border border-yellow-100 transition hover:shadow-xl md:hover:shadow-2xl">
+            <div className="mb-6 md:mb-8">
+              <div className="flex items-center justify-between mb-2">
+                <h1 className="text-lg sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-yellow-500 to-amber-600 bg-clip-text text-transparent">
+                  Welcome Back
+                </h1>
+                <div className="w-10 sm:w-12 h-10 sm:h-12 bg-gradient-to-br from-yellow-400 to-amber-600 rounded-full flex items-center justify-center shadow-md">
+                  <span className="text-lg sm:text-xl font-bold">👤</span>
+                </div>
+              </div>
+              <div className="h-1 sm:h-1.5 w-20 sm:w-24 bg-gradient-to-r from-yellow-500 to-amber-600 rounded"></div>
+              <p className="text-gray-600 text-xs sm:text-sm mt-2 md:mt-3 font-medium">Sign in to your admin account</p>
+            </div>
+
+            <form onSubmit={handleLogin} className="space-y-4 md:space-y-5">
+              <div className="group">
+                <label className="block mb-1.5 sm:mb-2 text-xs sm:text-sm font-semibold text-gray-700">
+                  Email Address
+                </label>
+                <div className="relative">
+                  <input
+                    type="email"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border-2 border-gray-200 rounded-lg bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200 focus:bg-white outline-none transition duration-200 hover:border-gray-300 text-sm sm:text-base"
+                  />
+                  <div className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-lg">
+                    ✉️
+                  </div>
+                </div>
+              </div>
+
+              <div className="group">
+                <label className="block mb-1.5 sm:mb-2 text-xs sm:text-sm font-semibold text-gray-700">
+                  Password
+                </label>
+
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-10 sm:pr-12 border-2 border-gray-200 rounded-lg bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200 focus:bg-white outline-none transition duration-200 hover:border-gray-300 text-sm sm:text-base"
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-yellow-600 transition duration-200 p-1"
+                  >
+                    {showPassword ? <EyeOff size={18} className="sm:w-5 sm:h-5" /> : <Eye size={18} className="sm:w-5 sm:h-5" />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between text-xs sm:text-sm gap-2">
+                <label className="flex items-center gap-2 cursor-pointer group">
+                  <input
+                    type="checkbox"
+                    className="w-4 h-4 rounded border-2 border-gray-300 cursor-pointer accent-yellow-500 transition"
+                  />
+                  <span className="text-gray-600 group-hover:text-gray-700 transition font-medium">
+                    Remember me
+                  </span>
+                </label>
+
+              </div>
+
+              {error && (
+                <div className="bg-red-50 border-2 border-red-300 text-red-700 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg text-xs sm:text-sm font-medium animate-pulse">
+                  ⚠️ {error}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-yellow-500 to-amber-600 hover:from-yellow-600 hover:to-amber-700 text-white py-2.5 sm:py-3 md:py-3.5 rounded-lg font-bold text-sm sm:text-base transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg disabled:shadow-sm transform hover:scale-105 disabled:hover:scale-100"
+              >
+                {loading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span className="text-xs sm:text-sm">Logging in...</span>
+                  </span>
+                ) : (
+                  "Login to Admin"
+                )}
+              </button>
+
+
+
+
+            </form>
+
+            {/* FOOTER */}
+            <div className="mt-6 md:mt-8 pt-4 sm:pt-6 border-t-2 border-gray-200 text-center">
+              <p className="text-xs text-gray-600 leading-relaxed font-medium">
+                © 2026 Geine Studio Admin. <br className="sm:hidden" />
+                All rights reserved. <br />
+                <span className="text-yellow-600 font-semibold">🔒 Secure Area</span>
+              </p>
+            </div>
+          </div>
+
+          {/* BOTTOM HELPER TEXT */}
+          <p className="text-center text-xs text-gray-600 mt-4 sm:mt-6 px-2 font-medium">
+            By logging in, you agree to our
+            <a href="#" className="text-yellow-600 hover:text-amber-600 font-bold ml-1 transition">
+              Terms of Service
+            </a>
+          </p>
+        </div>
+      </section>
+
+
+    </main>
+  );
+}

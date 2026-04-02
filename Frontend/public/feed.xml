@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Genie Studio Blog</title>
+    <link>https://geniestudio.com/blogs</link>
+    <description>Latest updates, photography tips, and studio insights from Genie Studio</description>
+    <language>en-us</language>
+
+    <item>
+      <title>Why Professional Photography & Videography Are Essential</title>
+      <link>https://geniestudio.com/blog/professional-photography-videography-modern-brands</link>
+      <description>Learn why high-quality visuals boost your brand.</description>
+      <pubDate>Tue, 01 Apr 2026 10:00:00 GMT</pubDate>
+    </item>
+
+    <item>
+      <title>Top Benefits of Corporate Shoots for Businesses</title>
+      <link>https://geniestudio.com/blog/corporate-shoot-benefits</link>
+      <description>Discover how corporate shoots enhance brand identity.</description>
+      <pubDate>Mon, 30 Mar 2026 08:00:00 GMT</pubDate>
+    </item>
+
+  </channel>
+</rss>

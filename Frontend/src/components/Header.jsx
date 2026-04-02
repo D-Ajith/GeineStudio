@@ -24,7 +24,8 @@ const Header = () => {
     { name: "Portfolio", path: "/portfolio" },
     { name: "Services", path: "/services" },
     { name: "Gallery", path: "/gallery" },
-    { name: "Contact", path: "/contact" }
+    { name: "Contact", path: "/contact" },
+    {name:"Blogs",path:"/blogs"}
 
   ];
   const serviceItems = [
@@ -70,7 +71,6 @@ const Header = () => {
                       />
                     </Link>
 
-                    {/* Dropdown */}
                     <div className={`absolute top-full left-0 mt-3 w-56 bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 
           ${serviceOpen ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-2"}`}>
 

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pages>
+  <page>
+    <title>Home</title>
+    <url>https://geniestudio.com/</url>
+  </page>
+  <page>
+    <title>About</title>
+    <url>https://geniestudio.com/about</url>
+  </page>
+  <page>
+    <title>Portfolio</title>
+    <url>https://geniestudio.com/portfolio</url>
+  </page>
+  <page>
+    <title>Services</title>
+    <url>https://geniestudio.com/services</url>
+  </page>
+  <page>
+    <title>Gallery</title>
+    <url>https://geniestudio.com/gallery</url>
+  </page>
+  <page>
+    <title>Contact</title>
+    <url>https://geniestudio.com/contact</url>
+  </page>
+  <page>
+    <title>Blogs</title>
+    <url>https://geniestudio.com/blogs</url>
+  </page>
+</pages>
