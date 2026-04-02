@@ -303,7 +303,7 @@ const Home = () => {
           ))}
         </div>
       </section>
-      <Headings />
+      {/* <Headings /> */}
       <section
         id="about"
         className="py-10 sm:py-14 md:py-16 lg:py-20 bg-white overflow-hidden"

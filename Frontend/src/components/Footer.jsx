@@ -13,19 +13,16 @@ const Footer = () => {
                 alt="Genie Studio"
                 className="h-8 sm:h-9 w-cover"
               />
-              <span className="text-base sm:text-xl lg:text-2xl xl:text-3xl font-semibold">
-
+              <span className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold">
                 Genie
                 <span className="text-[var(--accent-color)]">Studio</span>
               </span>
             </div>
 
-            <p className="text-xs sm:text-sm lg:text-base text-[#555] leading-relaxed max-w-sm">
-
+            <p className="text-sm sm:text-sm lg:text-base text-[#555] leading-relaxed max-w-sm">
               Capturing moments, stories, and brands with creativity,
               precision, and professional excellence.
             </p>
-
             <Link
               to="/services"
               className=" inline-flex items-center gap-2 px-4 sm:px-6  py-2.5 sm:py-3 rounded-full bg-[#6b4a2d] text-white text-xs sm:text-sm lg:text-base font-medium w-fit transition-colors hover:bg-[#6b4a2d] ">
@@ -36,9 +33,9 @@ const Footer = () => {
           <div className="grid grid-cols-2 gap-4 sm:space-y-6 sm:block">
 
             <div>
-              <h4 className="font-semibold mb-2 text-sm sm:text-base lg:text-lg">
+              <h3 className="font-semibold mb-2 text-base sm:text-base lg:text-lg">
                 Address
-              </h4>
+              </h3>
               <p className="text-xs sm:text-sm lg:text-base text-[#555] leading-relaxed">
                 5A-2, KP Icon, Yendada,
                 <br />
@@ -49,9 +46,9 @@ const Footer = () => {
             </div>
 
             <div>
-              <h4 className="font-semibold mb-2 text-sm sm:text-base lg:text-lg">
+              <h3 className="font-semibold mb-2 text-base sm:text-base lg:text-lg">
                 Contact
-              </h4>
+              </h3>
               <div className="space-y-1 text-xs sm:text-sm lg:text-base text-[#555]">
                 <a
                   href="tel:+919032845433"
@@ -73,9 +70,9 @@ const Footer = () => {
 
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-2 lg:col-span-2">
             <div>
-              <h4 className="font-semibold mb-2 text-sm sm:text-base lg:text-lg">
+              <h3 className="font-semibold mb-2 text-base sm:text-base lg:text-lg">
                 Quick links
-              </h4>
+              </h3>
               <ul className="space-y-2 text-xs sm:text-sm lg:text-base text-[#555]">
                 <li><Link to="/">Home</Link></li>
                 <li><Link to="/about">About</Link></li>
@@ -87,9 +84,9 @@ const Footer = () => {
 
 
             <div>
-              <h4 className="font-semibold mb-2 text-sm sm:text-base lg:text-lg">
+              <h3 className="font-semibold mb-2 text-base sm:text-base lg:text-lg">
                 Services
-              </h4>
+              </h3>
               <ul className="space-y-2 text-xs sm:text-sm lg:text-base text-[#555]">
                 <ul>
                   <li><a href="/services/corporate-shoots">Corporate Shoots</a></li>
@@ -106,7 +103,7 @@ const Footer = () => {
         <div className="border-t border-[#ddd] mt-8 sm:mt-12 pt-5 sm:pt-6">
           <div
             className=" flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6">
-            <p className="text-xs sm:text-sm text-[#555] text-center md:text-left">
+            <p className="text-sm sm:text-sm text-[#555] text-center md:text-left">
               © {new Date().getFullYear()} Genie Studio. All rights reserved.
             </p>
 
