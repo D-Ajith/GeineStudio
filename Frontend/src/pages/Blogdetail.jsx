@@ -129,8 +129,8 @@ export default function BlogDetail() {
         <meta name="keywords" content={blog.keywords} />
       )}
 
-      <section className="relative w-full h-56 sm:h-64 md:h-80 lg:h-96 xl:h-[28rem] overflow-hidden bg-slate-200 -mt-16 sm:-mt-20 md:-mt-24 pt-16 sm:pt-20 md:pt-24">
-        <img
+<section className="relative w-full h-72 sm:h-80 md:h-96 lg:h-[28rem] xl:h-[32rem] overflow-hidden bg-slate-200">
+          <img
           src={
             blog.image ||
             "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1200&q=80"
@@ -151,7 +151,7 @@ export default function BlogDetail() {
           </div>
         )}
 
-        <button
+        {/* <button
           onClick={() => navigate(-1)}
           className="absolute top-4 sm:top-6 md:top-8 left-4 sm:left-6 md:left-8 lg:left-12 p-2 sm:p-2.5 text-slate-900 rounded-lg shadow-lg transition-all duration-300 backdrop-blur-sm"
           style={{ backgroundColor: "rgba(255, 255, 255, 0.9)" }}
@@ -159,7 +159,7 @@ export default function BlogDetail() {
           onMouseLeave={(e) => e.target.style.backgroundColor = "rgba(255, 255, 255, 0.9)"}
         >
           <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" strokeWidth={2} />
-        </button>
+        </button> */}
       </section>
 
       <article className="py-8 sm:py-12 md:py-16 lg:py-20 bg-white">
