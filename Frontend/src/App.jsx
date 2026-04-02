@@ -20,7 +20,7 @@ import Professionalshoots from './pages/Professionalshoots';
 import Businessportfolioshoots from './pages/Businessportfolioshoots';
 import AdminBlogs from "./pages/AdminBlogs";
 import Blogs from "./pages/Blogs";
-import BlogDetail from "./pages/BlogDetail";
+import BlogDetail from "./pages/Blogdetail";
 import AdminLogin from "./pages/AdminLogin";
 import ProtectedRoute from "./components/ProtectedRoute";
 import "aos/dist/aos.css";
