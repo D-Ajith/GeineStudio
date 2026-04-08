@@ -1,27 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<categories>
-  <category>
-    <name>Corporate Shoots</name>
-    <slug>corporate-shoots</slug>
-  </category>
-  <category>
-    <name>Event Shoots</name>
-    <slug>event-shoots</slug>
-  </category>
-  <category>
-    <name>Product Shoots</name>
-    <slug>product-shoots</slug>
-  </category>
-  <category>
-    <name>Podcast Shoots</name>
-    <slug>podcast-shoots</slug>
-  </category>
-  <category>
-    <name>Professional Shoots</name>
-    <slug>professional-shoots</slug>
-  </category>
-  <category>
-    <name>Business Portfolio</name>
-    <slug>business-portfolio</slug>
-  </category>
-</categories>
+
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <url>
+    <loc>https://geniestudio.in/services/corporate-shoots</loc>
+    <lastmod>2026-04-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://geniestudio.in/services/event-shoots</loc>
+    <lastmod>2026-04-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://geniestudio.in/services/product-shoots</loc>
+    <lastmod>2026-04-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://geniestudio.in/services/podcast-shoots</loc>
+    <lastmod>2026-04-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://geniestudio.in/services/professional-shoots</loc>
+    <lastmod>2026-04-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://geniestudio.in/services/business-portfolio</loc>
+    <lastmod>2026-04-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+</urlset>

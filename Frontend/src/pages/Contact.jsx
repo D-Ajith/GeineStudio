@@ -71,8 +71,8 @@ const Contact = () => {
     {
       icon: Mail,
       title: 'Email',
-      details: 'contact@kkdigitalgrowth.com',
-      link: 'mailto:contact@kkdigitalgrowth.com',
+      details: 'admin@geniestudio.in',
+      link: 'mailto:admin@geniestudio.in',
     },
     {
       icon: MapPin,

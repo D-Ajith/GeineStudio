@@ -1,10 +1,7 @@
-import { useState } from "react";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../lib/firebase";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
-import { useEffect } from "react";
-import { onAuthStateChanged } from "firebase/auth";
+import BASE_URL from "../api";
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("");
@@ -12,32 +9,44 @@ export default function AdminLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) navigate("/admin/blogs");
+  }, [navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    if (!email || !password) {
+      setError("Please enter your email and password.");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
 
     try {
-      setLoading(true);
-      await signInWithEmailAndPassword(auth, email, password);
-      navigate("/admin/blogs");
+      const res = await fetch(`${BASE_URL}/api/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        localStorage.setItem("token", data.token);
+        navigate("/admin/blogs");
+      } else {
+        setError(data.message || "Invalid credentials.");
+      }
     } catch (err) {
-      setError("Invalid credentials");
+      setError("Server error. Please try again.");
     } finally {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        navigate("/admin/blogs");
-      }
-    });
-
-    return () => unsubscribe();
-  }, [navigate]);
 
   return (
     <main className="w-full min-h-screen bg-white overflow-x-hidden">
@@ -50,24 +59,22 @@ export default function AdminLogin() {
               "url('https://images.unsplash.com/39/lIZrwvbeRuuzqOoWJUEn_Photoaday_CSD%20%281%20of%201%29-5.jpg?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
           }}
         />
-
-        <div className="absolute inset-0 bg-black/60"></div>
-
-        <div
-          className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center"
-          data-aos="fade-up"
-        >
+        <div className="absolute inset-0 bg-black/60" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center w-full">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6">
             Admin Portal
           </h1>
-
           <p className="text-lg md:text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
-            Secure access to manage your Geine Studio content and operations      </p>
+            Secure access to manage your Genie Studio content and operations
+          </p>
         </div>
       </section>
+
       <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 px-3 sm:px-4 md:px-6 py-6 sm:py-8 md:py-12 lg:py-16">
         <div className="w-full max-w-sm md:max-w-md lg:max-w-md">
           <div className="bg-white p-5 sm:p-6 md:p-8 lg:p-10 rounded-2xl shadow-lg md:shadow-xl border border-yellow-100 transition hover:shadow-xl md:hover:shadow-2xl">
+
+            {/* Card Header */}
             <div className="mb-6 md:mb-8">
               <div className="flex items-center justify-between mb-2">
                 <h1 className="text-lg sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-yellow-500 to-amber-600 bg-clip-text text-transparent">
@@ -77,11 +84,14 @@ export default function AdminLogin() {
                   <span className="text-lg sm:text-xl font-bold">👤</span>
                 </div>
               </div>
-              <div className="h-1 sm:h-1.5 w-20 sm:w-24 bg-gradient-to-r from-yellow-500 to-amber-600 rounded"></div>
-              <p className="text-gray-600 text-xs sm:text-sm mt-2 md:mt-3 font-medium">Sign in to your admin account</p>
+              <div className="h-1 sm:h-1.5 w-20 sm:w-24 bg-gradient-to-r from-yellow-500 to-amber-600 rounded" />
+              <p className="text-gray-600 text-xs sm:text-sm mt-2 md:mt-3 font-medium">
+                Sign in to your admin account
+              </p>
             </div>
 
             <form onSubmit={handleLogin} className="space-y-4 md:space-y-5">
+
               <div className="group">
                 <label className="block mb-1.5 sm:mb-2 text-xs sm:text-sm font-semibold text-gray-700">
                   Email Address
@@ -89,13 +99,13 @@ export default function AdminLogin() {
                 <div className="relative">
                   <input
                     type="email"
-                    placeholder="you@example.com"
+                    placeholder="admin@geniemedia.in"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
                     className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border-2 border-gray-200 rounded-lg bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200 focus:bg-white outline-none transition duration-200 hover:border-gray-300 text-sm sm:text-base"
                   />
-                  <div className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-lg">
+                  <div className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-lg pointer-events-none">
                     ✉️
                   </div>
                 </div>
@@ -105,7 +115,6 @@ export default function AdminLogin() {
                 <label className="block mb-1.5 sm:mb-2 text-xs sm:text-sm font-semibold text-gray-700">
                   Password
                 </label>
-
                 <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
@@ -115,13 +124,14 @@ export default function AdminLogin() {
                     required
                     className="w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-10 sm:pr-12 border-2 border-gray-200 rounded-lg bg-gray-50 text-gray-900 placeholder-gray-400 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-200 focus:bg-white outline-none transition duration-200 hover:border-gray-300 text-sm sm:text-base"
                   />
-
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-yellow-600 transition duration-200 p-1"
                   >
-                    {showPassword ? <EyeOff size={18} className="sm:w-5 sm:h-5" /> : <Eye size={18} className="sm:w-5 sm:h-5" />}
+                    {showPassword
+                      ? <EyeOff size={18} className="sm:w-5 sm:h-5" />
+                      : <Eye size={18} className="sm:w-5 sm:h-5" />}
                   </button>
                 </div>
               </div>
@@ -136,11 +146,10 @@ export default function AdminLogin() {
                     Remember me
                   </span>
                 </label>
-
               </div>
 
               {error && (
-                <div className="bg-red-50 border-2 border-red-300 text-red-700 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg text-xs sm:text-sm font-medium animate-pulse">
+                <div className="bg-red-50 border-2 border-red-300 text-red-700 px-3 sm:px-4 py-2.5 sm:py-3 rounded-lg text-xs sm:text-sm font-medium">
                   ⚠️ {error}
                 </div>
               )}
@@ -152,7 +161,7 @@ export default function AdminLogin() {
               >
                 {loading ? (
                   <span className="flex items-center justify-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     <span className="text-xs sm:text-sm">Logging in...</span>
                   </span>
                 ) : (
@@ -160,22 +169,17 @@ export default function AdminLogin() {
                 )}
               </button>
 
-
-
-
             </form>
 
-            {/* FOOTER */}
             <div className="mt-6 md:mt-8 pt-4 sm:pt-6 border-t-2 border-gray-200 text-center">
               <p className="text-xs text-gray-600 leading-relaxed font-medium">
-                © 2026 Geine Studio Admin. <br className="sm:hidden" />
+                © 2026 Genie Studio Admin. <br className="sm:hidden" />
                 All rights reserved. <br />
                 <span className="text-yellow-600 font-semibold">🔒 Secure Area</span>
               </p>
             </div>
           </div>
 
-          {/* BOTTOM HELPER TEXT */}
           <p className="text-center text-xs text-gray-600 mt-4 sm:mt-6 px-2 font-medium">
             By logging in, you agree to our
             <a href="#" className="text-yellow-600 hover:text-amber-600 font-bold ml-1 transition">
@@ -184,7 +188,6 @@ export default function AdminLogin() {
           </p>
         </div>
       </section>
-
 
     </main>
   );

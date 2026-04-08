@@ -1,27 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<services>
-  <service>
-    <name>Corporate Shoots</name>
-    <url>https://geniestudio.com/services/corporate-shoots</url>
-  </service>
-  <service>
-    <name>Event Shoots</name>
-    <url>https://geniestudio.com/services/event-shoots</url>
-  </service>
-  <service>
-    <name>Product Shoots</name>
-    <url>https://geniestudio.com/services/product-shoots</url>
-  </service>
-  <service>
-    <name>Podcast Shoots</name>
-    <url>https://geniestudio.com/services/podcast-shoots</url>
-  </service>
-  <service>
-    <name>Professional Shoots</name>
-    <url>https://geniestudio.com/services/professional-shoots</url>
-  </service>
-  <service>
-    <name>Business Portfolio</name>
-    <url>https://geniestudio.com/services/business-portfolio</url>
-  </service>
-</services>
+
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <url>
+    <loc>https://geniestudio.in/services/corporate-shoots</loc>
+    <lastmod>2026-04-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://geniestudio.in/services/event-shoots</loc>
+    <lastmod>2026-04-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://geniestudio.in/services/product-shoots</loc>
+    <lastmod>2026-04-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://geniestudio.in/services/podcast-shoots</loc>
+    <lastmod>2026-04-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://geniestudio.in/services/professional-shoots</loc>
+    <lastmod>2026-04-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://geniestudio.in/services/business-portfolio</loc>
+    <lastmod>2026-04-04</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+</urlset>

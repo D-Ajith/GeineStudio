@@ -18,10 +18,10 @@ import Productshoots from './pages/Productshoots';
 import Podcastshoots from './pages/Podcastshoots';
 import Professionalshoots from './pages/Professionalshoots';
 import Businessportfolioshoots from './pages/Businessportfolioshoots';
+import AdminLogin from "./pages/AdminLogin";
 import AdminBlogs from "./pages/AdminBlogs";
 import Blogs from "./pages/Blogs";
 import BlogDetail from "./pages/Blogdetail";
-import AdminLogin from "./pages/AdminLogin";
 import ProtectedRoute from "./components/ProtectedRoute";
 import "aos/dist/aos.css";
 function App() {
@@ -60,6 +60,8 @@ function App() {
           <Route path="/services/podcast-shoots" element={<Podcastshoots />} />
           <Route path="/services/professional-shoots" element={<Professionalshoots />} />
           <Route path="/services/business-portfolio-shoots" element={<Businessportfolioshoots />} />
+          <Route path="/admin" element={<AdminLogin />} />
+
           <Route
             path="/admin/blogs"
             element={
@@ -68,10 +70,9 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="/admin" element={<AdminLogin />} />
+
           <Route path="/blogs" element={<Blogs />} />
-          <Route path="/blog/:id" element={<BlogDetail />} />
-        </Routes>
+          <Route path="/blog/*" element={<BlogDetail />} />        </Routes>
       </main>
       <FloatingSocial />
       <Footer />

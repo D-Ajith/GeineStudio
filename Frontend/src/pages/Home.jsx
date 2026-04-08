@@ -279,7 +279,7 @@ const Home = () => {
                     </p>
                     <button
                       className="group px-6 sm:px-8 py-3 sm:py-4 bg-white text-sm sm:text-base text-gray-900 rounded-full font-semibold hover:bg-gradient-to-r hover:from-blue-500 hover:to-purple-500 hover:text-white transition-all duration-300 flex items-center gap-2 sm:gap-3 shadow-xl hover:shadow-2xl hover:scale-105"
-                      onClick={() => navigate(slides[activeIndex].route)}
+                    onClick={() => navigate(slides[active].route)}
                     >
                       {slides[activeIndex].buttonText}
                       <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />

@@ -1,13 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tags>
-  <tag>photography</tag>
-  <tag>videography</tag>
-  <tag>corporate shoots</tag>
-  <tag>event shoots</tag>
-  <tag>product photography</tag>
-  <tag>podcast studio</tag>
-  <tag>professional shoots</tag>
-  <tag>business portfolio</tag>
-  <tag>branding</tag>
-  <tag>content creation</tag>
-</tags>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Your original tags preserved in a comment -->
+  <!-- 
+  <tag slug="photography">Photography</tag>
+  <tag slug="videography">Videography</tag>
+  <tag slug="corporate-shoots">Corporate Shoots</tag>
+  <tag slug="event-shoots">Event Shoots</tag>
+  <tag slug="product-photography">Product Photography</tag>
+  <tag slug="podcast-studio">Podcast Studio</tag>
+  <tag slug="professional-shoots">Professional Shoots</tag>
+  <tag slug="business-portfolio">Business Portfolio</tag>
+  <tag slug="branding">Branding</tag>
+  <tag slug="content-creation">Content Creation</tag>
+  -->
+  
+  <!-- Google-compatible sitemap entries -->
+  <url>
+    <loc>https://geniestudio.in/services</loc>
+    <lastmod>2026-04-04</lastmod>
+  </url>
+  <!-- ... rest of URLs ... -->
+</urlset>

@@ -12,4 +12,4 @@ Allow: /assets/
 Allow: /images/
 
 # Sitemap location
-Sitemap: https://www.geinestudio.com/sitemap.xml
+Sitemap: https://geinestudio.in/sitemap.xml

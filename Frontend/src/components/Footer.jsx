@@ -58,10 +58,10 @@ const Footer = () => {
                 </a>
 
                 <a
-                  href="mailto:contact@kkdigitalgrowth.com"
+                  href="mailto:admin@geniestudio.in"
                   className="block hover:text-[#111] transition-colors"
                 >
-                  contact@kkdigitalgrowth.com
+                  admin@geniestudio.in
                 </a>
               </div>
 
