@@ -270,7 +270,6 @@ app.use(
 );
 
 // Handle preflight requests for ALL routes
-app.options("/*", cors());
 app.use(express.json());
 
 // ================= DB CONNECTION =================
