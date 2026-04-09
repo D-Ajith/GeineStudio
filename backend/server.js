@@ -345,14 +345,16 @@ app.post("/api/login", (req, res) => {
 
     const user = result[0];
 
-    // ✅ Use bcrypt compare (safe) — if passwords are plain text in DB,
-    // use: if (password !== user.password) for now, then migrate to bcrypt
+    // ✅ FIXED: Check if password is bcrypt hash or plain text
+    const isHashed = user.password.startsWith("$2b$") || user.password.startsWith("$2a$");
+
     let passwordMatch = false;
-    try {
-      // Try bcrypt first (for hashed passwords)
+
+    if (isHashed) {
+      // bcrypt hashed password
       passwordMatch = await bcrypt.compare(password, user.password);
-    } catch {
-      // Fallback for plain text passwords (migrate these to bcrypt!)
+    } else {
+      // plain text password (direct compare)
       passwordMatch = password === user.password;
     }
 
