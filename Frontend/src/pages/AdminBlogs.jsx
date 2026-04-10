@@ -295,7 +295,7 @@ const toSlug = (str) =>
   str.toLowerCase().replace(/[^a-z0-9 ]/g, "").trim().replace(/\s+/g, "-");
 
 const buildPermalink = (title, category) => {
-  const titleSlug    = toSlug(title);
+  const titleSlug = toSlug(title);
   const categorySlug = toSlug(category);
   if (categorySlug && titleSlug) return `${categorySlug}/${titleSlug}`;
   if (titleSlug) return titleSlug;
@@ -303,23 +303,23 @@ const buildPermalink = (title, category) => {
 };
 
 export default function AdminBlogs() {
-  const navigate   = useNavigate();
-  const token      = localStorage.getItem("token");
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
   const formTopRef = useRef();
 
-  const [form, setForm]                     = useState(emptyForm);
-  const [blogs, setBlogs]                   = useState([]);
-  const [loading, setLoading]               = useState(false);
-  const [dbLoading, setDbLoading]           = useState(true);
-  const [activeTab, setActiveTab]           = useState("published");
-  const [editingId, setEditingId]           = useState(null);
-  const [searchTerm, setSearchTerm]         = useState("");
+  const [form, setForm] = useState(emptyForm);
+  const [blogs, setBlogs] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [dbLoading, setDbLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("published");
+  const [editingId, setEditingId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("");
-  const [deleteTarget, setDeleteTarget]     = useState(null);
-  const [publishTarget, setPublishTarget]   = useState(null);
-  const [toast, setToast]                   = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [publishTarget, setPublishTarget] = useState(null);
+  const [toast, setToast] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [saveAsDraft, setSaveAsDraft]       = useState(false);
+  const [saveAsDraft, setSaveAsDraft] = useState(false);
   const [permalinkManual, setPermalinkManual] = useState(false); // true = user edited manually
 
   const fetchBlogs = async () => {
@@ -333,7 +333,7 @@ export default function AdminBlogs() {
         const allData = await allRes.json();
         setBlogs(Array.isArray(allData) ? allData.sort((a, b) => b.createdAt - a.createdAt) : []);
       } else {
-        const pubRes  = await fetch(`${BASE_URL}/api/blogs`);
+        const pubRes = await fetch(`${BASE_URL}/api/blogs`);
         const pubData = await pubRes.json();
         setBlogs(Array.isArray(pubData) ? pubData.sort((a, b) => b.createdAt - a.createdAt) : []);
       }
@@ -347,7 +347,7 @@ export default function AdminBlogs() {
   useEffect(() => { fetchBlogs(); }, []);
 
   const publishedBlogs = blogs.filter((b) => b.status === "published");
-  const draftBlogs     = blogs.filter((b) => b.status === "draft");
+  const draftBlogs = blogs.filter((b) => b.status === "draft");
 
   const filteredBlogs = (() => {
     let list = activeTab === "drafts" ? draftBlogs : publishedBlogs;
@@ -361,9 +361,9 @@ export default function AdminBlogs() {
     return list;
   })();
 
-  const showToast    = (msg, type = "success") => setToast({ msg, type });
+  const showToast = (msg, type = "success") => setToast({ msg, type });
   const dismissToast = () => setToast(null);
-  const formatDate   = (ts) =>
+  const formatDate = (ts) =>
     new Date(Number(ts)).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
 
   const handleChange = (e) => {
@@ -379,7 +379,7 @@ export default function AdminBlogs() {
       const updated = { ...prev, [name]: value };
 
       if ((name === "title" || name === "category") && !permalinkManual) {
-        const newTitle    = name === "title"    ? value : prev.title;
+        const newTitle = name === "title" ? value : prev.title;
         const newCategory = name === "category" ? value : prev.category;
         updated.permalink = buildPermalink(newTitle, newCategory);
       }
@@ -406,77 +406,82 @@ export default function AdminBlogs() {
     }));
   };
 
-  const handleSubmit = async (e, asDraft = false) => {
-    e.preventDefault();
-    if (!form.title.trim() || !form.description.trim() || !form.category) {
-      showToast("Please fill Title, Category, and Content.", "error");
-      return;
+const handleSubmit = async (e, asDraft = false) => {
+  e.preventDefault();
+  if (!form.title.trim() || !form.description.trim() || !form.category) {
+    showToast("Please fill Title, Category, and Content.", "error");
+    return;
+  }
+
+  setSaveAsDraft(asDraft); // ✅ sync loading indicator
+  setLoading(true);
+
+  try {
+    const formData = new FormData();
+    formData.append("title",           form.title);
+    formData.append("permalink",       form.permalink);
+    formData.append("metaDescription", form.metaDescription);
+    formData.append("description",     form.description);
+    formData.append("category",        form.category);
+    formData.append("keywords",        form.keywords);
+    formData.append("status",          asDraft ? "draft" : "published");
+    if (form.image) formData.append("image", form.image);
+
+    let res;
+    if (editingId) {
+      res = await fetch(`${BASE_URL}/api/blogs/${editingId}`, {
+        method:  "PUT",
+        headers: { Authorization: token },
+        body:    formData,
+      });
+    } else {
+      res = await fetch(`${BASE_URL}/api/blogs`, {
+        method:  "POST",
+        headers: { Authorization: token },
+        body:    formData,
+      });
     }
 
-    setLoading(true);
-    try {
-      const formData = new FormData();
-      formData.append("title",           form.title);
-      formData.append("permalink",       form.permalink);
-      formData.append("metaDescription", form.metaDescription);
-      formData.append("description",     form.description);
-      formData.append("category",        form.category);
-      formData.append("keywords",        form.keywords);
-      formData.append("status",          asDraft ? "draft" : "published");
-      if (form.image) formData.append("image", form.image);
+    const data = await res.json();
 
-      let res;
-      if (editingId) {
-        res = await fetch(`${BASE_URL}/api/blogs/${editingId}`, {
-          method:  "PUT",
-          headers: { Authorization: token },
-          body:    formData,
-        });
+    if (data.success) { // ✅ check data.success not data.message
+      // ✅ Correct toast for each case
+      if (asDraft) {
+        showToast(editingId ? "✏️ Changes saved as draft!" : "📝 Blog saved as draft — hidden from users!");
       } else {
-        res = await fetch(`${BASE_URL}/api/blogs`, {
-          method:  "POST",
-          headers: { Authorization: token },
-          body:    formData,
-        });
+        showToast(editingId ? "✅ Blog updated & published!" : "🎉 Blog published successfully!");
       }
-
-      const data = await res.json();
-      if (data.message) {
-        showToast(
-          asDraft
-            ? (editingId ? "Changes saved as draft ✏️" : "Blog saved as draft — hidden from users 📝")
-            : (editingId ? "Blog updated & published! ✅" : "Blog published successfully! 🎉")
-        );
-        resetForm();
-        setActiveTab(asDraft ? "drafts" : "published");
-        fetchBlogs();
-      } else {
-        showToast("Something went wrong. Please try again.", "error");
-      }
-    } catch (err) {
-      showToast("Network error. Please try again.", "error");
-    } finally {
-      setLoading(false);
+      resetForm();
+      setSaveAsDraft(false); // ✅ reset loading indicator state
+      setActiveTab(asDraft ? "drafts" : "published");
+      fetchBlogs();
+    } else {
+      showToast(data.message || "Something went wrong. Please try again.", "error");
     }
-  };
+  } catch (err) {
+    showToast("Network error. Please try again.", "error");
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handlePublishDraft = async () => {
     if (!publishTarget) return;
     setLoading(true);
     try {
       const formData = new FormData();
-      formData.append("title",           publishTarget.title);
-      formData.append("permalink",       publishTarget.permalink);
+      formData.append("title", publishTarget.title);
+      formData.append("permalink", publishTarget.permalink);
       formData.append("metaDescription", publishTarget.metaDescription || "");
-      formData.append("description",     publishTarget.description || "");
-      formData.append("category",        publishTarget.category || "");
-      formData.append("keywords",        publishTarget.keywords || "");
-      formData.append("status",          "published"); // ← the key change
+      formData.append("description", publishTarget.description || "");
+      formData.append("category", publishTarget.category || "");
+      formData.append("keywords", publishTarget.keywords || "");
+      formData.append("status", "published"); // ← the key change
 
-      const res  = await fetch(`${BASE_URL}/api/blogs/${publishTarget.id}`, {
-        method:  "PUT",
+      const res = await fetch(`${BASE_URL}/api/blogs/${publishTarget.id}`, {
+        method: "PUT",
         headers: { Authorization: token },
-        body:    formData,
+        body: formData,
       });
       const data = await res.json();
       if (data.message) {
@@ -497,18 +502,18 @@ export default function AdminBlogs() {
   const handleUnpublish = async (blog) => {
     try {
       const formData = new FormData();
-      formData.append("title",           blog.title);
-      formData.append("permalink",       blog.permalink);
+      formData.append("title", blog.title);
+      formData.append("permalink", blog.permalink);
       formData.append("metaDescription", blog.metaDescription || "");
-      formData.append("description",     blog.description || "");
-      formData.append("category",        blog.category || "");
-      formData.append("keywords",        blog.keywords || "");
-      formData.append("status",          "draft"); // ← move back to draft
+      formData.append("description", blog.description || "");
+      formData.append("category", blog.category || "");
+      formData.append("keywords", blog.keywords || "");
+      formData.append("status", "draft"); // ← move back to draft
 
       await fetch(`${BASE_URL}/api/blogs/${blog.id}`, {
-        method:  "PUT",
+        method: "PUT",
         headers: { Authorization: token },
-        body:    formData,
+        body: formData,
       });
       showToast("Blog moved to drafts — hidden from users.");
       fetchBlogs();
@@ -521,14 +526,14 @@ export default function AdminBlogs() {
   const handleEdit = (blog) => {
     setPermalinkManual(true); // preserve existing permalink when editing
     setForm({
-      title:           blog.title || "",
-      permalink:       blog.permalink || "",
+      title: blog.title || "",
+      permalink: blog.permalink || "",
       metaDescription: blog.metaDescription || "",
-      description:     blog.description || "",
-      category:        blog.category || "",
-      keywords:        blog.keywords || "",
-      image:           null,
-      imagePreview:    blog.image || "",
+      description: blog.description || "",
+      category: blog.category || "",
+      keywords: blog.keywords || "",
+      image: null,
+      imagePreview: blog.image || "",
     });
     setEditingId(blog.id);
     setActiveTab("create");
@@ -540,7 +545,7 @@ export default function AdminBlogs() {
     setLoading(true);
     try {
       await fetch(`${BASE_URL}/api/blogs/${deleteTarget.id}`, {
-        method:  "DELETE",
+        method: "DELETE",
         headers: { Authorization: token },
       });
       showToast("Blog deleted.");
@@ -564,7 +569,7 @@ export default function AdminBlogs() {
     navigate("/admin");
   };
 
- 
+
   return (
     <main className="w-full min-h-screen bg-[#F7F6F3] overflow-x-hidden font-sans">
       <style>{`
@@ -785,7 +790,7 @@ export default function AdminBlogs() {
               </div>
             </div>
 
-            <form onSubmit={(e) => handleSubmit(e, saveAsDraft)} className="px-4 sm:px-8 py-6 sm:py-8 space-y-5 sm:space-y-6">
+<form onSubmit={(e) => e.preventDefault()} className="px-4 sm:px-8 py-6 sm:py-8 space-y-5 sm:space-y-6">
 
               <Field label="Blog Title" required icon={FileText}>
                 <input type="text" name="title" placeholder="Enter an engaging blog title…"
@@ -856,7 +861,7 @@ export default function AdminBlogs() {
                     <p className="text-xs font-bold text-blue-900 flex items-center gap-1.5"><Image size={12} /> 📐 Required Image Specifications</p>
                   </div>
                   <div className="px-4 py-3 grid grid-cols-3 gap-3 text-xs">
-                    {[["Dimensions","1200 × 675","pixels"],["Ratio","16 : 9","landscape"],["Format","JPG / WebP","max 500 KB"]].map(([label, val, sub]) => (
+                    {[["Dimensions", "1200 × 675", "pixels"], ["Ratio", "16 : 9", "landscape"], ["Format", "JPG / WebP", "max 500 KB"]].map(([label, val, sub]) => (
                       <div key={label} className="bg-white rounded-lg p-2.5 border border-blue-100 text-center">
                         <p className="text-[10px] text-blue-500 font-semibold uppercase tracking-wide mb-1">{label}</p>
                         <p className="font-bold text-blue-900 text-sm">{val}</p>
@@ -915,16 +920,24 @@ export default function AdminBlogs() {
                   </button>
                 )}
 
-                <button type="submit" disabled={loading} onClick={() => setSaveAsDraft(true)}
-                  className="flex-1 py-3 sm:py-3.5 rounded-xl font-extrabold text-sm transition-all shadow border-2 border-amber-400 bg-amber-50 hover:bg-amber-100 text-amber-800 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={(e) => handleSubmit(e, true)}
+                  className="flex-1 py-3 sm:py-3.5 rounded-xl font-extrabold text-sm transition-all shadow border-2 border-amber-400 bg-amber-50 hover:bg-amber-100 text-amber-800 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
                   {loading && saveAsDraft
                     ? <><Loader size={15} className="animate-spin" /> Saving…</>
                     : <><Lock size={14} /> Save as Draft (Admin Only)</>}
                 </button>
 
-                <button type="submit" disabled={loading} onClick={() => setSaveAsDraft(false)}
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={(e) => handleSubmit(e, false)}
                   className="flex-1 py-3 sm:py-3.5 rounded-xl font-extrabold text-sm text-white transition-all shadow-lg hover:shadow-xl hover:scale-[1.02] disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2"
-                  style={{ background: loading ? "#9d7a5f" : "#6B4A2D" }}>
+                  style={{ background: loading ? "#9d7a5f" : "#6B4A2D" }}
+                >
                   {loading && !saveAsDraft
                     ? <><Loader size={15} className="animate-spin" /> {editingId ? "Saving…" : "Publishing…"}</>
                     : editingId
