@@ -79,12 +79,8 @@ const BASE_URL = process.env.BASE_URL || "https://geniestudio.in";
 // WITH THIS:
 const getImageUrl = (imagePath) => {
   if (!imagePath) return null;
-  if (Buffer.isBuffer(imagePath)) return null;   // ✅ old blob rows — return null safely
-  const str = String(imagePath);
-  if (str.startsWith("http")) return str;
-  return `${BASE_URL}${str}`;
+  return String(imagePath);
 };
-
 // ================= JWT MIDDLEWARE =================
 const verifyToken = (req, res, next) => {
   const authHeader = req.headers["authorization"];
@@ -147,33 +143,72 @@ app.post("/api/login", (req, res) => {
 });
 
 // ================= CREATE BLOG =================
-app.post("/api/blogs", verifyToken, upload.single("image"), (req, res) => {
-  const { title, permalink, metaDescription, description, category, keywords, status } = req.body;
+// app.post("/api/blogs", verifyToken, upload.single("image"), (req, res) => {
+//   const { title, permalink, metaDescription, description, category, keywords, status } = req.body;
 
-  if (!title || !permalink)
-    return res.status(400).json({ success: false, message: "Title and permalink are required" });
+//   if (!title || !permalink)
+//     return res.status(400).json({ success: false, message: "Title and permalink are required" });
 
-  // ✅ Store file path, not buffer
-  const image = req.file ? `/uploads/${req.file.filename}` : null;
-  const sql = `
-    INSERT INTO blogs 
-    (title, permalink, metaDescription, description, category, image, keywords, status, createdAt, updatedAt)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `;
+//   // ✅ Store file path, not buffer
+//   const image = req.file ? `/uploads/${req.file.filename}` : null;
+//   const sql = `
+//     INSERT INTO blogs 
+//     (title, permalink, metaDescription, description, category, image, keywords, status, createdAt, updatedAt)
+//     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+//   `;
 
-  db.query(
-    sql,
-    [title, permalink, metaDescription, description, category, image, keywords, status, Date.now(), Date.now()],
-    (err) => {
-      if (err) {
-        console.error("DB error creating blog:", err);
-        return res.status(500).json({ success: false, message: "Failed to create blog" });
-      }
-      res.json({ success: true, message: "Blog created" });
+//   db.query(
+//     sql,
+//     [title, permalink, metaDescription, description, category, image, keywords, status, Date.now(), Date.now()],
+//     (err) => {
+//       if (err) {
+//         console.error("DB error creating blog:", err);
+//         return res.status(500).json({ success: false, message: "Failed to create blog" });
+//       }
+//       res.json({ success: true, message: "Blog created" });
+//     }
+//   );
+// });
+const axios = require("axios");
+const FormData = require("form-data");
+
+app.post("/api/blogs", verifyToken, upload.single("image"), async (req, res) => {
+  try {
+    let imageUrl = null;
+
+    if (req.file) {
+      const formData = new FormData();
+      formData.append("file", fs.createReadStream(req.file.path));
+
+      const response = await axios.post(
+        "https://geniestudio.in/upload.php", // 👈 Hostinger API
+        formData,
+        { headers: formData.getHeaders() }
+      );
+
+      imageUrl = response.data.url; // full HTTPS URL
     }
-  );
-});
 
+    const sql = `
+      INSERT INTO blogs 
+      (title, permalink, metaDescription, description, category, image, keywords, status, createdAt, updatedAt)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    db.query(
+      sql,
+      [req.body.title, req.body.permalink, req.body.metaDescription, req.body.description, req.body.category, imageUrl, req.body.keywords, req.body.status, Date.now(), Date.now()],
+      (err) => {
+        if (err) return res.status(500).json({ success: false });
+        res.json({ success: true });
+      }
+    );
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false });
+  }
+});
 // ================= GET PUBLIC BLOGS =================
 app.get("/api/blogs", (req, res) => {
   db.query("SELECT * FROM blogs WHERE status = 'published' ORDER BY createdAt DESC", (err, results) => {
