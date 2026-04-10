@@ -115,13 +115,17 @@ export default function BlogEditor({ value, onChange }) {
   const [isFocused, setIsFocused] = useState(false);
 
   const editor = useEditor({
-    extensions: [
-      StarterKit.configure({ heading: { levels: [1, 2, 3] } }),
-      Link.configure({ openOnClick: false, autolink: true }),
-      Underline,
-      TextAlign.configure({ types: ["heading", "paragraph"] }),
-      Placeholder.configure({ placeholder: "Start writing your blog content here…" }),
-    ],
+   extensions: [
+  StarterKit.configure({
+    heading: { levels: [1, 2, 3] },
+    link: false,
+    underline: false,
+  }),
+  Link.configure({ openOnClick: false, autolink: true }),
+  Underline,
+  TextAlign.configure({ types: ["heading", "paragraph"] }),
+  Placeholder.configure({ placeholder: "Start writing your blog content here…" }),
+],
     content: value,
     onUpdate: ({ editor }) => onChange?.(editor.getHTML()),
     onFocus:  () => setIsFocused(true),

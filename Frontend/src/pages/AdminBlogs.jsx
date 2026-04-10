@@ -270,6 +270,14 @@ const CATEGORIES = [
   "Podcast Shoots",
   "Professional Shoots",
   "Business Portfolio",
+  "UI/UX Design",
+  "Animation 2d or 3d",
+  "Video Editing",
+  "Podcast",
+  "Figma",
+  "Technology",
+  "News"
+
 ];
 
 const emptyForm = {
