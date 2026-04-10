@@ -76,7 +76,6 @@ const upload = multer({
 });
 // ================= HELPER: Build full image URL =================
 const BASE_URL = process.env.BASE_URL || "https://geniestudio.in";
-const imageType = req.file ? req.file.mimetype : null;
 // WITH THIS:
 const getImageUrl = (imagePath) => {
   if (!imagePath) return null;
