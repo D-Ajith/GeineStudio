@@ -15,9 +15,33 @@
   -->
   
   <!-- Google-compatible sitemap entries -->
+   <url>
+    <loc>https://geniestudio.in</loc>
+    <lastmod>2026-04-13</lastmod>
+  </url>
   <url>
     <loc>https://geniestudio.in/services</loc>
     <lastmod>2026-04-04</lastmod>
+  </url>
+   <url>
+    <loc>https://geniestudio.in/about</loc>
+    <lastmod>2026-04-13</lastmod>
+  </url>
+     <url>
+    <loc>https://geniestudio.in/portfolio</loc>
+    <lastmod>2026-04-13</lastmod>
+  </url>
+     <url>
+    <loc>https://geniestudio.in/gallery</loc>
+    <lastmod>2026-04-13</lastmod>
+  </url>
+     <url>
+    <loc>https://geniestudio.in/contact</loc>
+    <lastmod>2026-04-13</lastmod>
+  </url>
+     <url>
+    <loc>https://geniestudio.in/blogs</loc>
+    <lastmod>2026-04-13</lastmod>
   </url>
   <!-- ... rest of URLs ... -->
 </urlset>

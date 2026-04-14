@@ -8,6 +8,8 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const path = require("path");
 const fs = require("fs");
+const axios = require("axios");
+const FormData = require("form-data");
 
 const PORT = process.env.PORT || 5000;
 const app = express();
@@ -35,6 +37,7 @@ app.use(express.json());
 
 // ================= STATIC FILES =================
 app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
+
 // ================= DB CONNECTION =================
 const db = mysql.createPool({
   host: process.env.DB_HOST,
@@ -52,6 +55,7 @@ db.query("SELECT 1", (err) => {
 });
 
 // ================= MULTER =================
+// Multer is only used as a temp buffer before uploading to Hostinger
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadDir = path.join(__dirname, "public/uploads");
@@ -74,13 +78,35 @@ const upload = multer({
     else cb(new Error("Only images are allowed"));
   },
 });
-// ================= HELPER: Build full image URL =================
-const BASE_URL = process.env.BASE_URL || "https://geniestudio.in";
-// WITH THIS:
+
+// ================= HELPER: Upload file to Hostinger =================
+// Uploads temp file to upload.php, returns full HTTPS URL, cleans up temp file
+const uploadToHostinger = async (tempFilePath) => {
+  try {
+    const formData = new FormData();
+    formData.append("file", fs.createReadStream(tempFilePath));
+
+    const response = await axios.post(
+      "https://geniestudio.in/upload.php",
+      formData,
+      { headers: formData.getHeaders() }
+    );
+
+    return response.data.url; // full HTTPS URL from Hostinger
+  } finally {
+    // Always clean up the temp file, whether upload succeeded or failed
+    try {
+      if (fs.existsSync(tempFilePath)) fs.unlinkSync(tempFilePath);
+    } catch (_) {}
+  }
+};
+
+// ================= HELPER: Normalize image URL =================
 const getImageUrl = (imagePath) => {
   if (!imagePath) return null;
   return String(imagePath);
 };
+
 // ================= JWT MIDDLEWARE =================
 const verifyToken = (req, res, next) => {
   const authHeader = req.headers["authorization"];
@@ -98,6 +124,7 @@ const verifyToken = (req, res, next) => {
     next();
   });
 };
+
 app.use((req, res, next) => {
   if (
     process.env.NODE_ENV === "production" &&
@@ -108,6 +135,7 @@ app.use((req, res, next) => {
   }
   next();
 });
+
 // ================= ROOT =================
 app.get("/", (req, res) => {
   res.send("🚀 GenieStudio Backend is Working!");
@@ -143,50 +171,13 @@ app.post("/api/login", (req, res) => {
 });
 
 // ================= CREATE BLOG =================
-// app.post("/api/blogs", verifyToken, upload.single("image"), (req, res) => {
-//   const { title, permalink, metaDescription, description, category, keywords, status } = req.body;
-
-//   if (!title || !permalink)
-//     return res.status(400).json({ success: false, message: "Title and permalink are required" });
-
-//   // ✅ Store file path, not buffer
-//   const image = req.file ? `/uploads/${req.file.filename}` : null;
-//   const sql = `
-//     INSERT INTO blogs 
-//     (title, permalink, metaDescription, description, category, image, keywords, status, createdAt, updatedAt)
-//     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-//   `;
-
-//   db.query(
-//     sql,
-//     [title, permalink, metaDescription, description, category, image, keywords, status, Date.now(), Date.now()],
-//     (err) => {
-//       if (err) {
-//         console.error("DB error creating blog:", err);
-//         return res.status(500).json({ success: false, message: "Failed to create blog" });
-//       }
-//       res.json({ success: true, message: "Blog created" });
-//     }
-//   );
-// });
-const axios = require("axios");
-const FormData = require("form-data");
-
 app.post("/api/blogs", verifyToken, upload.single("image"), async (req, res) => {
   try {
     let imageUrl = null;
 
     if (req.file) {
-      const formData = new FormData();
-      formData.append("file", fs.createReadStream(req.file.path));
-
-      const response = await axios.post(
-        "https://geniestudio.in/upload.php", // 👈 Hostinger API
-        formData,
-        { headers: formData.getHeaders() }
-      );
-
-      imageUrl = response.data.url; // full HTTPS URL
+      // Upload temp file to Hostinger, get back full HTTPS URL
+      imageUrl = await uploadToHostinger(req.file.path);
     }
 
     const sql = `
@@ -197,24 +188,37 @@ app.post("/api/blogs", verifyToken, upload.single("image"), async (req, res) => 
 
     db.query(
       sql,
-      [req.body.title, req.body.permalink, req.body.metaDescription, req.body.description, req.body.category, imageUrl, req.body.keywords, req.body.status, Date.now(), Date.now()],
+      [
+        req.body.title,
+        req.body.permalink,
+        req.body.metaDescription,
+        req.body.description,
+        req.body.category,
+        imageUrl,
+        req.body.keywords,
+        req.body.status,
+        Date.now(),
+        Date.now(),
+      ],
       (err) => {
-        if (err) return res.status(500).json({ success: false });
-        res.json({ success: true });
+        if (err) {
+          console.error("DB error creating blog:", err);
+          return res.status(500).json({ success: false, message: "Failed to create blog" });
+        }
+        res.json({ success: true, message: "Blog created" });
       }
     );
-
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false });
+    console.error("Error creating blog:", err);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 });
+
 // ================= GET PUBLIC BLOGS =================
 app.get("/api/blogs", (req, res) => {
   db.query("SELECT * FROM blogs WHERE status = 'published' ORDER BY createdAt DESC", (err, results) => {
     if (err) return res.status(500).json({ success: false, message: "Failed to fetch blogs" });
 
-    // ✅ Return full HTTPS URL, no base64
     const blogs = results.map((blog) => ({
       ...blog,
       image: getImageUrl(blog.image),
@@ -255,43 +259,79 @@ app.use("/api/blog", (req, res) => {
 });
 
 // ================= UPDATE BLOG =================
-app.put("/api/blogs/:id", verifyToken, upload.single("image"), (req, res) => {
+app.put("/api/blogs/:id", verifyToken, upload.single("image"), async (req, res) => {
   const { id } = req.params;
-  const { title, permalink, metaDescription, description, category, keywords, status } = req.body;
+  const {
+    title,
+    permalink,
+    metaDescription,
+    description,
+    category,
+    keywords,
+    status,
+    existingImage, // ✅ sent by frontend when no new file is chosen — preserve current image
+  } = req.body;
 
-  let sql = `
-    UPDATE blogs SET 
-    title = ?, permalink = ?, metaDescription = ?, description = ?, 
-    category = ?, keywords = ?, status = ?, updatedAt = ?
-  `;
-  let values = [title, permalink, metaDescription, description, category, keywords, status, Date.now()];
+  try {
+    let imageUrl;
 
-  // ✅ Only update image column if a new file was uploaded
-  if (req.file) {
-    sql += ", image = ?";
-    values.push(`/uploads/${req.file.filename}`);
-  }
-
-  sql += " WHERE id = ?";
-  values.push(id);
-
-  db.query(sql, values, (err) => {
-    if (err) {
-      console.error("DB error updating blog:", err);
-      return res.status(500).json({ success: false, message: "Failed to update blog" });
+    if (req.file) {
+      // ✅ FIX: New file uploaded → send it to Hostinger upload.php, get full HTTPS URL
+      // Previously this was storing a local /uploads/ path which broke on Hostinger
+      imageUrl = await uploadToHostinger(req.file.path);
+    } else if (existingImage && existingImage.trim() !== "") {
+      // ✅ No new file, but frontend passed the current image URL → keep it
+      imageUrl = existingImage.trim();
+    } else {
+      // No file, no existingImage → user intentionally removed the image
+      imageUrl = null;
     }
-    res.json({ success: true, message: "Blog updated" });
-  });
+
+    const sql = `
+      UPDATE blogs SET
+        title = ?,
+        permalink = ?,
+        metaDescription = ?,
+        description = ?,
+        category = ?,
+        keywords = ?,
+        status = ?,
+        image = ?,
+        updatedAt = ?
+      WHERE id = ?
+    `;
+
+    const values = [
+      title,
+      permalink,
+      metaDescription,
+      description,
+      category,
+      keywords,
+      status,
+      imageUrl,   // ✅ always explicitly set — no conditional column building
+      Date.now(),
+      id,
+    ];
+
+    db.query(sql, values, (err) => {
+      if (err) {
+        console.error("DB error updating blog:", err);
+        return res.status(500).json({ success: false, message: "Failed to update blog" });
+      }
+      res.json({ success: true, message: "Blog updated" });
+    });
+  } catch (err) {
+    console.error("Error updating blog:", err);
+    res.status(500).json({ success: false, message: "Server error uploading image" });
+  }
 });
 
 // ================= DELETE BLOG =================
 app.delete("/api/blogs/:id", verifyToken, (req, res) => {
-  // ✅ Also delete the image file from disk when blog is deleted
   db.query("SELECT image FROM blogs WHERE id = ?", [req.params.id], (err, result) => {
-    if (!err && result.length > 0 && result[0].image) {
-      const filePath = path.join(__dirname, "public", result[0].image);
-      if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-    }
+    // Note: images are stored on Hostinger, not locally, so local file deletion is skipped
+    // If you want to also delete from Hostinger you'd need a delete endpoint on upload.php
 
     db.query("DELETE FROM blogs WHERE id = ?", [req.params.id], (err2) => {
       if (err2) return res.status(500).json({ success: false, message: "Failed to delete blog" });
