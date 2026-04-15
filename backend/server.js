@@ -715,10 +715,9 @@ const escapeHtml = (str) =>
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
-
-app.get("/share/*", (req, res) => {
-  // req.params[0] captures everything after /share/
-  const permalink = req.params[0];
+// ================= OG SHARE PREVIEW =================
+app.use("/share/", (req, res) => {
+  const permalink = req.path.replace(/^\//, "");
   if (!permalink) return res.redirect("https://geniestudio.in");
 
   db.query(
@@ -728,26 +727,19 @@ app.get("/share/*", (req, res) => {
       if (err || result.length === 0) {
         return res.redirect("https://geniestudio.in/blog");
       }
-
       const blog        = result[0];
       const title       = escapeHtml(blog.title || "GenieStudio Blog");
       const description = escapeHtml(blog.metaDescription || "Read this article on GenieStudio");
-      const image       = escapeHtml(
-        blog.image || "https://geniestudio.in/og-default.jpg"
-      );
-      // The canonical page that real users should land on (your React frontend URL)
-      const pageUrl = `https://geniestudio.in/blog/${blog.permalink}`;
+      const image       = escapeHtml(blog.image || "https://geniestudio.in/og-default.jpg");
+      const pageUrl     = `https://geniestudio.in/blog/${blog.permalink}`;
 
       res.setHeader("Content-Type", "text/html; charset=utf-8");
       res.send(`<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>${title}</title>
   <meta name="description" content="${description}" />
-
-  <!-- Open Graph — Facebook, WhatsApp, LinkedIn, Telegram -->
   <meta property="og:type"        content="article" />
   <meta property="og:title"       content="${title}" />
   <meta property="og:description" content="${description}" />
@@ -756,14 +748,10 @@ app.get("/share/*", (req, res) => {
   <meta property="og:image:height" content="630" />
   <meta property="og:url"         content="${pageUrl}" />
   <meta property="og:site_name"   content="GenieStudio" />
-
-  <!-- Twitter Card -->
   <meta name="twitter:card"        content="summary_large_image" />
   <meta name="twitter:title"       content="${title}" />
   <meta name="twitter:description" content="${description}" />
   <meta name="twitter:image"       content="${image}" />
-
-  <!-- Instant redirect for real human visitors -->
   <meta http-equiv="refresh" content="0;url=${pageUrl}" />
 </head>
 <body style="margin:0;background:#1a1a1a;color:#fff;font-family:sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;text-align:center;">
