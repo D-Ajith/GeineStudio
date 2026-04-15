@@ -165,7 +165,6 @@
 //           <p className="text-xs sm:text-sm text-gray-500 line-clamp-2 mb-3 sm:mb-4 flex-grow">{blog.metaDescription}</p>
 //         )}
 
-//         {/* Permalink preview */}
 //         {blog.permalink && (
 //           <p className="text-[10px] text-gray-400 font-mono mb-2 truncate">/blog/{blog.permalink}</p>
 //         )}
@@ -277,7 +276,6 @@
 //   "Figma",
 //   "Technology",
 //   "News"
-
 // ];
 
 // const emptyForm = {
@@ -287,8 +285,9 @@
 //   description: "",
 //   category: "",
 //   keywords: "",
-//   image: null,
-//   imagePreview: "",
+//   image: null,          // new File object (only when user picks a new file)
+//   imagePreview: "",     // blob URL or existing hosted URL — drives the preview
+//   existingImageUrl: "", // ✅ FIX: stores the current saved URL when editing
 // };
 
 // const toSlug = (str) =>
@@ -320,7 +319,7 @@
 //   const [toast, setToast] = useState(null);
 //   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 //   const [saveAsDraft, setSaveAsDraft] = useState(false);
-//   const [permalinkManual, setPermalinkManual] = useState(false); // true = user edited manually
+//   const [permalinkManual, setPermalinkManual] = useState(false);
 
 //   const fetchBlogs = async () => {
 //     setDbLoading(true);
@@ -396,87 +395,119 @@
 //     }));
 //   };
 
+//   // ✅ FIX: When a new image file is selected, store it in form.image
+//   //         AND keep existingImageUrl intact so the backend knows what was there before
 //   const handleImageChange = (e) => {
 //     const file = e.target.files[0];
 //     if (!file) return;
+//     // Revoke previous blob URL to avoid memory leaks
+//     if (form.imagePreview && form.imagePreview.startsWith("blob:")) {
+//       URL.revokeObjectURL(form.imagePreview);
+//     }
 //     setForm((prev) => ({
 //       ...prev,
 //       image: file,
 //       imagePreview: URL.createObjectURL(file),
+//       // existingImageUrl stays — backend will ignore it when a new file is sent
 //     }));
 //   };
 
-// const handleSubmit = async (e, asDraft = false) => {
-//   e.preventDefault();
-//   if (!form.title.trim() || !form.description.trim() || !form.category) {
-//     showToast("Please fill Title, Category, and Content.", "error");
-//     return;
-//   }
+//   // ✅ FIX: Remove image — clears both new file AND existing URL
+//   const handleRemoveImage = () => {
+//     if (form.imagePreview && form.imagePreview.startsWith("blob:")) {
+//       URL.revokeObjectURL(form.imagePreview);
+//     }
+//     setForm((prev) => ({
+//       ...prev,
+//       image: null,
+//       imagePreview: "",
+//       existingImageUrl: "", // explicitly tell backend to clear the image
+//     }));
+//   };
 
-//   setSaveAsDraft(asDraft); // ✅ sync loading indicator
-//   setLoading(true);
-
-//   try {
-//     const formData = new FormData();
-//     formData.append("title",           form.title);
-//     formData.append("permalink",       form.permalink);
-//     formData.append("metaDescription", form.metaDescription);
-//     formData.append("description",     form.description);
-//     formData.append("category",        form.category);
-//     formData.append("keywords",        form.keywords);
-//     formData.append("status",          asDraft ? "draft" : "published");
-//     if (form.image) formData.append("image", form.image);
-
-//     let res;
-//     if (editingId) {
-//       res = await fetch(`${BASE_URL}/api/blogs/${editingId}`, {
-//         method:  "PUT",
-//         headers: { Authorization: token },
-//         body:    formData,
-//       });
-//     } else {
-//       res = await fetch(`${BASE_URL}/api/blogs`, {
-//         method:  "POST",
-//         headers: { Authorization: token },
-//         body:    formData,
-//       });
+//   const handleSubmit = async (e, asDraft = false) => {
+//     e.preventDefault();
+//     if (!form.title.trim() || !form.description.trim() || !form.category) {
+//       showToast("Please fill Title, Category, and Content.", "error");
+//       return;
 //     }
 
-//     const data = await res.json();
+//     setSaveAsDraft(asDraft);
+//     setLoading(true);
 
-//     if (data.success) { // ✅ check data.success not data.message
-//       // ✅ Correct toast for each case
-//       if (asDraft) {
-//         showToast(editingId ? "✏️ Changes saved as draft!" : "📝 Blog saved as draft — hidden from users!");
-//       } else {
-//         showToast(editingId ? "✅ Blog updated & published!" : "🎉 Blog published successfully!");
+//     try {
+//       const formData = new FormData();
+//       formData.append("title",           form.title);
+//       formData.append("permalink",       form.permalink);
+//       formData.append("metaDescription", form.metaDescription);
+//       formData.append("description",     form.description);
+//       formData.append("category",        form.category);
+//       formData.append("keywords",        form.keywords);
+//       formData.append("status",          asDraft ? "draft" : "published");
+
+//       if (form.image) {
+//         // ✅ User picked a brand-new image file — upload it
+//         formData.append("image", form.image);
+//       } else if (form.existingImageUrl) {
+//         // ✅ FIX: No new file chosen — tell the backend to keep the existing image
+//         //         The backend should read this field and skip overwriting the image column
+//         formData.append("existingImage", form.existingImageUrl);
 //       }
-//       resetForm();
-//       setSaveAsDraft(false); // ✅ reset loading indicator state
-//       setActiveTab(asDraft ? "drafts" : "published");
-//       fetchBlogs();
-//     } else {
-//       showToast(data.message || "Something went wrong. Please try again.", "error");
+//       // If both are empty, no image field is sent → backend sets image to null/empty
+
+//       let res;
+//       if (editingId) {
+//         res = await fetch(`${BASE_URL}/api/blogs/${editingId}`, {
+//           method:  "PUT",
+//           headers: { Authorization: token },
+//           body:    formData,
+//         });
+//       } else {
+//         res = await fetch(`${BASE_URL}/api/blogs`, {
+//           method:  "POST",
+//           headers: { Authorization: token },
+//           body:    formData,
+//         });
+//       }
+
+//       const data = await res.json();
+
+//       if (data.success) {
+//         if (asDraft) {
+//           showToast(editingId ? "✏️ Changes saved as draft!" : "📝 Blog saved as draft — hidden from users!");
+//         } else {
+//           showToast(editingId ? "✅ Blog updated & published!" : "🎉 Blog published successfully!");
+//         }
+//         resetForm();
+//         setSaveAsDraft(false);
+//         setActiveTab(asDraft ? "drafts" : "published");
+//         fetchBlogs();
+//       } else {
+//         showToast(data.message || "Something went wrong. Please try again.", "error");
+//       }
+//     } catch (err) {
+//       showToast("Network error. Please try again.", "error");
+//     } finally {
+//       setLoading(false);
 //     }
-//   } catch (err) {
-//     showToast("Network error. Please try again.", "error");
-//   } finally {
-//     setLoading(false);
-//   }
-// };
+//   };
 
 //   const handlePublishDraft = async () => {
 //     if (!publishTarget) return;
 //     setLoading(true);
 //     try {
 //       const formData = new FormData();
-//       formData.append("title", publishTarget.title);
-//       formData.append("permalink", publishTarget.permalink);
+//       formData.append("title",           publishTarget.title);
+//       formData.append("permalink",       publishTarget.permalink);
 //       formData.append("metaDescription", publishTarget.metaDescription || "");
-//       formData.append("description", publishTarget.description || "");
-//       formData.append("category", publishTarget.category || "");
-//       formData.append("keywords", publishTarget.keywords || "");
-//       formData.append("status", "published"); // ← the key change
+//       formData.append("description",     publishTarget.description || "");
+//       formData.append("category",        publishTarget.category || "");
+//       formData.append("keywords",        publishTarget.keywords || "");
+//       formData.append("status",          "published");
+//       // ✅ FIX: preserve the existing image when publishing a draft
+//       if (publishTarget.image) {
+//         formData.append("existingImage", publishTarget.image);
+//       }
 
 //       const res = await fetch(`${BASE_URL}/api/blogs/${publishTarget.id}`, {
 //         method: "PUT",
@@ -502,13 +533,17 @@
 //   const handleUnpublish = async (blog) => {
 //     try {
 //       const formData = new FormData();
-//       formData.append("title", blog.title);
-//       formData.append("permalink", blog.permalink);
+//       formData.append("title",           blog.title);
+//       formData.append("permalink",       blog.permalink);
 //       formData.append("metaDescription", blog.metaDescription || "");
-//       formData.append("description", blog.description || "");
-//       formData.append("category", blog.category || "");
-//       formData.append("keywords", blog.keywords || "");
-//       formData.append("status", "draft"); // ← move back to draft
+//       formData.append("description",     blog.description || "");
+//       formData.append("category",        blog.category || "");
+//       formData.append("keywords",        blog.keywords || "");
+//       formData.append("status",          "draft");
+//       // ✅ FIX: preserve the existing image when moving to draft
+//       if (blog.image) {
+//         formData.append("existingImage", blog.image);
+//       }
 
 //       await fetch(`${BASE_URL}/api/blogs/${blog.id}`, {
 //         method: "PUT",
@@ -522,18 +557,18 @@
 //     }
 //   };
 
-
 //   const handleEdit = (blog) => {
-//     setPermalinkManual(true); // preserve existing permalink when editing
+//     setPermalinkManual(true);
 //     setForm({
-//       title: blog.title || "",
-//       permalink: blog.permalink || "",
-//       metaDescription: blog.metaDescription || "",
-//       description: blog.description || "",
-//       category: blog.category || "",
-//       keywords: blog.keywords || "",
-//       image: null,
-//       imagePreview: blog.image || "",
+//       title:            blog.title || "",
+//       permalink:        blog.permalink || "",
+//       metaDescription:  blog.metaDescription || "",
+//       description:      blog.description || "",
+//       category:         blog.category || "",
+//       keywords:         blog.keywords || "",
+//       image:            null,            // no new file yet
+//       imagePreview:     blog.image || "", // ✅ show existing image in preview
+//       existingImageUrl: blog.image || "", // ✅ FIX: remember the current image URL
 //     });
 //     setEditingId(blog.id);
 //     setActiveTab("create");
@@ -559,6 +594,10 @@
 //   };
 
 //   const resetForm = () => {
+//     // Revoke any pending blob URL
+//     if (form.imagePreview && form.imagePreview.startsWith("blob:")) {
+//       URL.revokeObjectURL(form.imagePreview);
+//     }
 //     setForm(emptyForm);
 //     setEditingId(null);
 //     setPermalinkManual(false);
@@ -568,7 +607,6 @@
 //     localStorage.removeItem("token");
 //     navigate("/admin");
 //   };
-
 
 //   return (
 //     <main className="w-full min-h-screen bg-[#F7F6F3] overflow-x-hidden font-sans">
@@ -790,7 +828,7 @@
 //               </div>
 //             </div>
 
-// <form onSubmit={(e) => e.preventDefault()} className="px-4 sm:px-8 py-6 sm:py-8 space-y-5 sm:space-y-6">
+//             <form onSubmit={(e) => e.preventDefault()} className="px-4 sm:px-8 py-6 sm:py-8 space-y-5 sm:space-y-6">
 
 //               <Field label="Blog Title" required icon={FileText}>
 //                 <input type="text" name="title" placeholder="Enter an engaging blog title…"
@@ -849,7 +887,11 @@
 //                   </div>
 //                   <div className="text-center">
 //                     <p className="text-sm font-semibold text-gray-600 group-hover:text-[#6B4A2D] transition">
-//                       {form.image ? form.image.name : "Click to upload image"}
+//                       {form.image
+//                         ? form.image.name
+//                         : editingId && form.existingImageUrl
+//                           ? "✅ Image saved — click to replace with a new one"
+//                           : "Click to upload image"}
 //                     </p>
 //                     <p className="text-xs text-gray-400 mt-0.5">JPG, PNG, WebP · max 5MB · recommended 1200×675px</p>
 //                   </div>
@@ -874,13 +916,17 @@
 //                 {form.imagePreview && (
 //                   <div className="mt-3">
 //                     <p className="text-xs font-semibold text-gray-500 mb-1.5 flex items-center gap-1.5">
-//                       <CheckCircle size={11} className="text-green-500" /> Image Preview — 16:9 ratio
+//                       {form.image
+//                         ? <><CheckCircle size={11} className="text-green-500" /> New image selected — 16:9 preview</>
+//                         : <><CheckCircle size={11} className="text-blue-500" /> Current saved image — click upload area above to replace</>
+//                       }
 //                     </p>
 //                     <div className="relative rounded-xl overflow-hidden border-2 border-gray-200 bg-gray-100 w-full" style={{ aspectRatio: "16/9" }}>
 //                       <img src={form.imagePreview} alt="Preview" className="w-full h-full object-cover"
 //                         onError={(e) => { e.target.style.display = "none"; }} />
-//                       <button type="button" onClick={() => setForm((p) => ({ ...p, image: null, imagePreview: "" }))}
-//                         className="absolute top-2 right-2 w-7 h-7 bg-black/60 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition">
+//                       <button type="button" onClick={handleRemoveImage}
+//                         className="absolute top-2 right-2 w-7 h-7 bg-black/60 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition"
+//                         title="Remove image">
 //                         <X size={13} />
 //                       </button>
 //                     </div>
@@ -956,6 +1002,7 @@
 //               <li className="flex items-start gap-2"><span>→</span> Keep meta description under 160 chars for best SEO</li>
 //               <li className="flex items-start gap-2"><span>→</span> Press <kbd className="bg-amber-100 px-1 rounded font-mono">Enter</kbd> or <kbd className="bg-amber-100 px-1 rounded font-mono">,</kbd> to add keyword tags</li>
 //               <li className="flex items-start gap-2"><span>→</span> Best image: <strong>1200×675px · JPG/WebP · 16:9 · max 500KB</strong></li>
+//               <li className="flex items-start gap-2"><span>→</span> When editing, existing image is <strong>preserved automatically</strong> — upload a new file only if you want to change it</li>
 //               <li className="flex items-start gap-2"><span>→</span> Drafts are 100% hidden — users only see blogs you explicitly Publish</li>
 //             </ul>
 //           </div>
@@ -970,8 +1017,6 @@
 
 
 
-
-
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import BlogEditor from "../components/BlogEditor";
@@ -980,7 +1025,7 @@ import {
   Menu, X, LogOut, BookOpen, Edit2, Trash2, Plus,
   Search, Filter, CheckCircle, AlertCircle, Loader, ChevronRight,
   Calendar, Tag, Link2, Image, FileText, AlignLeft, ArrowLeft,
-  MoreVertical, RefreshCw, Globe, EyeOff, Lock,
+  MoreVertical, RefreshCw, Globe, EyeOff, Lock, Copy, Share2,
 } from "lucide-react";
 
 function Toast({ toast, onClose }) {
@@ -1070,6 +1115,7 @@ const FALLBACK = "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w
 
 function BlogCard({ blog, onEdit, onDelete, onPublish, onUnpublish, formatDate }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [copied, setCopied] = useState(false);   // ✅ NEW: tracks copy-link feedback state
   const menuRef = useRef();
   const isDraft = blog.status === "draft";
 
@@ -1080,6 +1126,37 @@ function BlogCard({ blog, onEdit, onDelete, onPublish, onUnpublish, formatDate }
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
+
+  // ✅ NEW: Copies the OG-preview share URL to clipboard.
+  //         Format: <BASE_URL>/share/<permalink>
+  //         When shared on WhatsApp / Twitter / Telegram etc., the platform's
+  //         crawler fetches this URL, reads the OG meta tags, and shows the
+  //         blog title + featured image in the link preview card.
+  //         Real human visitors who click the link get instantly JS-redirected
+  //         to the actual geniestudio.in/blog/<permalink> page.
+  const handleCopyShareLink = () => {
+    if (!blog.permalink) return;
+    const shareUrl = `${BASE_URL}/share/${blog.permalink}`;
+    navigator.clipboard
+      .writeText(shareUrl)
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2500);
+      })
+      .catch(() => {
+        // Fallback for browsers that block clipboard API
+        const ta = document.createElement("textarea");
+        ta.value = shareUrl;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2500);
+      });
+  };
 
   return (
     <div className="bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 hover:shadow-xl hover:-translate-y-0.5 sm:hover:-translate-y-1 transition-all duration-300 flex flex-col group">
@@ -1106,7 +1183,7 @@ function BlogCard({ blog, onEdit, onDelete, onPublish, onUnpublish, formatDate }
             <MoreVertical size={14} className="text-gray-700" />
           </button>
           {menuOpen && (
-            <div className="absolute right-0 top-8 sm:top-9 bg-white rounded-xl shadow-xl border border-gray-100 py-1 w-40 z-10 animate-fadeIn">
+            <div className="absolute right-0 top-8 sm:top-9 bg-white rounded-xl shadow-xl border border-gray-100 py-1 w-44 z-10 animate-fadeIn">
               <button onClick={() => { onEdit(blog); setMenuOpen(false); }} className="w-full flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-blue-600 hover:bg-blue-50 transition">
                 <Edit2 size={13} /> Edit Blog
               </button>
@@ -1117,6 +1194,15 @@ function BlogCard({ blog, onEdit, onDelete, onPublish, onUnpublish, formatDate }
               ) : (
                 <button onClick={() => { onUnpublish(blog); setMenuOpen(false); }} className="w-full flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-amber-600 hover:bg-amber-50 transition">
                   <EyeOff size={13} /> Move to Draft
+                </button>
+              )}
+              {/* ✅ NEW: Copy share link option in dropdown menu */}
+              {!isDraft && (
+                <button
+                  onClick={() => { handleCopyShareLink(); setMenuOpen(false); }}
+                  className="w-full flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-purple-600 hover:bg-purple-50 transition"
+                >
+                  <Share2 size={13} /> Copy Share Link
                 </button>
               )}
               <button onClick={() => { onDelete(blog); setMenuOpen(false); }} className="w-full flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 transition">
@@ -1153,6 +1239,7 @@ function BlogCard({ blog, onEdit, onDelete, onPublish, onUnpublish, formatDate }
             </span>
           )}
         </div>
+
         <div className="flex gap-2 mt-3">
           <button onClick={() => onEdit(blog)} className="flex-1 flex items-center justify-center gap-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 py-2 rounded-lg font-semibold text-xs transition">
             <Edit2 size={12} /> Edit
@@ -1166,10 +1253,38 @@ function BlogCard({ blog, onEdit, onDelete, onPublish, onUnpublish, formatDate }
               <EyeOff size={12} /> Draft
             </button>
           )}
+
+          {/* ✅ NEW: Copy Share Link button — visible on published blogs only.
+                      Copies BASE_URL/share/<permalink> which serves OG meta tags
+                      so WhatsApp / Twitter / LinkedIn show title + image preview. */}
+          {!isDraft && (
+            <button
+              onClick={handleCopyShareLink}
+              title={copied ? "Link copied!" : "Copy share link (shows preview on WhatsApp, Twitter etc.)"}
+              className={`flex items-center justify-center px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-200 ${
+                copied
+                  ? "bg-green-100 text-green-700 scale-95"
+                  : "bg-purple-50 hover:bg-purple-100 text-purple-700"
+              }`}
+            >
+              {copied ? <CheckCircle size={12} /> : <Copy size={12} />}
+            </button>
+          )}
+
           <button onClick={() => onDelete(blog)} className="flex items-center justify-center bg-red-50 hover:bg-red-100 text-red-600 px-3 py-2 rounded-lg text-xs transition">
             <Trash2 size={12} />
           </button>
         </div>
+
+        {/* ✅ NEW: Inline copied confirmation banner — appears briefly after copy */}
+        {copied && (
+          <div className="mt-2 flex items-center gap-1.5 bg-green-50 border border-green-200 rounded-lg px-3 py-1.5 animate-fadeIn">
+            <CheckCircle size={11} className="text-green-600 shrink-0" />
+            <p className="text-[10px] text-green-700 font-semibold">
+              Share link copied! Paste on WhatsApp, Twitter, etc. to show image + title preview.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -1978,6 +2093,7 @@ export default function AdminBlogs() {
               <li className="flex items-start gap-2"><span>→</span> Best image: <strong>1200×675px · JPG/WebP · 16:9 · max 500KB</strong></li>
               <li className="flex items-start gap-2"><span>→</span> When editing, existing image is <strong>preserved automatically</strong> — upload a new file only if you want to change it</li>
               <li className="flex items-start gap-2"><span>→</span> Drafts are 100% hidden — users only see blogs you explicitly Publish</li>
+              <li className="flex items-start gap-2"><span>→</span> Use the <strong>purple Copy button</strong> on any published blog card to get a share link — when pasted on WhatsApp / Twitter / LinkedIn, it shows the blog image + title as a preview card</li>
             </ul>
           </div>
         </section>
