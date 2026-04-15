@@ -1136,7 +1136,10 @@ function BlogCard({ blog, onEdit, onDelete, onPublish, onUnpublish, formatDate }
   //         to the actual geniestudio.in/blog/<permalink> page.
   const handleCopyShareLink = () => {
     if (!blog.permalink) return;
-    const shareUrl = `${BASE_URL}/share/${blog.permalink}`;
+    // const shareUrl = `${BASE_URL}/share/${blog.permalink}`;
+const shareUrl = `https://geniestudio.in/og.php?slug=${blog.permalink}`;
+
+
     navigator.clipboard
       .writeText(shareUrl)
       .then(() => {
