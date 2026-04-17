@@ -18,6 +18,20 @@ const Services = () => {
 
   const services = [
     {
+      title: "Podcast Shoots",
+      description: "End-to-end podcast production with professional audio, video, lighting, and post-production support.",
+      image: "https://i.pinimg.com/1200x/ac/8e/d1/ac8ed1fdb943b1e8d4058ef7c54fd92d.jpg",
+      Icon: FaPodcast,
+      route: "/services/podcast-shoots",
+    },
+     {
+      title: "Product Shoots",
+      description: "High-impact product photography designed to increase engagement, trust, and conversions across digital platforms.",
+      image: "https://images.pexels.com/photos/1667088/pexels-photo-1667088.jpeg?auto=compress&cs=tinysrgb&w=800",
+      Icon: FaBoxOpen,
+      route: "/services/product-shoots",
+    },
+    {
       title: "Corporate Shoots",
       description: "Strategic corporate photography crafted to strengthen brand presence, leadership identity, and workplace culture.",
       image: "https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&w=800",
@@ -30,20 +44,6 @@ const Services = () => {
       image: "https://images.pexels.com/photos/1190298/pexels-photo-1190298.jpeg?auto=compress&cs=tinysrgb&w=800",
       Icon: FaCalendarCheck,
       route: "/services/event-shoots",
-    },
-    {
-      title: "Product Shoots",
-      description: "High-impact product photography designed to increase engagement, trust, and conversions across digital platforms.",
-      image: "https://images.pexels.com/photos/1667088/pexels-photo-1667088.jpeg?auto=compress&cs=tinysrgb&w=800",
-      Icon: FaBoxOpen,
-      route: "/services/product-shoots",
-    },
-    {
-      title: "Podcast Shoots",
-      description: "End-to-end podcast production with professional audio, video, lighting, and post-production support.",
-      image: "https://i.pinimg.com/1200x/ac/8e/d1/ac8ed1fdb943b1e8d4058ef7c54fd92d.jpg",
-      Icon: FaPodcast,
-      route: "/services/podcast-shoots",
     },
     {
       title: "Professional Shoots",

@@ -48,6 +48,22 @@ const Home = () => {
   ];
   const services = [
     {
+      icon: Mic,
+      title: "Podcast Shoots",
+      link: "/services/podcast-shoots",
+      description: "Professional video...",
+      features: ["Studio Setup", "Multi-Camera", "Thumbnail Creation", "Behind-the-Scenes"],
+      color: "from-green-500 to-teal-500",
+    },
+    {
+      icon: Package,
+      title: "Product Shoots",
+      link: "/services/product-shoots",
+      description: "Stunning product photography...",
+      features: ["E-commerce Photos", "Catalog Shots", "Lifestyle Products", "360° Photography"],
+      color: "from-orange-500 to-red-500",
+    },
+    {
       icon: Briefcase,
       title: "Corporate Shoots",
       link: "/services/corporate-shoots",
@@ -62,22 +78,6 @@ const Home = () => {
       description: "Comprehensive event coverage...",
       features: ["Conferences", "Galas & Awards", "Product Launches", "Networking Events"],
       color: "from-purple-500 to-pink-500",
-    },
-    {
-      icon: Package,
-      title: "Product Shoots",
-      link: "/services/product-shoots",
-      description: "Stunning product photography...",
-      features: ["E-commerce Photos", "Catalog Shots", "Lifestyle Products", "360° Photography"],
-      color: "from-orange-500 to-red-500",
-    },
-    {
-      icon: Mic,
-      title: "Podcast Shoots",
-      link: "/services/podcast-shoots",
-      description: "Professional video...",
-      features: ["Studio Setup", "Multi-Camera", "Thumbnail Creation", "Behind-the-Scenes"],
-      color: "from-green-500 to-teal-500",
     },
     {
       icon: User,
@@ -177,6 +177,16 @@ const Home = () => {
   ];
   const portfolioItems = [
     {
+      title: "Podcast Studio Production",
+      category: "Podcast / Studio",
+      image: "https://i.pinimg.com/736x/65/88/b6/6588b6fc9bb70ef48ba65f0be15c20bd.jpg"
+    },
+    {
+      title: "Product Photography",
+      category: "Commercial / Products",
+      image: "https://i.pinimg.com/736x/f8/8e/88/f88e88f7ccdad77b46f6d471c9332b58.jpg"
+    },
+    {
       title: "Corporate Branding Shoot",
       category: "Corporate / Branding",
       image: "https://i.pinimg.com/736x/c6/ef/3d/c6ef3d665b0844f2711e886e6eada37c.jpg"
@@ -187,19 +197,9 @@ const Home = () => {
       image: "https://i.pinimg.com/736x/c6/6a/7c/c66a7c264f2a970e0c461b3175c419ee.jpg"
     },
     {
-      title: "Podcast Studio Production",
-      category: "Podcast / Studio",
-      image: "https://i.pinimg.com/736x/65/88/b6/6588b6fc9bb70ef48ba65f0be15c20bd.jpg"
-    },
-    {
       title: "Professional Portraits",
       category: "Personal Branding",
       image: "https://i.pinimg.com/736x/b5/91/c4/b591c4e45306485fbccd883a84faa8dc.jpg"
-    },
-    {
-      title: "Product Photography",
-      category: "Commercial / Products",
-      image: "https://i.pinimg.com/736x/f8/8e/88/f88e88f7ccdad77b46f6d471c9332b58.jpg"
     },
     {
       title: "Business Portfolio Shoot",
@@ -279,7 +279,7 @@ const Home = () => {
                     </p>
                     <button
                       className="group px-6 sm:px-8 py-3 sm:py-4 bg-white text-sm sm:text-base text-gray-900 rounded-full font-semibold hover:bg-gradient-to-r hover:from-blue-500 hover:to-purple-500 hover:text-white transition-all duration-300 flex items-center gap-2 sm:gap-3 shadow-xl hover:shadow-2xl hover:scale-105"
-                    onClick={() => navigate(slides[active].route)}
+                      onClick={() => navigate(slides[active].route)}
                     >
                       {slides[activeIndex].buttonText}
                       <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -358,6 +358,36 @@ const Home = () => {
 
                   <div className="carousel-item flex-shrink-0 w-[300px] sm:w-[340px] h-[280px] sm:h-[320px] relative rounded-2xl overflow-hidden cursor-pointer group">
                     <img
+                      src="https://images.unsplash.com/photo-1590602847861-f357a9332bbc?w=800&q=80"
+                      alt="Podcast Production"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-6 flex flex-col justify-end pointer-events-none">
+                      <span className="bg-orange-500 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
+                        Podcast
+                      </span>
+                      <h3 className="text-white text-lg font-extrabold uppercase leading-tight">
+                        Podcast Production
+                      </h3>
+                    </div>
+                  </div>
+                  <div className="carousel-item flex-shrink-0 w-[300px] sm:w-[340px] h-[280px] sm:h-[320px] relative rounded-2xl overflow-hidden cursor-pointer group">
+                    <img
+                      src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80"
+                      alt="Product Shoots"
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-6 flex flex-col justify-end pointer-events-none">
+                      <span className="bg-orange-500 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
+                        Product
+                      </span>
+                      <h3 className="text-white text-lg font-extrabold uppercase leading-tight">
+                        Product Shoots
+                      </h3>
+                    </div>
+                  </div>
+                  <div className="carousel-item flex-shrink-0 w-[300px] sm:w-[340px] h-[280px] sm:h-[320px] relative rounded-2xl overflow-hidden cursor-pointer group">
+                    <img
                       src="https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=800&q=80"
                       alt="Corporate Shoots"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
@@ -384,38 +414,6 @@ const Home = () => {
                       </span>
                       <h3 className="text-white text-lg font-extrabold uppercase leading-tight">
                         Event Photography
-                      </h3>
-                    </div>
-                  </div>
-
-                  <div className="carousel-item flex-shrink-0 w-[300px] sm:w-[340px] h-[280px] sm:h-[320px] relative rounded-2xl overflow-hidden cursor-pointer group">
-                    <img
-                      src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80"
-                      alt="Product Shoots"
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-6 flex flex-col justify-end pointer-events-none">
-                      <span className="bg-orange-500 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
-                        Product
-                      </span>
-                      <h3 className="text-white text-lg font-extrabold uppercase leading-tight">
-                        Product Shoots
-                      </h3>
-                    </div>
-                  </div>
-
-                  <div className="carousel-item flex-shrink-0 w-[300px] sm:w-[340px] h-[280px] sm:h-[320px] relative rounded-2xl overflow-hidden cursor-pointer group">
-                    <img
-                      src="https://images.unsplash.com/photo-1590602847861-f357a9332bbc?w=800&q=80"
-                      alt="Podcast Production"
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-6 flex flex-col justify-end pointer-events-none">
-                      <span className="bg-orange-500 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
-                        Podcast
-                      </span>
-                      <h3 className="text-white text-lg font-extrabold uppercase leading-tight">
-                        Podcast Production
                       </h3>
                     </div>
                   </div>

@@ -8,27 +8,27 @@ export default function imageCarousel() {
   const slides = [
     {
       id: 1,
-      image: "https://i.pinimg.com/1200x/8a/5c/1d/8a5c1ded741ab3a3a3b05bc11f4bf048.jpg",
-      title: "Corporate Shoots",
-      description: "Professional visuals that elevate brands, teams, and workplaces."
+      image: "https://i.pinimg.com/1200x/03/79/f1/0379f10c7de915ae64bca35ffa7f59e0.jpg",
+      title: "Podcast Shoots",
+      description: "Studio-grade podcast video and audio production."
     },
     {
       id: 2,
-      image: "https://i.pinimg.com/736x/e4/2f/d6/e42fd65fa4584ed088d924f9a024bafc.jpg",
-      title: "Event Shoots",
-      description: "Seamless coverage of corporate events, launches, and conferences."
-    },
-    {
-      id: 3,
       image: "https://i.pinimg.com/736x/44/70/5c/44705c6700132d6e6c27edee1b800c34.jpg",
       title: "Product Shoots",
       description: "High-quality product photography built for impact and conversion."
     },
     {
+      id: 3,
+      image: "https://i.pinimg.com/1200x/8a/5c/1d/8a5c1ded741ab3a3a3b05bc11f4bf048.jpg",
+      title: "Corporate Shoots",
+      description: "Professional visuals that elevate brands, teams, and workplaces."
+    },
+    {
       id: 4,
-      image: "https://i.pinimg.com/1200x/03/79/f1/0379f10c7de915ae64bca35ffa7f59e0.jpg",
-      title: "Podcast Shoots",
-      description: "Studio-grade podcast video and audio production."
+      image: "https://i.pinimg.com/736x/e4/2f/d6/e42fd65fa4584ed088d924f9a024bafc.jpg",
+      title: "Event Shoots",
+      description: "Seamless coverage of corporate events, launches, and conferences."
     },
     {
       id: 5,

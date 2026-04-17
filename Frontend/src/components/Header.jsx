@@ -29,10 +29,10 @@ const Header = () => {
 
   ];
   const serviceItems = [
+    { name: "Podcast Shoots", path: "/services/podcast-shoots" },
+    { name: "Product Shoots", path: "/services/product-shoots" },
     { name: "Corporate Shoots", path: "/services/corporate-shoots" },
     { name: "Event Shoots", path: "/services/event-shoots" },
-    { name: "Product Shoots", path: "/services/product-shoots" },
-    { name: "Podcast Shoots", path: "/services/podcast-shoots" },
     { name: "Professional Shoots", path: "/services/professional-shoots" },
     { name: "Business Portfolio", path: "/services/business-portfolio-shoots" },
   ];

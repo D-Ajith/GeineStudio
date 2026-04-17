@@ -184,9 +184,18 @@ const Contact = () => {
                       value={formData.service}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-3 text-sm sm:text-base border-2 border-slate-200 rounded-xl bg-white text-black cursor-pointer focus:border-slate-900 focus:ring-4 focus:ring-slate-100 outline-none transition-all duration-300">                      <option value="">Select a service</option>
-                      <option value="Wedding Photography">Wedding Photography</option>
-                      <option value="Portrait Session">Portrait Session</option>
+                      className="w-full px-4 py-3 text-sm sm:text-base border-2 border-slate-200 rounded-xl bg-white text-black cursor-pointer focus:border-slate-900 focus:ring-4 focus:ring-slate-100 outline-none transition-all duration-300">
+                      <option value="">Select a service</option>
+
+                      <option value="Podcast Shoots">Podcast Shoots</option>
+                      <option value="Corporate Shoots">Corporate Shoots</option>
+                      <option value="Event Shoots">Event Shoots</option>
+                      <option value="Professional Shoots">Professional Shoots</option>
+                      <option value="Business Portfolio">Business Portfolio</option>
+                      <option value="UI/UX Design">UI/UX Design</option>
+                      <option value="Animation 2D or 3D">Animation 2D or 3D</option>
+                      <option value="Video Editing">Video Editing</option>
+                      <option value="Figma">Figma</option>
                       <option value="Event Coverage">Event Coverage</option>
                       <option value="Commercial Shoot">Commercial Shoot</option>
                       <option value="Other">Other</option>

@@ -38,6 +38,18 @@ const About = () => {
 
   const services = [
     {
+      title: "Podcast Shoots",
+      description: "Studio-grade podcast video and audio production.",
+      image:
+        "https://i.pinimg.com/736x/5c/e3/5d/5ce35d0889ef345c506e7fa37e79d8fa.jpg"
+    },
+    {
+      title: "Product Shoots",
+      description: "High-quality product images for ads and e-commerce.",
+      image:
+        "https://i.pinimg.com/1200x/e0/61/e4/e061e43416d96e8a601a0de529f0a520.jpg"
+    },
+    {
       title: "Corporate Shoots",
       description: "Professional visuals for brands, teams, and workspaces.",
       image:
@@ -48,18 +60,6 @@ const About = () => {
       description: "Complete coverage for corporate events and launches.",
       image:
         "https://images.pexels.com/photos/1190298/pexels-photo-1190298.jpeg?w=800&q=80"
-    },
-    {
-      title: "Product Shoots",
-      description: "High-quality product images for ads and e-commerce.",
-      image:
-        "https://i.pinimg.com/1200x/e0/61/e4/e061e43416d96e8a601a0de529f0a520.jpg"
-    },
-    {
-      title: "Podcast Shoots",
-      description: "Studio-grade podcast video and audio production.",
-      image:
-        "https://i.pinimg.com/736x/5c/e3/5d/5ce35d0889ef345c506e7fa37e79d8fa.jpg"
     },
     {
       title: "Professional Shoots",
@@ -209,7 +209,32 @@ const About = () => {
               className="grid grid-cols-2 gap-3 sm:gap-4"
               data-aos="fade-up"
             >
-
+              <div className="relative group overflow-hidden rounded-2xl shadow-lg h-64 sm:h-72 cursor-pointer">
+                <img
+                  src="https://i.pinimg.com/736x/b2/c6/9b/b2c69b972599048fc2df5ce3b7ef5dfd.jpg"
+                  alt="Podcast Studio"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-5">
+                  <h3 className="text-white text-xl sm:text-2xl font-black uppercase leading-tight">
+                    Podcast Studio
+                  </h3>
+                </div>
+              </div>
+              <div className="relative group overflow-hidden rounded-2xl shadow-lg h-64 sm:h-72 cursor-pointer">
+                <img
+                  src="https://i.pinimg.com/736x/3c/cf/4a/3ccf4a1912458df31a0645616e942585.jpg"
+                  alt="Product Studio"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                <div className="absolute bottom-0 left-0 right-0 p-5">
+                  <h3 className="text-white text-xl sm:text-2xl font-black uppercase leading-tight">
+                    Product Studio
+                  </h3>
+                </div>
+              </div>
               <div className="relative group overflow-hidden rounded-2xl shadow-lg h-64 sm:h-72 cursor-pointer">
                 <img
                   src="https://i.pinimg.com/1200x/17/16/37/1716377cd614f7b416d16c5d8c264a97.jpg"
@@ -237,35 +262,6 @@ const About = () => {
                   </h3>
                 </div>
               </div>
-
-              <div className="relative group overflow-hidden rounded-2xl shadow-lg h-64 sm:h-72 cursor-pointer">
-                <img
-                  src="https://i.pinimg.com/736x/3c/cf/4a/3ccf4a1912458df31a0645616e942585.jpg"
-                  alt="Product Studio"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-5">
-                  <h3 className="text-white text-xl sm:text-2xl font-black uppercase leading-tight">
-                    Product Studio
-                  </h3>
-                </div>
-              </div>
-
-              <div className="relative group overflow-hidden rounded-2xl shadow-lg h-64 sm:h-72 cursor-pointer">
-                <img
-                  src="https://i.pinimg.com/736x/b2/c6/9b/b2c69b972599048fc2df5ce3b7ef5dfd.jpg"
-                  alt="Podcast Studio"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-5">
-                  <h3 className="text-white text-xl sm:text-2xl font-black uppercase leading-tight">
-                    Podcast Studio
-                  </h3>
-                </div>
-              </div>
-
             </div>
 
           </div>
@@ -278,6 +274,32 @@ const About = () => {
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start overflow-x-hidden">
 
             <div className=" grid grid-cols-2 gap-1 sm:gap-2 order-2 lg:order-1 w-full rounded-2xl shadow-lg overflow-hidden">
+              <div className="relative group overflow-hidden h-[180px] sm:h-[210px] md:h-[240px]">
+                <img
+                  src="https://i.pinimg.com/736x/1a/1f/b9/1a1fb96c5cfa4263b8106be30c6bfa55.jpg"
+                  alt="Podcast Shoots"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+                <div className="absolute bottom-3 left-3">
+                  <h3 className="text-white text-sm sm:text-lg font-black uppercase">
+                    Podcast
+                  </h3>
+                </div>
+              </div>
+              <div className="relative group overflow-hidden h-[180px] sm:h-[210px] md:h-[240px]">
+                <img
+                  src="https://i.pinimg.com/736x/13/5e/5f/135e5fb7a6fb24e98a8cb5fa65a89281.jpg"
+                  alt="Product Shoots"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+                <div className="absolute bottom-3 left-3">
+                  <h3 className="text-white text-sm sm:text-lg font-black uppercase">
+                    Product
+                  </h3>
+                </div>
+              </div>
               <div className="relative group overflow-hidden h-[180px] sm:h-[210px] md:h-[240px]">
                 <img
                   src="https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=800&q=80"
@@ -305,35 +327,6 @@ const About = () => {
                   </h3>
                 </div>
               </div>
-
-              <div className="relative group overflow-hidden h-[180px] sm:h-[210px] md:h-[240px]">
-                <img
-                  src="https://i.pinimg.com/736x/13/5e/5f/135e5fb7a6fb24e98a8cb5fa65a89281.jpg"
-                  alt="Product Shoots"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-                <div className="absolute bottom-3 left-3">
-                  <h3 className="text-white text-sm sm:text-lg font-black uppercase">
-                    Product
-                  </h3>
-                </div>
-              </div>
-
-              <div className="relative group overflow-hidden h-[180px] sm:h-[210px] md:h-[240px]">
-                <img
-                  src="https://i.pinimg.com/736x/1a/1f/b9/1a1fb96c5cfa4263b8106be30c6bfa55.jpg"
-                  alt="Podcast Shoots"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-                <div className="absolute bottom-3 left-3">
-                  <h3 className="text-white text-sm sm:text-lg font-black uppercase">
-                    Podcast
-                  </h3>
-                </div>
-              </div>
-
             </div>
 
 
@@ -351,12 +344,15 @@ const About = () => {
               </p>
 
               <ul className="space-y-2 pl-4 text-sm sm:text-base">
+                <li>• Podcast & Studio Production</li>
+                <li>• Product & Commercial Shoots</li>
                 <li>• Corporate & Brand Shoots</li>
                 <li>• Event Photography & Coverage</li>
-                <li>• Product & Commercial Shoots</li>
-                <li>• Podcast & Studio Production</li>
                 <li>• Professional Portraits</li>
                 <li>• Business Portfolio Creation</li>
+                <li>• Video Editing</li>
+                <li>• Animations 2d or 3d</li>
+                <li>• Figma</li>
               </ul>
             </div>
 

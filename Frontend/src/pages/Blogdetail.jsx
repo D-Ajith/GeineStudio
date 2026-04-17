@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
-    ArrowLeft, Calendar, Tag, Share2, Copy, Check, ArrowRight,
+    ArrowLeft, Calendar, Tag, Share2, Copy, Check, ArrowRight, Hash, X,
 } from "lucide-react";
 import DOMPurify from "dompurify";
 import BASE_URL from "../api";
@@ -22,6 +22,8 @@ export default function BlogDetail() {
     const [copied, setCopied] = useState(false);
     const [relatedBlogs, setRelated] = useState([]);
     const [imgError, setImgError] = useState(false);
+    const [activeKeyword, setActiveKeyword] = useState(null);
+    const [kwLoading, setKwLoading] = useState(null);
 
     useEffect(() => {
         const fetchBlog = async () => {
@@ -29,35 +31,23 @@ export default function BlogDetail() {
             setImgError(false);
             setBlog(null);
             setRelated([]);
+            setActiveKeyword(null);
 
             const safeSlug = cleanSlug(slug);
-
-            if (!safeSlug) {
-                setLoading(false);
-                return;
-            }
+            if (!safeSlug) { setLoading(false); return; }
 
             try {
                 const res = await fetch(`${BASE_URL}/api/blog/${safeSlug}`);
-
-                if (!res.ok) {
-                    setBlog(null);
-                    return;
-                }
+                if (!res.ok) { setBlog(null); return; }
 
                 const data = await res.json();
-
-                if (!data || !data.title) {
-                    setBlog(null);
-                    return;
-                }
+                if (!data || !data.title) { setBlog(null); return; }
 
                 setBlog(data);
 
                 try {
                     const allRes = await fetch(`${BASE_URL}/api/blogs`);
                     const allData = await allRes.json();
-
                     if (Array.isArray(allData)) {
                         const related = allData
                             .filter(
@@ -69,9 +59,7 @@ export default function BlogDetail() {
                             .slice(0, 3);
                         setRelated(related);
                     }
-                } catch (_) {
-                    
-                }
+                } catch (_) { }
             } catch (err) {
                 console.error("BlogDetail fetch error:", err);
                 setBlog(null);
@@ -97,7 +85,9 @@ export default function BlogDetail() {
     const formatDate = (ts) =>
         ts
             ? new Date(Number(ts)).toLocaleDateString("en-US", {
-                year: "numeric", month: "long", day: "numeric",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
             })
             : "Just now";
 
@@ -112,20 +102,74 @@ export default function BlogDetail() {
         window.scrollTo(0, 0);
     };
 
+    /* ── Keyword click:
+         1. Show keyword as active tag below the date row
+         2. Navigate to matching blog by title/keywords      ── */
+    const handleKeywordClick = async (keyword) => {
+        // Set active tag immediately — stays visible on new page load
+        setActiveKeyword(keyword);
+        setKwLoading(keyword);
+
+        try {
+            const res = await fetch(`${BASE_URL}/api/blogs`);
+            const allBlogs = await res.json();
+
+            if (Array.isArray(allBlogs)) {
+                const published = allBlogs.filter((b) => b.status === "published");
+
+                // 1️⃣ Exact title match
+                let matched = published.find(
+                    (b) => b.title?.trim().toLowerCase() === keyword.toLowerCase()
+                );
+
+                // 2️⃣ Title contains keyword
+                if (!matched) {
+                    matched = published.find((b) =>
+                        b.title?.toLowerCase().includes(keyword.toLowerCase())
+                    );
+                }
+
+                // 3️⃣ Keyword present in that blog's keywords field
+                if (!matched) {
+                    matched = published.find(
+                        (b) =>
+                            b.keywords &&
+                            b.keywords
+                                .split(",")
+                                .map((k) => k.trim().toLowerCase())
+                                .includes(keyword.toLowerCase())
+                    );
+                }
+
+                if (matched && cleanSlug(matched.permalink)) {
+                    navigate(`/blog/${cleanSlug(matched.permalink)}`);
+                    window.scrollTo(0, 0);
+                }
+                // If no match — tag still shows, user can dismiss with ×
+            }
+        } catch (err) {
+            console.error("Keyword click error:", err);
+        } finally {
+            setKwLoading(null);
+        }
+    };
+
+    /* ─────────────────────── Loading ─────────────────────── */
     if (loading) {
         return (
             <main className="w-full min-h-screen bg-white flex flex-col items-center justify-center gap-4 px-4">
                 <div className="animate-spin">
-                    <svg className="w-12 h-12 sm:w-14 sm:h-14 text-[#6B4A2D]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="w-12 h-12 text-[#6B4A2D]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <circle cx="12" cy="12" r="10" strokeWidth="2" opacity="0.25" />
                         <path d="M12 2a10 10 0 0 1 10 10" strokeWidth="2" />
                     </svg>
                 </div>
-                <p className="text-slate-600 font-medium text-sm sm:text-base">Loading blog…</p>
+                <p className="text-slate-500 text-sm font-medium">Loading blog…</p>
             </main>
         );
     }
 
+    /* ─────────────────────── Not Found ─────────────────────── */
     if (!blog) {
         return (
             <main className="w-full min-h-screen bg-white flex flex-col items-center justify-center gap-4 px-4">
@@ -133,7 +177,7 @@ export default function BlogDetail() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                         d="M12 8v4m0 4v.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <p className="text-slate-600 font-medium text-sm sm:text-base">Blog not found</p>
+                <p className="text-slate-600 font-medium text-sm">Blog not found</p>
                 <p className="text-slate-400 text-xs mt-1">
                     Slug: <code className="bg-slate-100 px-1 rounded">{slug || "undefined"}</code>
                 </p>
@@ -150,37 +194,48 @@ export default function BlogDetail() {
     const heroSrc = !imgError && blog.image ? blog.image : FALLBACK;
 
     return (
-        <main className="w-full overflow-x-hidden">
+        <main className="w-full overflow-x-hidden bg-white">
 
-            <section className="relative w-full bg-[#f5f0eb] overflow-hidden">
-                <div className="relative w-full flex items-center justify-center min-h-[320px] sm:min-h-[340px] md:min-h-[400px]">
+            {/* ══════════════════════════════════════════════
+                HERO IMAGE
+            ══════════════════════════════════════════════ */}
+            <section className="w-full bg-stone-100 overflow-hidden">
+                <div className="relative w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[2/1] lg:aspect-[21/9]">
                     <img
                         src={heroSrc}
                         alt={blog.title}
                         onError={() => setImgError(true)}
                         loading="eager"
                         decoding="async"
-                        className="w-full h-auto max-h-[420px] sm:max-h-[420px] md:max-h-[500px] lg:max-h-[580px] xl:max-h-[640px] object-contain block"
+                        className="absolute inset-0 w-full h-full object-cover"
                     />
-                    <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#f5f0eb] to-transparent pointer-events-none" />
+                    <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-stone-900/30 to-transparent pointer-events-none" />
+
+                    {/* Category badge overlaid bottom-left */}
+                    {blog.category && (
+                        <div className="absolute bottom-4 left-4 z-10">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#6B4A2D] text-white text-xs font-semibold rounded-full shadow-lg backdrop-blur-sm">
+                                <Tag className="w-3.5 h-3.5" strokeWidth={2} />
+                                {blog.category}
+                            </span>
+                        </div>
+                    )}
                 </div>
-                {blog.category && (
-                    <div className="absolute bottom-4 sm:bottom-5 left-4 sm:left-6 md:left-10">
-                        <span className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 bg-[#6B4A2D] text-white text-xs sm:text-sm font-semibold rounded-full shadow-lg">
-                            <Tag className="w-3.5 h-3.5 sm:w-4 sm:h-4" strokeWidth={2} />
-                            {blog.category}
-                        </span>
-                    </div>
-                )}
             </section>
 
-            <article className="py-8 sm:py-12 md:py-16 lg:py-20 bg-white">
+            {/* ══════════════════════════════════════════════
+                ARTICLE BODY
+            ══════════════════════════════════════════════ */}
+            <article className="py-8 sm:py-12 md:py-16 bg-white">
                 <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
 
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-6 sm:mb-8 pb-5 sm:pb-6 border-b-2 border-slate-100">
+                    {/* ── Date + Share row ── */}
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4 pb-5 border-b-2 border-slate-100">
                         <div className="flex items-center gap-2 text-sm text-slate-500 font-medium">
                             <Calendar className="w-4 h-4 text-[#6B4A2D] flex-shrink-0" strokeWidth={2} />
-                            <time dateTime={String(blog.createdAt)}>{formatDate(blog.createdAt)}</time>
+                            <time dateTime={String(blog.createdAt)}>
+                                {formatDate(blog.createdAt)}
+                            </time>
                         </div>
                         <button
                             onClick={copyLink}
@@ -188,29 +243,58 @@ export default function BlogDetail() {
                             className="flex items-center gap-2 px-4 py-2 bg-[#6B4A2D] hover:bg-[#5a3f25] text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors w-fit"
                         >
                             {copied ? (
-                                <><Check className="w-4 h-4 text-green-300" strokeWidth={2.5} /><span>Copied!</span></>
+                                <>
+                                    <Check className="w-4 h-4 text-green-300" strokeWidth={2.5} />
+                                    <span>Copied!</span>
+                                </>
                             ) : (
-                                <><Copy className="w-4 h-4" strokeWidth={2} /><span>Share</span></>
+                                <>
+                                    <Copy className="w-4 h-4" strokeWidth={2} />
+                                    <span>Share</span>
+                                </>
                             )}
                         </button>
                     </div>
 
+                    {/* ── Active keyword tag — shown directly below date row ──
+                         Appears when user clicks a keyword pill below              */}
+                    {activeKeyword && (
+                        <div className="flex items-center gap-2.5 mb-6">
+                            <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-widest flex-shrink-0">
+                                Keyword
+                            </span>
+                            <span className="inline-flex items-center gap-1.5 pl-2.5 pr-1.5 py-1.5 bg-[#6B4A2D] text-white text-xs font-bold rounded-full shadow-sm">
+                                <Hash className="w-3 h-3 opacity-60 flex-shrink-0" strokeWidth={2.5} />
+                                <span className="leading-none">{activeKeyword}</span>
+                                <button
+                                    onClick={() => setActiveKeyword(null)}
+                                    className="ml-0.5 flex items-center justify-center w-4 h-4 rounded-full bg-white/20 hover:bg-white/40 transition-colors flex-shrink-0"
+                                    aria-label="Clear keyword"
+                                >
+                                    <X className="w-2.5 h-2.5" strokeWidth={3} />
+                                </button>
+                            </span>
+                        </div>
+                    )}
+
+                    {/* ── Title ── */}
                     <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-slate-900 mb-4 sm:mb-5 leading-tight tracking-tight">
                         {blog.title}
                     </h1>
 
+                    {/* ── Meta description ── */}
                     {blog.metaDescription && (
-                        <p className="text-base sm:text-lg text-slate-600 leading-relaxed italic pl-4 sm:pl-5 py-3 sm:py-4 mb-8 sm:mb-10 bg-amber-50 border-l-4 border-[#6B4A2D] rounded-r-xl font-normal">
+                        <p className="text-base sm:text-lg text-slate-600 leading-relaxed italic pl-4 sm:pl-5 py-3 sm:py-4 mb-8 sm:mb-10 bg-amber-50 border-l-4 border-[#6B4A2D] rounded-r-xl">
                             "{blog.metaDescription}"
                         </p>
                     )}
 
+                    {/* ── Blog body ── */}
                     <div
                         className="
               text-[17px] leading-[1.85] text-slate-800
               sm:text-[18px] sm:leading-[1.9]
-              break-words
-              [&_*]:box-border
+              break-words [&_*]:box-border
               [&_p]:my-5 [&_p]:leading-[1.85] [&_p]:text-slate-700 [&_p]:text-[17px]
               sm:[&_p]:text-[18px]
               [&_h1]:text-3xl [&_h1]:sm:text-4xl [&_h1]:font-extrabold [&_h1]:text-slate-900
@@ -238,12 +322,11 @@ export default function BlogDetail() {
               [&_blockquote]:border-l-4 [&_blockquote]:border-[#6B4A2D]
               [&_blockquote]:bg-amber-50 [&_blockquote]:rounded-r-xl
               [&_blockquote]:text-slate-600 [&_blockquote]:italic [&_blockquote]:text-[17px]
-              [&_blockquote]:leading-relaxed
-              [&_blockquote_p]:my-0 [&_blockquote_p]:text-slate-600
+              [&_blockquote]:leading-relaxed [&_blockquote_p]:my-0 [&_blockquote_p]:text-slate-600
               [&_code]:font-mono [&_code]:text-[14px] [&_code]:text-[#6B4A2D]
               [&_code]:bg-slate-100 [&_code]:px-1.5 [&_code]:py-0.5
               [&_code]:rounded [&_code]:border [&_code]:border-slate-200
-              [&_pre]:my-6 [&_pre]:bg-[#1a1a2e] [&_pre]:text-slate-100
+              [&_pre]:my-6 [&_pre]:bg-slate-900 [&_pre]:text-slate-100
               [&_pre]:rounded-xl [&_pre]:p-5 [&_pre]:overflow-x-auto
               [&_pre]:text-[13px] [&_pre]:sm:text-[14px] [&_pre]:leading-relaxed [&_pre]:font-mono
               [&_pre_code]:bg-transparent [&_pre_code]:border-none [&_pre_code]:text-slate-100
@@ -270,11 +353,74 @@ export default function BlogDetail() {
                         }}
                     />
 
+                    {/* ══════════════════════════════════════════════
+                        KEYWORDS SECTION
+                        — always horizontal single-row scroll, no wrap
+                    ══════════════════════════════════════════════ */}
+                    {blog.keywords && (
+                        <div className="mt-10 mb-8">
+                            {/* Header */}
+                            <div className="flex items-center gap-2.5 mb-4">
+                                <div className="flex items-center justify-center w-7 h-7 rounded-md bg-[#6B4A2D] flex-shrink-0">
+                                    <Hash size={14} className="text-white" strokeWidth={2.5} />
+                                </div>
+                                <span className="text-xs font-bold text-slate-500 tracking-widest uppercase">
+                                    Keywords
+                                </span>
+                                <div className="flex-1 h-px bg-slate-100" />
+                            </div>
+
+                            <div className="flex flex-wrap gap-1.5">
+                                {blog.keywords
+                                    .split(",")
+                                    .map((kw) => kw.trim())
+                                    .filter(Boolean)
+                                    .map((kw, index) => {
+                                        const isActive = activeKeyword === kw;
+                                        const isLoading = kwLoading === kw;
+                                        return (
+                                            <button
+                                                key={index}
+                                                onClick={() => handleKeywordClick(kw)}
+                                                disabled={!!kwLoading}
+                                                className={`
+                                                    inline-flex items-center gap-1
+                                                    px-2.5 py-1
+                                                    text-[11px] font-medium rounded-md
+                                                    border transition-all duration-200
+                                                    active:scale-95 select-none cursor-pointer
+                                                    ${isLoading
+                                                        ? "bg-[#6B4A2D] text-white border-[#6B4A2D] cursor-wait opacity-80"
+                                                        : isActive
+                                                            ? "bg-[#6B4A2D] text-white border-[#6B4A2D]"
+                                                            : "bg-slate-50 text-slate-500 border-slate-200 hover:border-[#6B4A2D] hover:text-[#6B4A2D] hover:bg-amber-50"
+                                                    }
+                                                `}
+                                            >
+                                                {isLoading ? (
+                                                    <svg className="w-2.5 h-2.5 animate-spin flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <circle cx="12" cy="12" r="10" strokeWidth="2" opacity="0.25" />
+                                                        <path d="M12 2a10 10 0 0 1 10 10" strokeWidth="2" />
+                                                    </svg>
+                                                ) : (
+                                                    <span className={`leading-none ${isActive ? "text-white/50" : "text-slate-400"}`}>#</span>
+                                                )}
+                                                <span className="leading-none">{kw}</span>
+                                            </button>
+                                        );
+                                    })}
+                            </div>
+                        </div>
+                    )}
+
                     <div className="my-10 sm:my-12 border-t-2 border-slate-100" />
 
-                    <div className="rounded-xl sm:rounded-2xl p-6 sm:p-8 text-center mb-2 bg-gradient-to-br from-amber-50 to-stone-100 border-2 border-stone-200">
-                        <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-2 sm:mb-3">✨ Found This Helpful?</h3>
-                        <p className="text-sm sm:text-base text-slate-600 mb-5 sm:mb-6 max-w-md mx-auto">
+                    {/* ── CTA share card ── */}
+                    <div className="rounded-2xl p-6 sm:p-8 text-center mb-2 bg-stone-50 border border-stone-200">
+                        <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-2">
+                            ✨ Found This Helpful?
+                        </h3>
+                        <p className="text-sm sm:text-base text-slate-500 mb-5 max-w-md mx-auto">
                             Share this article with friends and colleagues who might find it useful.
                         </p>
                         <button
@@ -288,15 +434,20 @@ export default function BlogDetail() {
                 </div>
             </article>
 
+            {/* ══════════════════════════════════════════════
+                RELATED ARTICLES
+            ══════════════════════════════════════════════ */}
             {relatedBlogs.length > 0 && (
-                <section className="py-10 sm:py-14 md:py-16 lg:py-20 bg-gradient-to-br from-stone-50 to-amber-50">
+                <section className="py-10 sm:py-14 md:py-16 bg-stone-50 border-t border-stone-100">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="text-center mb-10 sm:mb-12">
-                            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-2 sm:mb-3 tracking-tight">
+                            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-2 tracking-tight">
                                 📚 Related Articles
                             </h2>
-                            <p className="text-sm sm:text-base text-slate-600 max-w-xl mx-auto">
-                                More from the <span className="font-bold text-[#6B4A2D]">{blog.category}</span> category
+                            <p className="text-sm sm:text-base text-slate-500 max-w-xl mx-auto">
+                                More from the{" "}
+                                <span className="font-bold text-[#6B4A2D]">{blog.category}</span>{" "}
+                                category
                             </p>
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
@@ -304,20 +455,20 @@ export default function BlogDetail() {
                                 <article
                                     key={rb.id}
                                     onClick={() => goRelated(rb)}
-                                    className="group flex flex-col overflow-hidden rounded-xl sm:rounded-2xl bg-white shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 cursor-pointer border border-slate-100 hover:border-stone-300"
+                                    className="group flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1.5 cursor-pointer border border-slate-100 hover:border-stone-200"
                                 >
-                                    <div className="relative w-full bg-[#f5f0eb] overflow-hidden aspect-[4/3]">
+                                    <div className="relative w-full overflow-hidden aspect-[4/3]">
                                         <img
                                             src={rb.image || FALLBACK}
                                             alt={rb.title || "Related blog"}
                                             loading="lazy"
                                             decoding="async"
                                             onError={(e) => { e.currentTarget.src = FALLBACK; }}
-                                            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
+                                            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                                         />
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                         {rb.category && (
-                                            <div className="absolute top-2.5 left-2.5 z-10">
+                                            <div className="absolute top-3 left-3 z-10">
                                                 <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#6B4A2D] text-white text-[10px] sm:text-xs font-semibold rounded-full shadow">
                                                     <Tag className="w-3 h-3" strokeWidth={2} />
                                                     {rb.category}
@@ -327,7 +478,7 @@ export default function BlogDetail() {
                                     </div>
                                     <div className="flex flex-col flex-1 p-4 sm:p-5">
                                         {rb.createdAt && (
-                                            <div className="flex items-center gap-1.5 text-[11px] sm:text-xs text-slate-500 mb-2">
+                                            <div className="flex items-center gap-1.5 text-[11px] text-slate-400 mb-2">
                                                 <Calendar className="w-3.5 h-3.5 text-[#6B4A2D]" strokeWidth={2} />
                                                 <time>{formatDate(rb.createdAt)}</time>
                                             </div>
@@ -335,8 +486,9 @@ export default function BlogDetail() {
                                         <h3 className="text-sm sm:text-base font-bold text-slate-900 group-hover:text-[#6B4A2D] mb-2 line-clamp-2 transition-colors duration-300 leading-snug">
                                             {rb.title}
                                         </h3>
-                                        <p className="text-[11px] sm:text-xs text-slate-500 line-clamp-2 leading-relaxed mb-3 flex-1">
-                                            {rb.metaDescription || rb.description?.replace(/<[^>]+>/g, "").substring(0, 100)}
+                                        <p className="text-[11px] sm:text-xs text-slate-400 line-clamp-2 leading-relaxed mb-3 flex-1">
+                                            {rb.metaDescription ||
+                                                rb.description?.replace(/<[^>]+>/g, "").substring(0, 100)}
                                         </p>
                                         <div className="flex items-center gap-1.5 text-[#6B4A2D] font-semibold text-xs sm:text-sm group-hover:gap-2.5 transition-all duration-300">
                                             <span>Read More</span>
@@ -350,18 +502,21 @@ export default function BlogDetail() {
                 </section>
             )}
 
-            <section className="py-10 sm:py-14 md:py-16 lg:py-20 bg-white">
+            {/* ══════════════════════════════════════════════
+                CTA FOOTER
+            ══════════════════════════════════════════════ */}
+            <section className="py-10 sm:py-14 md:py-16 bg-white border-t border-slate-100">
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-4 sm:mb-5 tracking-tight">
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 mb-4 tracking-tight">
                         Ready to Create Amazing Visuals?
                     </h2>
-                    <p className="text-sm sm:text-base md:text-lg text-slate-600 mb-8 sm:mb-10 max-w-2xl mx-auto leading-relaxed">
+                    <p className="text-sm sm:text-base md:text-lg text-slate-500 mb-8 max-w-2xl mx-auto leading-relaxed">
                         Let's bring your creative vision to life. Contact Genie Studio today.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
                         <button
                             onClick={() => navigate("/blogs")}
-                            className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-sm sm:text-base rounded-lg transition-colors border border-slate-200"
+                            className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm sm:text-base rounded-lg transition-colors border border-slate-200"
                         >
                             <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" strokeWidth={2} />
                             Back to Blogs
