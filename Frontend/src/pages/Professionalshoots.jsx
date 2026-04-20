@@ -24,10 +24,22 @@ const Professionalshoots = () => {
   ];
 
   const deliverables = [
-    "30–50 edited portraits",
-    "Multiple outfit options",
-    "Retouching included",
-    "Digital & print formats",
+    {
+      label: "30–50 edited portraits",
+      img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&auto=format&fit=crop&q=80",
+    },
+    {
+      label: "Multiple outfit options",
+      img: "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=600&auto=format&fit=crop&q=80",
+    },
+    {
+      label: "Retouching included",
+      img: "https://images.unsplash.com/photo-1512314889357-e157c22f938d?w=600&auto=format&fit=crop&q=80",
+    },
+    {
+      label: "Digital & print formats",
+      img: "https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=600&auto=format&fit=crop&q=80",
+    },
   ];
 
   return (
@@ -54,7 +66,7 @@ const Professionalshoots = () => {
               'linear-gradient(to top, rgba(28,20,20,0.85) 25%, rgba(28,20,20,0.45) 55%, transparent 100%)',
           }}
         />
-        
+
 
         <div className="relative z-10 w-full max-w-6xl mx-auto px-6 sm:px-10 pb-12 sm:pb-16">
           <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full mb-5 text-sm font-semibold tracking-widest uppercase" style={{ background: '#C0392B22', color: '#E05A4E', border: '1px solid #C0392B44' }}>
@@ -105,13 +117,36 @@ const Professionalshoots = () => {
             <div className="w-12 h-1 rounded-full mx-auto mb-4" style={{ background: '#C0392B' }} />
             <h2 className="text-3xl sm:text-4xl font-black text-slate-900">What You'll Receive</h2>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 px-4 sm:px-0">
             {deliverables.map((item, i) => (
-              <div key={i} className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow text-center">
-                <div className="w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-4 text-white font-bold text-sm" style={{ background: '#C0392B' }}>
-                  {String(i + 1).padStart(2, '0')}
+              <div
+                key={i}
+                data-aos="fade-up"
+                data-aos-delay={i * 100}
+                className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 active:scale-95 sm:hover:-translate-y-1 group"
+              >
+                {/* Image */}
+                <div className="w-full h-40 sm:h-44 overflow-hidden">
+                  <img
+                    src={item.img}
+                    alt={item.label}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
                 </div>
-                <p className="text-slate-800 font-medium text-sm leading-snug">{item}</p>
+
+                {/* Card Footer */}
+                <div className="p-4 sm:p-5 flex items-center gap-3">
+                  <div
+                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-full flex-shrink-0 flex items-center justify-center text-white font-bold text-xs"
+                    style={{ background: ' #C0392B' }}
+                  >
+                    {String(i + 1).padStart(2, '0')}
+                  </div>
+
+                  <p className="text-slate-800 font-semibold text-sm sm:text-base leading-snug">
+                    {item.label}
+                  </p>
+                </div>
               </div>
             ))}
           </div>

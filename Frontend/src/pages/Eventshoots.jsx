@@ -24,10 +24,22 @@ const Eventshoots = () => {
   ];
 
   const deliverables = [
-    "Full day event coverage",
-    "Photo & video combined",
-    "Edited highlights video",
-    "500+ high-res images",
+    {
+      label: "Full day event coverage",
+      img: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&auto=format&fit=crop&q=80",
+    },
+    {
+      label: "Photo & video combined",
+      img: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&auto=format&fit=crop&q=80",
+    },
+    {
+      label: "Edited highlights video",
+      img: "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=600&auto=format&fit=crop&q=80",
+    },
+    {
+      label: "500+ high-res images",
+      img: "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=600&auto=format&fit=crop&q=80",
+    },
   ];
 
   return (
@@ -104,13 +116,36 @@ const Eventshoots = () => {
             <div className="w-12 h-1 rounded-full mx-auto mb-4" style={{ background: '#A064F0' }} />
             <h2 className="text-3xl sm:text-4xl font-black text-slate-900">What You'll Receive</h2>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 px-4 sm:px-0">
             {deliverables.map((item, i) => (
-              <div key={i} className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow text-center">
-                <div className="w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-4 text-white font-bold text-sm" style={{ background: '#A064F0' }}>
-                  {String(i + 1).padStart(2, '0')}
+              <div
+                key={i}
+                data-aos="fade-up"
+                data-aos-delay={i * 100}
+                className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 active:scale-95 sm:hover:-translate-y-1 group"
+              >
+                {/* Image */}
+                <div className="w-full h-40 sm:h-44 overflow-hidden">
+                  <img
+                    src={item.img}
+                    alt={item.label}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
                 </div>
-                <p className="text-slate-800 font-medium text-sm leading-snug">{item}</p>
+
+                {/* Card Footer */}
+                <div className="p-4 sm:p-5 flex items-center gap-3">
+                  <div
+                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-full flex-shrink-0 flex items-center justify-center text-white font-bold text-xs"
+                    style={{ background: '#A064F0' }}
+                  >
+                    {String(i + 1).padStart(2, '0')}
+                  </div>
+
+                  <p className="text-slate-800 font-semibold text-sm sm:text-base leading-snug">
+                    {item.label}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
