@@ -159,6 +159,50 @@ db.query(
   }
 );
 
+// ================= DOME GALLERY =================
+// One flat, ordered list of images for the DomeGallery component on /gallery.
+// Seeded from the values that used to be hardcoded in DomeGallery.jsx.
+const GALLERY_SEED = [
+  ["https://images.unsplash.com/photo-1755331039789-7e5680e26e8f?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", "Abstract art"],
+  ["https://images.unsplash.com/photo-1755569309049-98410b94f66d?q=80&w=772&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", "Modern sculpture"],
+  ["https://images.unsplash.com/photo-1755497595318-7e5e3523854f?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", "Digital artwork"],
+  ["https://images.unsplash.com/photo-1755353985163-c2a0fe5ac3d8?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", "Contemporary art"],
+  ["https://images.unsplash.com/photo-1745965976680-d00be7dc0377?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", "Geometric pattern"],
+  ["https://images.unsplash.com/photo-1752588975228-21f44630bb3c?q=80&w=774&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", "Textured surface"],
+  ["https://pbs.twimg.com/media/Gyla7NnXMAAXSo_?format=jpg&name=large", "Social media image"],
+];
+
+db.query(
+  `CREATE TABLE IF NOT EXISTS gallery_images (
+     id         INT AUTO_INCREMENT PRIMARY KEY,
+     image_url  VARCHAR(500) NOT NULL,
+     alt        VARCHAR(255) DEFAULT NULL,
+     sort_order INT          DEFAULT 0,
+     created_at BIGINT       DEFAULT NULL,
+     updated_at BIGINT       DEFAULT NULL,
+     UNIQUE KEY uniq_gallery_url (image_url(191))
+   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`,
+  (err) => {
+    if (err) return console.log("❌ gallery_images table error:", err.message);
+    console.log("✅ gallery_images table ready");
+
+    // Seed once, only while empty — deleting images must not bring them back
+    db.query("SELECT COUNT(*) AS n FROM gallery_images", (err2, rows) => {
+      if (err2 || rows[0].n > 0) return;
+      const now = Date.now();
+      const values = GALLERY_SEED.map(([url, alt], i) => [url, alt, i, now, now]);
+      db.query(
+        "INSERT INTO gallery_images (image_url, alt, sort_order, created_at, updated_at) VALUES ?",
+        [values],
+        (err3) => {
+          if (err3) console.log("❌ gallery seed error:", err3.message);
+          else console.log(`✅ dome gallery seeded with ${values.length} images`);
+        }
+      );
+    });
+  }
+);
+
 // ================= MULTER =================
 // Multer is only used as a temp buffer before uploading to Hostinger
 const storage = multer.diskStorage({
@@ -415,6 +459,29 @@ app.delete("/api/images/:id", verifyToken, async (req, res) => {
   }
 });
 
+// ================= SHARED: parse a pasted URL list =================
+// Used by both the Portfolio and Dome Gallery bulk endpoints so the two behave
+// identically: trim, drop blanks, reject non-http(s) lines, and de-duplicate
+// within the pasted list itself.
+const parseUrlList = (raw) => {
+  const lines = Array.isArray(raw) ? raw : String(raw || "").split(/\r?\n/);
+  const seen = new Set();
+  const invalid = [];
+  const urls = [];
+  let repeated = 0;
+
+  for (const line of lines) {
+    const url = String(line || "").trim();
+    if (!url) continue;
+    if (!/^https?:\/\/\S+$/i.test(url)) { invalid.push(url); continue; }
+    if (seen.has(url)) { repeated += 1; continue; }
+    seen.add(url);
+    urls.push(url);
+  }
+
+  return { urls, invalid, repeated };
+};
+
 // ================= PORTFOLIO API =================
 // Public read — the Portfolio page fetches this instead of hardcoding images.
 app.get("/api/portfolio", async (req, res) => {
@@ -457,23 +524,7 @@ app.post("/api/portfolio/bulk", verifyToken, async (req, res) => {
       });
     }
 
-    const raw = Array.isArray(req.body.urls)
-      ? req.body.urls
-      : String(req.body.urls || "").split(/\r?\n/);
-
-    // Trim, drop blanks, keep only real http(s) URLs, de-dupe within the paste
-    const seen = new Set();
-    const invalid = [];
-    const urls = [];
-    let repeated = 0; // duplicated within the pasted list itself
-    for (const line of raw) {
-      const url = String(line || "").trim();
-      if (!url) continue;
-      if (!/^https?:\/\/\S+$/i.test(url)) { invalid.push(url); continue; }
-      if (seen.has(url)) { repeated += 1; continue; }
-      seen.add(url);
-      urls.push(url);
-    }
+    const { urls, invalid, repeated } = parseUrlList(req.body.urls);
 
     if (urls.length === 0) {
       return res.status(400).json({
@@ -597,6 +648,138 @@ app.delete("/api/portfolio/:id", verifyToken, async (req, res) => {
     res.json({ success: true, message: "Portfolio image removed" });
   } catch (err) {
     console.error("DB error deleting portfolio image:", err.message);
+    res.status(500).json({ success: false, message: "Failed to delete the image" });
+  }
+});
+
+// ================= DOME GALLERY API =================
+// Public read — DomeGallery.jsx fetches this instead of holding a hardcoded list.
+app.get("/api/gallery", async (req, res) => {
+  try {
+    const items = await dbQuery(
+      "SELECT * FROM gallery_images ORDER BY sort_order ASC, id ASC"
+    );
+    res.json({ success: true, items });
+  } catch (err) {
+    console.error("DB error fetching gallery:", err.message);
+    res.status(500).json({ success: false, message: "Failed to fetch gallery images" });
+  }
+});
+
+/**
+ * Bulk add / replace the dome gallery.
+ * body: { urls: string[] | string, mode: "append" | "replace", alt? }
+ */
+app.post("/api/gallery/bulk", verifyToken, async (req, res) => {
+  try {
+    const mode = req.body.mode === "replace" ? "replace" : "append";
+    const { urls, invalid, repeated } = parseUrlList(req.body.urls);
+
+    if (urls.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: invalid.length
+          ? "No valid URLs found — each line must start with http:// or https://"
+          : "Paste at least one image URL.",
+      });
+    }
+
+    if (mode === "replace") {
+      await dbQuery("DELETE FROM gallery_images");
+    }
+
+    const existing = await dbQuery("SELECT image_url FROM gallery_images");
+    const already = new Set(existing.map((r) => r.image_url));
+
+    const [{ maxOrder }] = await dbQuery(
+      "SELECT COALESCE(MAX(sort_order), -1) AS maxOrder FROM gallery_images"
+    );
+
+    const now = Date.now();
+    const alt = String(req.body.alt || "").trim() || null;
+
+    let order = Number(maxOrder) + 1;
+    const rows = [];
+    let skipped = repeated;
+    for (const url of urls) {
+      if (already.has(url)) { skipped += 1; continue; }
+      rows.push([url, alt, order++, now, now]);
+    }
+
+    if (rows.length > 0) {
+      await dbQuery(
+        "INSERT IGNORE INTO gallery_images (image_url, alt, sort_order, created_at, updated_at) VALUES ?",
+        [rows]
+      );
+    }
+
+    const items = await dbQuery(
+      "SELECT * FROM gallery_images ORDER BY sort_order ASC, id ASC"
+    );
+
+    res.json({
+      success: true,
+      message: `${rows.length} image${rows.length === 1 ? "" : "s"} added${skipped ? `, ${skipped} duplicate skipped` : ""}`,
+      added: rows.length,
+      skipped,
+      invalid,
+      items,
+    });
+  } catch (err) {
+    console.error("DB error bulk-saving gallery:", err.message);
+    res.status(500).json({ success: false, message: "Failed to update the gallery" });
+  }
+});
+
+// Reorder — must be declared BEFORE /:id
+app.put("/api/gallery/reorder", verifyToken, async (req, res) => {
+  try {
+    const ids = Array.isArray(req.body.ids) ? req.body.ids.map(Number).filter(Boolean) : [];
+    if (ids.length === 0)
+      return res.status(400).json({ success: false, message: "No image order provided" });
+
+    const now = Date.now();
+    await Promise.all(
+      ids.map((id, index) =>
+        dbQuery("UPDATE gallery_images SET sort_order = ?, updated_at = ? WHERE id = ?", [index, now, id])
+      )
+    );
+    res.json({ success: true, message: "Order saved" });
+  } catch (err) {
+    console.error("DB error reordering gallery:", err.message);
+    res.status(500).json({ success: false, message: "Failed to save the new order" });
+  }
+});
+
+app.put("/api/gallery/:id", verifyToken, async (req, res) => {
+  try {
+    const url = String(req.body.image_url || "").trim();
+    if (!/^https?:\/\/\S+$/i.test(url))
+      return res.status(400).json({ success: false, message: "Enter a valid http:// or https:// image URL." });
+
+    const result = await dbQuery(
+      "UPDATE gallery_images SET image_url = ?, alt = ?, updated_at = ? WHERE id = ?",
+      [url, String(req.body.alt || "").trim() || null, Date.now(), req.params.id]
+    );
+    if (result.affectedRows === 0)
+      return res.status(404).json({ success: false, message: "Gallery image not found" });
+
+    const [item] = await dbQuery("SELECT * FROM gallery_images WHERE id = ?", [req.params.id]);
+    res.json({ success: true, message: "Gallery image updated", item });
+  } catch (err) {
+    if (err.code === "ER_DUP_ENTRY")
+      return res.status(409).json({ success: false, message: "That URL is already in the gallery." });
+    console.error("DB error updating gallery image:", err.message);
+    res.status(500).json({ success: false, message: "Failed to update the image" });
+  }
+});
+
+app.delete("/api/gallery/:id", verifyToken, async (req, res) => {
+  try {
+    await dbQuery("DELETE FROM gallery_images WHERE id = ?", [req.params.id]);
+    res.json({ success: true, message: "Gallery image removed" });
+  } catch (err) {
+    console.error("DB error deleting gallery image:", err.message);
     res.status(500).json({ success: false, message: "Failed to delete the image" });
   }
 });

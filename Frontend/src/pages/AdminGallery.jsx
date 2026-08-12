@@ -1,21 +1,19 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { LayoutGrid } from "lucide-react";
+import { Orbit } from "lucide-react";
 
 import AdminNav from "../components/AdminNav";
 import AdminToast from "../components/AdminToast";
 import BulkUrlManager from "../components/BulkUrlManager";
 import BASE_URL from "../api";
 import {
-  PORTFOLIO_CATEGORIES, categoryName, fetchPortfolio, bulkSavePortfolio,
-  updatePortfolioImage, deletePortfolioImage, reorderPortfolio,
-} from "../lib/portfolioApi";
+  fetchGallery, bulkSaveGallery, updateGalleryImage, deleteGalleryImage, reorderGallery,
+} from "../lib/galleryApi";
 
-export default function AdminPortfolio() {
+export default function AdminGallery() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
-  const [category, setCategory] = useState("corporate");
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -24,20 +22,20 @@ export default function AdminPortfolio() {
 
   const showToast = (msg, type = "success") => setToast({ msg, type });
 
-  const load = useCallback(async (cat) => {
+  const load = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
-      setItems(await fetchPortfolio(cat));
+      setItems(await fetchGallery());
     } catch (err) {
-      setError(err?.message || "Could not load the portfolio.");
+      setError(err?.message || "Could not load the gallery.");
       setItems([]);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  useEffect(() => { load(category); }, [category, load]);
+  useEffect(() => { load(); }, [load]);
 
   // Nav badge counts only
   useEffect(() => {
@@ -58,9 +56,9 @@ export default function AdminPortfolio() {
   }, [token]);
 
   const handleNav = (tab) => {
-    if (tab === "portfolio") return;
+    if (tab === "gallery") return;
     if (tab === "images") return navigate("/admin/images");
-    if (tab === "gallery") return navigate("/admin/gallery");
+    if (tab === "portfolio") return navigate("/admin/portfolio");
     navigate("/admin/blogs", { state: { tab } });
   };
 
@@ -88,20 +86,25 @@ export default function AdminPortfolio() {
 
       <header className="relative min-h-[30vh] sm:min-h-[38vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url('https://images.unsplash.com/photo-1615567250006-de1875d0c61c?q=80&w=1331&auto=format&fit=crop')" }} />
+          style={{ backgroundImage: "url('https://images.unsplash.com/photo-1755331039789-7e5680e26e8f?q=80&w=1200&auto=format&fit=crop')" }} />
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80" />
         <div className="relative z-10 text-center px-4">
           <h1 className="text-2xl sm:text-4xl md:text-5xl font-extrabold text-white leading-tight mb-2 sm:mb-3">
-            Portfolio Manager
+            Dome Gallery
           </h1>
           <p className="text-xs sm:text-sm text-gray-300 max-w-md mx-auto">
-            Paste image URLs by category — the public Portfolio page updates instantly
+            Paste image URLs — the 3D gallery on /gallery updates instantly
           </p>
+          <div className="flex items-center justify-center gap-2 mt-4">
+            <Orbit size={16} className="text-gray-300" />
+            <p className="text-xl sm:text-2xl font-black text-white">{items.length}</p>
+            <p className="text-[10px] sm:text-xs text-gray-400">images in the dome</p>
+          </div>
         </div>
       </header>
 
       <AdminNav
-        active="portfolio"
+        active="gallery"
         publishedCount={counts.published}
         draftCount={counts.draft}
         onSelect={handleNav}
@@ -114,61 +117,35 @@ export default function AdminPortfolio() {
           onItemsChange={setItems}
           loading={loading}
           error={error}
-          onReload={() => load(category)}
+          onReload={load}
           onToast={showToast}
-          onBulkSave={(urls, mode) => bulkSavePortfolio({ category, urls, mode })}
-          onEditSave={(item, fields) => updatePortfolioImage(item.id, fields)}
-          onDelete={(item) => deletePortfolioImage(item.id)}
-          onReorder={reorderPortfolio}
-          labelKey="title"
-          extraFields={[
-            { key: "title", label: "Title", hint: "shown in the lightbox" },
-            { key: "description", label: "Description", multiline: true },
-          ]}
+          onBulkSave={(urls, mode) => bulkSaveGallery({ urls, mode })}
+          onEditSave={(item, fields) => updateGalleryImage(item.id, fields)}
+          onDelete={(item) => deleteGalleryImage(item.id)}
+          onReorder={reorderGallery}
+          labelKey="alt"
+          extraFields={[{ key: "alt", label: "Alt text", hint: "for accessibility" }]}
           labels={{
-            cardTitle: "Bulk Image URLs",
-            cardSubtitle: "One URL per line — preview, then update",
-            updateButton: "Update Portfolio",
-            replaceButton: `Replace All in ${categoryName(category)}`,
-            replaceTitle: `Replace all ${categoryName(category)} images?`,
-            listTitle: `${categoryName(category)} Images`,
-            emptyTitle: `No images in ${categoryName(category)}`,
-            emptyBody: "Paste URLs above and click Update Portfolio.",
-            deleteBody: `This image will disappear from the ${categoryName(category)} category on the public Portfolio page.`,
+            cardTitle: "Bulk Dome Gallery URLs",
+            cardSubtitle: "One URL per line — preview, then update the 3D gallery",
+            updateButton: "Update Dome Gallery",
+            replaceButton: "Replace Entire Gallery",
+            replaceTitle: "Replace the whole Dome Gallery?",
+            listTitle: "Dome Gallery Images",
+            emptyTitle: "No gallery images",
+            emptyBody: "Paste URLs above and click Update Dome Gallery.",
+            deleteBody: "This image will disappear from the Dome Gallery on /gallery.",
           }}
-        >
-          {/* Category picker sits above the paste box */}
-          <div>
-            <label className="flex items-center gap-1.5 text-sm font-semibold text-gray-700 mb-2">
-              <LayoutGrid size={14} style={{ color: "#6B4A2D" }} /> Category
-            </label>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {PORTFOLIO_CATEGORIES.map((cat) => (
-                <button
-                  key={cat.id}
-                  type="button"
-                  onClick={() => setCategory(cat.id)}
-                  className={`px-3 py-2.5 rounded-xl text-xs font-bold border-2 transition-all text-left ${
-                    category === cat.id
-                      ? "border-[#6B4A2D] bg-[#6B4A2D] text-white shadow-md"
-                      : "border-gray-200 text-gray-600 hover:border-[#6B4A2D] hover:text-[#6B4A2D]"
-                  }`}
-                >
-                  {cat.name}
-                </button>
-              ))}
-            </div>
-          </div>
-        </BulkUrlManager>
+        />
 
         <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 sm:p-5">
           <h4 className="text-xs sm:text-sm font-bold text-amber-800 mb-3">💡 Quick Tips</h4>
           <ul className="text-[11px] sm:text-xs text-amber-700 space-y-1.5">
-            <li className="flex items-start gap-2"><span>→</span> <strong>Update Portfolio</strong> adds the pasted URLs after the existing ones · <strong>Replace All</strong> wipes the category first</li>
-            <li className="flex items-start gap-2"><span>→</span> Duplicates are detected automatically and skipped — pasting the same list twice is safe</li>
-            <li className="flex items-start gap-2"><span>→</span> Use the arrows to reorder, then click <strong>Save Order</strong> — that order is what visitors see</li>
-            <li className="flex items-start gap-2"><span>→</span> Title and description are optional and only appear in the lightbox when the image is opened</li>
-            <li className="flex items-start gap-2"><span>→</span> Changes go live immediately — the Portfolio page reads this data on every visit</li>
+            <li className="flex items-start gap-2"><span>→</span> <strong>Update Dome Gallery</strong> adds after the existing images · <strong>Replace Entire Gallery</strong> clears it first</li>
+            <li className="flex items-start gap-2"><span>→</span> The dome repeats your images to fill every tile — even a handful of images fills the sphere</li>
+            <li className="flex items-start gap-2"><span>→</span> <strong>Portrait images work best</strong> — tiles are taller than they are wide</li>
+            <li className="flex items-start gap-2"><span>→</span> Use the arrows to reorder, then <strong>Save Order</strong> — that order maps onto the dome tiles</li>
+            <li className="flex items-start gap-2"><span>→</span> Duplicates are detected automatically and skipped</li>
           </ul>
         </div>
       </section>

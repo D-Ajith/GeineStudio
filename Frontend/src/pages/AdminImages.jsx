@@ -76,6 +76,7 @@ export default function AdminImages() {
   const handleNav = (tab) => {
     if (tab === "images") return;
     if (tab === "portfolio") return navigate("/admin/portfolio");
+    if (tab === "gallery") return navigate("/admin/gallery");
     navigate("/admin/blogs", { state: { tab } });
   };
 

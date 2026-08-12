@@ -695,6 +695,7 @@ export default function AdminBlogs() {
   const handleNavSelect = (tab) => {
     if (tab === "images") { navigate("/admin/images"); return; }
     if (tab === "portfolio") { navigate("/admin/portfolio"); return; }
+    if (tab === "gallery") { navigate("/admin/gallery"); return; }
     if (tab === "create") { resetForm(); }
     setActiveTab(tab);
   };
