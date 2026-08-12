@@ -299,6 +299,36 @@ app.get("/api/images", verifyToken, async (req, res) => {
   }
 });
 
+// Renames the DISPLAY NAME only.
+// The Hostinger file, file_url, file_path and filename are deliberately never
+// touched — every blog already pointing at the HTTPS URL must keep working.
+app.put("/api/images/:id", verifyToken, async (req, res) => {
+  try {
+    const name = String(req.body.original_name || "").trim();
+    if (!name)
+      return res.status(400).json({ success: false, message: "Display name cannot be empty" });
+    if (name.length > 255)
+      return res.status(400).json({ success: false, message: "Display name is too long (max 255 characters)" });
+
+    const result = await dbQuery("UPDATE images SET original_name = ? WHERE id = ?", [
+      name,
+      req.params.id,
+    ]);
+    if (result.affectedRows === 0)
+      return res.status(404).json({ success: false, message: "Image not found" });
+
+    const [image] = await dbQuery("SELECT * FROM images WHERE id = ?", [req.params.id]);
+    res.json({
+      success: true,
+      message: "Image renamed",
+      image: { ...image, url: image.file_url },
+    });
+  } catch (err) {
+    console.error("DB error renaming image:", err.message);
+    res.status(500).json({ success: false, message: "Failed to rename image" });
+  }
+});
+
 // Removes the library entry. The physical file stays on Hostinger (upload.php
 // exposes no delete endpoint), so blogs already pointing at the URL keep working.
 app.delete("/api/images/:id", verifyToken, async (req, res) => {

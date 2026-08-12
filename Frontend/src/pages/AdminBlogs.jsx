@@ -5,6 +5,8 @@ import AdminNav from "../components/AdminNav";
 import Toast from "../components/AdminToast";
 import ImageUploader from "../components/ImageUploader";
 import ImageLibraryModal from "../components/ImageLibraryModal";
+import ImageLibrarySection from "../components/ImageLibrarySection";
+import useImageLibrary from "../lib/useImageLibrary";
 import BASE_URL from "../api";
 import {
   X, BookOpen, Edit2, Trash2, Plus,
@@ -373,6 +375,10 @@ export default function AdminBlogs() {
   const [permalinkManual, setPermalinkManual] = useState(false);
   const [libraryOpen, setLibraryOpen] = useState(false);
 
+  // Same hook as /admin/images — a rename or delete here goes through the very
+  // same API call, so both pages agree immediately and after a refresh.
+  const library = useImageLibrary();
+
   const fetchBlogs = async () => {
     setDbLoading(true);
     try {
@@ -554,6 +560,8 @@ export default function AdminBlogs() {
         } else {
           showToast(editingId ? "✅ Blog updated & published!" : "🎉 Blog published successfully!");
         }
+        // A brand-new file was uploaded → it just joined the images library
+        if (form.image) library.reload();
         resetForm();
         setSaveAsDraft(false);
         setActiveTab(asDraft ? "drafts" : "published");
@@ -727,6 +735,7 @@ export default function AdminBlogs() {
         onClose={() => setLibraryOpen(false)}
         onSelect={handleLibrarySelect}
         selectedUrl={form.image ? "" : form.existingImageUrl}
+        library={library}
       />
 
       <header className="relative min-h-[40vh] sm:min-h-[55vh] flex items-center justify-center overflow-hidden">
@@ -851,6 +860,16 @@ export default function AdminBlogs() {
               ))}
             </div>
           )}
+
+          {/* ── Uploaded Images — the same section rendered on /admin/images ── */}
+          <div className="mt-10 sm:mt-14 pt-8 sm:pt-10 border-t-2 border-gray-200">
+            <ImageLibrarySection
+              library={library}
+              onToast={showToast}
+              subtitle="Every image uploaded for a blog or from the Images page. Renaming changes the display label only — the Hostinger file and its URL never change."
+              columnsClass="grid-cols-2 sm:grid-cols-3 lg:grid-cols-4"
+            />
+          </div>
         </section>
       )}
 

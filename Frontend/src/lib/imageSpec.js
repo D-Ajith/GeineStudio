@@ -49,6 +49,17 @@ export const formatBytes = (bytes) => {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 };
 
+/** Upload timestamp (BIGINT ms) → "Aug 12, 2026" */
+export const formatUploadDate = (ts) => {
+  const n = Number(ts);
+  if (!n) return "";
+  return new Date(n).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+};
+
 /** Reads natural width/height of a File without uploading it. */
 export const readImageDimensions = (file) =>
   new Promise((resolve, reject) => {

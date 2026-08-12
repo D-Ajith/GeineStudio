@@ -1,35 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { X, Images, AlertCircle, RefreshCw } from "lucide-react";
 
-import { fetchImages } from "../lib/imageApi";
 import ImageLibraryGrid from "./ImageLibraryGrid";
 
 /**
  * "Select From Library" picker for the Blog Editor.
  *
- * Picking an image here reuses an already-hosted Hostinger URL — nothing is
+ * Reads the same useImageLibrary state as the page's Uploaded Images section,
+ * so a rename or delete made there is reflected here with no second fetch path.
+ * Picking an image reuses an already-hosted Hostinger URL — nothing is
  * re-uploaded, so the same file can back any number of blogs.
  */
-export default function ImageLibraryModal({ open, onClose, onSelect, selectedUrl = "" }) {
-  const [images, setImages] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  const load = async () => {
-    setLoading(true);
-    setError("");
-    try {
-      setImages(await fetchImages());
-    } catch (err) {
-      setError(err?.message || "Could not load the image library.");
-    } finally {
-      setLoading(false);
-    }
-  };
+export default function ImageLibraryModal({ open, onClose, onSelect, selectedUrl = "", library }) {
+  const { images, loading, error, reload } = library;
+  const load = reload;
 
   useEffect(() => {
-    if (open) load();
-  }, [open]);
+    if (open) reload();
+  }, [open, reload]);
 
   useEffect(() => {
     if (!open) return;

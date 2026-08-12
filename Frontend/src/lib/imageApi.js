@@ -107,6 +107,30 @@ export async function fetchImages() {
   return data.images;
 }
 
+/**
+ * Renames the DISPLAY name only — the Hostinger file and its HTTPS URL are
+ * untouched, so every blog already using the image keeps working.
+ */
+export async function renameImage(id, originalName) {
+  let res;
+  try {
+    res = await fetch(`${BASE_URL}/api/images/${id}`, {
+      method: "PUT",
+      headers: { ...authHeader(), "Content-Type": "application/json" },
+      body: JSON.stringify({ original_name: originalName }),
+    });
+  } catch (err) {
+    throw new Error(describeNetworkError(err, "rename the image"));
+  }
+
+  const data = await parseJson(res);
+  if (!res.ok) throw new Error(describeHttpError(res, data, "rename the image"));
+  if (!data?.success || !data?.image) {
+    throw new Error(data?.message || "Could not rename the image.");
+  }
+  return data.image;
+}
+
 /** Removes an image from the library listing. */
 export async function deleteImage(id) {
   let res;

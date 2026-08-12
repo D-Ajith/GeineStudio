@@ -1,15 +1,19 @@
 import React, { useState } from "react";
-import { Copy, CheckCircle, Trash2, Check, ImageOff, Loader } from "lucide-react";
+import { Copy, CheckCircle, Trash2, Check, ImageOff, Loader, Pencil, Calendar } from "lucide-react";
 
 import { copyToClipboard } from "../lib/imageApi";
-import { formatBytes } from "../lib/imageSpec";
+import { formatBytes, formatUploadDate } from "../lib/imageSpec";
 
 const FALLBACK = "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&q=80";
 
-function ImageCard({ image, onSelect, onDelete, selected }) {
+function ImageCard({ image, onSelect, onRename, onDelete, selected }) {
   const [copied, setCopied] = useState(false);
 
   const url = image.file_url || image.url || "";
+  // Display name is what the admin can rename; filename is the real file on
+  // Hostinger and never changes.
+  const displayName = image.original_name || image.filename;
+  const renamed = image.original_name && image.original_name !== image.filename;
 
   const handleCopy = async () => {
     if (!url) return;
@@ -18,6 +22,11 @@ function ImageCard({ image, onSelect, onDelete, selected }) {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
+
+  const meta = [
+    image.width && image.height ? `${image.width}×${image.height}` : null,
+    image.file_size ? formatBytes(image.file_size) : null,
+  ].filter(Boolean).join(" · ");
 
   return (
     <div
@@ -36,7 +45,7 @@ function ImageCard({ image, onSelect, onDelete, selected }) {
       >
         <img
           src={url || FALLBACK}
-          alt={image.original_name || image.filename}
+          alt={displayName}
           loading="lazy"
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           onError={(e) => { e.target.onerror = null; e.target.src = FALLBACK; }}
@@ -49,20 +58,32 @@ function ImageCard({ image, onSelect, onDelete, selected }) {
       </button>
 
       <div className="p-3 sm:p-4 flex flex-col flex-grow">
-        <p className="text-xs font-bold text-gray-800 truncate" title={image.original_name || image.filename}>
-          {image.original_name || image.filename}
-        </p>
-        <p className="text-[10px] text-gray-400 font-mono mt-1">
-          {image.width && image.height ? `${image.width}×${image.height}` : "—"}
-          {image.file_size ? ` · ${formatBytes(image.file_size)}` : ""}
+        <p className="text-xs font-bold text-gray-800 truncate" title={displayName}>
+          {displayName}
         </p>
 
-        <div className="flex gap-2 mt-3">
+        {/* The real Hostinger file — shown when a display name has been set, so
+            it stays obvious that renaming never moved the file. */}
+        {renamed && (
+          <p className="text-[10px] text-gray-400 font-mono mt-0.5 truncate" title={image.filename}>
+            file: {image.filename}
+          </p>
+        )}
+
+        <p className="text-[10px] text-gray-400 font-mono mt-1">{meta || "—"}</p>
+
+        {image.created_at && (
+          <p className="text-[10px] text-gray-400 mt-1 flex items-center gap-1">
+            <Calendar size={9} /> {formatUploadDate(image.created_at)}
+          </p>
+        )}
+
+        <div className="flex flex-wrap gap-2 mt-3">
           {onSelect && (
             <button
               type="button"
               onClick={() => onSelect(image)}
-              className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg font-semibold text-xs text-white transition"
+              className="flex-1 min-w-[64px] flex items-center justify-center gap-1.5 py-2 rounded-lg font-semibold text-xs text-white transition"
               style={{ background: "#6B4A2D" }}
             >
               <Check size={12} /> Use
@@ -71,13 +92,23 @@ function ImageCard({ image, onSelect, onDelete, selected }) {
           <button
             type="button"
             onClick={handleCopy}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg font-semibold text-xs transition ${
+            className={`flex-1 min-w-[84px] flex items-center justify-center gap-1.5 py-2 rounded-lg font-semibold text-xs transition ${
               copied ? "bg-green-100 text-green-700" : "bg-blue-50 hover:bg-blue-100 text-blue-700"
             }`}
           >
             {copied ? <CheckCircle size={12} /> : <Copy size={12} />}
             {copied ? "Copied" : "Copy URL"}
           </button>
+          {onRename && (
+            <button
+              type="button"
+              onClick={() => onRename(image)}
+              className="flex items-center justify-center gap-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 px-3 py-2 rounded-lg font-semibold text-xs transition"
+              title="Rename display name"
+            >
+              <Pencil size={12} />
+            </button>
+          )}
           {onDelete && (
             <button
               type="button"
@@ -96,12 +127,13 @@ function ImageCard({ image, onSelect, onDelete, selected }) {
 
 /**
  * Responsive grid of every image already uploaded to Hostinger.
- * Shared by /admin/images and the "Select From Library" modal in the Blog Editor.
+ * Shared by /admin/images, /admin/blogs and the "Select From Library" modal.
  */
 export default function ImageLibraryGrid({
   images = [],
   loading = false,
   onSelect,
+  onRename,
   onDelete,
   selectedUrl = "",
   emptyHint = "Upload your first image using the box above.",
@@ -133,6 +165,7 @@ export default function ImageLibraryGrid({
           key={image.id ?? image.file_url}
           image={image}
           onSelect={onSelect}
+          onRename={onRename}
           onDelete={onDelete}
           selected={Boolean(selectedUrl) && selectedUrl === (image.file_url || image.url)}
         />
