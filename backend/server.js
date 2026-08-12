@@ -54,6 +54,37 @@ db.query("SELECT 1", (err) => {
   else console.log("✅ DB Connected Stable");
 });
 
+// Promise wrapper so the newer image endpoints can use async/await
+const dbQuery = (sql, params = []) =>
+  new Promise((resolve, reject) => {
+    db.query(sql, params, (err, result) => (err ? reject(err) : resolve(result)));
+  });
+
+// ================= IMAGES TABLE =================
+// Central registry of every image pushed to Hostinger — used by the standalone
+// Image Library (/admin/images) and by the Blog Editor's Featured Image.
+// Blogs keep storing the image URL, so nothing about existing rows changes.
+db.query(
+  `CREATE TABLE IF NOT EXISTS images (
+     id            INT AUTO_INCREMENT PRIMARY KEY,
+     filename      VARCHAR(255) NOT NULL,
+     original_name VARCHAR(255) DEFAULT NULL,
+     file_url      VARCHAR(500) NOT NULL,
+     file_path     VARCHAR(500) DEFAULT NULL,
+     mime_type     VARCHAR(100) DEFAULT NULL,
+     file_size     INT          DEFAULT NULL,
+     width         INT          DEFAULT NULL,
+     height        INT          DEFAULT NULL,
+     source        VARCHAR(32)  DEFAULT 'library',
+     created_at    BIGINT       DEFAULT NULL,
+     UNIQUE KEY uniq_file_url (file_url(191))
+   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`,
+  (err) => {
+    if (err) console.log("❌ images table error:", err.message);
+    else console.log("✅ images table ready");
+  }
+);
+
 // ================= MULTER =================
 // Multer is only used as a temp buffer before uploading to Hostinger
 const storage = multer.diskStorage({
@@ -99,6 +130,67 @@ const uploadToHostinger = async (tempFilePath) => {
       if (fs.existsSync(tempFilePath)) fs.unlinkSync(tempFilePath);
     } catch (_) {}
   }
+};
+
+// ================= HELPER: Upload + register an image =================
+// THE single entry point for getting an image onto Hostinger. Both the standalone
+// Image Library and the Blog Editor's Featured Image go through this, so there is
+// exactly one upload path:
+//
+//   multer temp file → upload.php → public_html/uploads/ → HTTPS url → images row
+//
+// The DB row is a convenience index; if the insert fails the upload itself is
+// still returned so blog creation never breaks because of the library.
+const uploadAndRegisterImage = async (file, meta = {}) => {
+  const url = await uploadToHostinger(file.path);
+  if (!url) throw new Error("Upload service did not return a URL");
+
+  const filename = String(url).split("/").pop().split("?")[0];
+  const record = {
+    id: null,
+    filename,
+    original_name: file.originalname || filename,
+    url,
+    file_url: url,
+    file_path: `public_html/uploads/${filename}`,
+    mime_type: file.mimetype || null,
+    file_size: file.size || null,
+    width: Number(meta.width) || null,
+    height: Number(meta.height) || null,
+    created_at: Date.now(),
+  };
+
+  try {
+    // Same physical file must never produce two library rows
+    const existing = await dbQuery("SELECT id FROM images WHERE file_url = ? LIMIT 1", [url]);
+    if (existing.length > 0) {
+      record.id = existing[0].id;
+      return record;
+    }
+
+    const result = await dbQuery(
+      `INSERT INTO images
+        (filename, original_name, file_url, file_path, mime_type, file_size, width, height, source, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        record.filename,
+        record.original_name,
+        record.file_url,
+        record.file_path,
+        record.mime_type,
+        record.file_size,
+        record.width,
+        record.height,
+        meta.source || "library",
+        record.created_at,
+      ]
+    );
+    record.id = result.insertId;
+  } catch (dbErr) {
+    console.error("DB error registering image (upload still succeeded):", dbErr.message);
+  }
+
+  return record;
 };
 
 // ================= HELPER: Normalize image URL =================
@@ -170,14 +262,73 @@ app.post("/api/login", (req, res) => {
   });
 });
 
+// ================= IMAGE LIBRARY =================
+// Standalone upload — no blog required. Uses the exact same pipeline as the
+// Blog Editor's Featured Image (multer → upload.php → public_html/uploads/).
+app.post("/api/images", verifyToken, upload.single("image"), async (req, res) => {
+  try {
+    if (!req.file)
+      return res.status(400).json({ success: false, message: "No image file received" });
+
+    const image = await uploadAndRegisterImage(req.file, {
+      width: req.body.width,
+      height: req.body.height,
+      source: "library",
+    });
+
+    res.json({ success: true, message: "Image uploaded successfully", image });
+  } catch (err) {
+    console.error("Error uploading image:", err.message);
+    res.status(500).json({ success: false, message: "Image upload failed. Please try again." });
+  }
+});
+
+// List every image in the library, newest first
+app.get("/api/images", verifyToken, async (req, res) => {
+  try {
+    const images = await dbQuery(
+      "SELECT * FROM images ORDER BY created_at DESC, id DESC"
+    );
+    res.json({
+      success: true,
+      images: images.map((img) => ({ ...img, url: img.file_url })),
+    });
+  } catch (err) {
+    console.error("DB error listing images:", err.message);
+    res.status(500).json({ success: false, message: "Failed to fetch images" });
+  }
+});
+
+// Removes the library entry. The physical file stays on Hostinger (upload.php
+// exposes no delete endpoint), so blogs already pointing at the URL keep working.
+app.delete("/api/images/:id", verifyToken, async (req, res) => {
+  try {
+    await dbQuery("DELETE FROM images WHERE id = ?", [req.params.id]);
+    res.json({ success: true, message: "Image removed from library" });
+  } catch (err) {
+    console.error("DB error deleting image:", err.message);
+    res.status(500).json({ success: false, message: "Failed to delete image" });
+  }
+});
+
 // ================= CREATE BLOG =================
 app.post("/api/blogs", verifyToken, upload.single("image"), async (req, res) => {
   try {
     let imageUrl = null;
 
     if (req.file) {
-      // Upload temp file to Hostinger, get back full HTTPS URL
-      imageUrl = await uploadToHostinger(req.file.path);
+      // Upload temp file to Hostinger, get back full HTTPS URL (also registered
+      // in the images library so it can be reused by other blogs later)
+      const image = await uploadAndRegisterImage(req.file, {
+        width: req.body.width,
+        height: req.body.height,
+        source: "blog",
+      });
+      imageUrl = image.url;
+    } else if (req.body.existingImage && req.body.existingImage.trim() !== "") {
+      // ✅ Image picked from the library — reuse the already-hosted URL,
+      //    no second copy of the file is created
+      imageUrl = req.body.existingImage.trim();
     }
 
     const sql = `
@@ -278,7 +429,12 @@ app.put("/api/blogs/:id", verifyToken, upload.single("image"), async (req, res) 
     if (req.file) {
       // ✅ FIX: New file uploaded → send it to Hostinger upload.php, get full HTTPS URL
       // Previously this was storing a local /uploads/ path which broke on Hostinger
-      imageUrl = await uploadToHostinger(req.file.path);
+      const image = await uploadAndRegisterImage(req.file, {
+        width: req.body.width,
+        height: req.body.height,
+        source: "blog",
+      });
+      imageUrl = image.url;
     } else if (existingImage && existingImage.trim() !== "") {
       // ✅ No new file, but frontend passed the current image URL → keep it
       imageUrl = existingImage.trim();
@@ -406,6 +562,25 @@ app.use("/share/", (req, res) => {
 </html>`);
     }
   );
+});
+
+// ================= ERROR HANDLER =================
+// Keeps upload failures (multer size / type rejections) as JSON so the frontend
+// can show the right message instead of choking on an HTML error page.
+app.use((err, req, res, next) => {
+  if (res.headersSent) return next(err);
+
+  console.error("Request error:", err.message);
+
+  if (err.code === "LIMIT_FILE_SIZE")
+    return res.status(413).json({ success: false, message: "Image size must be less than 5 MB." });
+
+  if (err.message === "Only images are allowed")
+    return res
+      .status(415)
+      .json({ success: false, message: "Please upload a JPG, JPEG, PNG, or WebP image." });
+
+  res.status(500).json({ success: false, message: err.message || "Server error" });
 });
 
 // ================= START =================

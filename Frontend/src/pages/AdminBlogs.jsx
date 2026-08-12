@@ -1,42 +1,17 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import BlogEditor from "../components/BlogEditor";
+import AdminNav from "../components/AdminNav";
+import Toast from "../components/AdminToast";
+import ImageUploader from "../components/ImageUploader";
+import ImageLibraryModal from "../components/ImageLibraryModal";
 import BASE_URL from "../api";
 import {
-  Menu, X, LogOut, BookOpen, Edit2, Trash2, Plus,
-  Search, Filter, CheckCircle, AlertCircle, Loader, ChevronRight,
+  X, BookOpen, Edit2, Trash2, Plus,
+  Search, Filter, CheckCircle, Loader, ChevronRight,
   Calendar, Tag, Link2, Image, FileText, AlignLeft, ArrowLeft,
-  MoreVertical, RefreshCw, Globe, EyeOff, Lock, Copy, Share2,
+  MoreVertical, RefreshCw, Globe, EyeOff, Lock, Copy, Share2, Images, Upload,
 } from "lucide-react";
-
-function Toast({ toast, onClose }) {
-  useEffect(() => {
-    if (!toast) return;
-    const t = setTimeout(onClose, 3500);
-    return () => clearTimeout(t);
-  }, [toast]);
-  if (!toast) return null;
-  const ok = toast.type === "success";
-  return (
-    <div
-      className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[100] flex items-center gap-3 px-4 sm:px-5 py-3 sm:py-4 rounded-xl shadow-2xl border animate-slideUp max-w-[calc(100vw-2rem)]"
-      style={{
-        background: ok ? "#f0fdf4" : "#fff1f2",
-        borderColor: ok ? "#86efac" : "#fca5a5",
-        color: ok ? "#166534" : "#991b1b",
-        minWidth: 240,
-      }}
-    >
-      {ok
-        ? <CheckCircle size={18} className="shrink-0" style={{ color: "#16a34a" }} />
-        : <AlertCircle size={18} className="shrink-0" style={{ color: "#dc2626" }} />}
-      <span className="font-semibold text-sm flex-1">{toast.msg}</span>
-      <button onClick={onClose} className="opacity-50 hover:opacity-100 transition shrink-0">
-        <X size={15} />
-      </button>
-    </div>
-  );
-}
 
 function DeleteModal({ blog, onConfirm, onCancel, loading }) {
   if (!blog) return null;
@@ -359,6 +334,7 @@ const emptyForm = {
   category: "",
   keywords: "",
   image: null,          // new File object (only when user picks a new file)
+  imageMeta: null,      // { width, height } measured during validation
   imagePreview: "",     // blob URL or existing hosted URL — drives the preview
   existingImageUrl: "", // ✅ FIX: stores the current saved URL when editing
 };
@@ -376,6 +352,7 @@ const buildPermalink = (title, category) => {
 
 export default function AdminBlogs() {
   const navigate = useNavigate();
+  const location = useLocation();
   const token = localStorage.getItem("token");
   const formTopRef = useRef();
 
@@ -383,16 +360,18 @@ export default function AdminBlogs() {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(false);
   const [dbLoading, setDbLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("published");
+  const [activeTab, setActiveTab] = useState(
+    ["published", "drafts", "create"].includes(location.state?.tab) ? location.state.tab : "published"
+  );
   const [editingId, setEditingId] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterCategory, setFilterCategory] = useState("");
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [publishTarget, setPublishTarget] = useState(null);
   const [toast, setToast] = useState(null);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [saveAsDraft, setSaveAsDraft] = useState(false);
   const [permalinkManual, setPermalinkManual] = useState(false);
+  const [libraryOpen, setLibraryOpen] = useState(false);
 
   const fetchBlogs = async () => {
     setDbLoading(true);
@@ -470,8 +449,8 @@ export default function AdminBlogs() {
 
   // ✅ FIX: When a new image file is selected, store it in form.image
   //         AND keep existingImageUrl intact so the backend knows what was there before
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
+  //         (the file itself is validated by the shared <ImageUploader />)
+  const handleImageSelect = (file, meta) => {
     if (!file) return;
     // Revoke previous blob URL to avoid memory leaks
     if (form.imagePreview && form.imagePreview.startsWith("blob:")) {
@@ -480,9 +459,29 @@ export default function AdminBlogs() {
     setForm((prev) => ({
       ...prev,
       image: file,
+      imageMeta: meta || null,
       imagePreview: URL.createObjectURL(file),
       // existingImageUrl stays — backend will ignore it when a new file is sent
     }));
+  };
+
+  // ✅ NEW: Picked an already-hosted image from the Image Library.
+  //         No file travels with the blog — the blog just points at the same
+  //         Hostinger URL, so one image can back any number of blogs.
+  const handleLibrarySelect = (image) => {
+    const url = image.file_url || image.url;
+    if (!url) return;
+    if (form.imagePreview && form.imagePreview.startsWith("blob:")) {
+      URL.revokeObjectURL(form.imagePreview);
+    }
+    setForm((prev) => ({
+      ...prev,
+      image: null,
+      imageMeta: null,
+      imagePreview: url,
+      existingImageUrl: url,
+    }));
+    showToast("Image selected from library.");
   };
 
   // ✅ FIX: Remove image — clears both new file AND existing URL
@@ -493,6 +492,7 @@ export default function AdminBlogs() {
     setForm((prev) => ({
       ...prev,
       image: null,
+      imageMeta: null,
       imagePreview: "",
       existingImageUrl: "", // explicitly tell backend to clear the image
     }));
@@ -521,6 +521,9 @@ export default function AdminBlogs() {
       if (form.image) {
         // ✅ User picked a brand-new image file — upload it
         formData.append("image", form.image);
+        // Measured client-side so the images library can store real dimensions
+        if (form.imageMeta?.width)  formData.append("width",  form.imageMeta.width);
+        if (form.imageMeta?.height) formData.append("height", form.imageMeta.height);
       } else if (form.existingImageUrl) {
         // ✅ FIX: No new file chosen — tell the backend to keep the existing image
         //         The backend should read this field and skip overwriting the image column
@@ -681,6 +684,12 @@ export default function AdminBlogs() {
     navigate("/admin");
   };
 
+  const handleNavSelect = (tab) => {
+    if (tab === "images") { navigate("/admin/images"); return; }
+    if (tab === "create") { resetForm(); }
+    setActiveTab(tab);
+  };
+
   return (
     <main className="w-full min-h-screen bg-[#F7F6F3] overflow-x-hidden font-sans">
       <style>{`
@@ -713,6 +722,12 @@ export default function AdminBlogs() {
       <Toast toast={toast} onClose={dismissToast} />
       <DeleteModal blog={deleteTarget} onConfirm={handleDelete} onCancel={() => setDeleteTarget(null)} loading={loading} />
       <PublishModal blog={publishTarget} onConfirm={handlePublishDraft} onCancel={() => setPublishTarget(null)} loading={loading} />
+      <ImageLibraryModal
+        open={libraryOpen}
+        onClose={() => setLibraryOpen(false)}
+        onSelect={handleLibrarySelect}
+        selectedUrl={form.image ? "" : form.existingImageUrl}
+      />
 
       <header className="relative min-h-[40vh] sm:min-h-[55vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1400&q=80')" }} />
@@ -739,53 +754,14 @@ export default function AdminBlogs() {
         </div>
       </header>
 
-      <nav className="admin-nav">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6">
-          <div className="flex items-center justify-between">
-            <div className="flex overflow-x-auto no-scrollbar">
-              <button
-                onClick={() => setActiveTab("published")}
-                className={`flex items-center gap-1.5 px-3 sm:px-5 py-3.5 sm:py-4 text-xs sm:text-sm font-bold border-b-2 transition-all whitespace-nowrap ${activeTab === "published" ? "border-[#6B4A2D] text-[#6B4A2D]" : "border-transparent text-gray-500 hover:text-gray-800"}`}
-              >
-                <Globe size={14} /><span>Published</span>
-                <span className="text-[10px] sm:text-xs font-bold px-1.5 sm:px-2 py-0.5 rounded-full" style={{ background: "#6B4A2D", color: "#fff" }}>{publishedBlogs.length}</span>
-              </button>
-
-              <button
-                onClick={() => setActiveTab("drafts")}
-                className={`flex items-center gap-1.5 px-3 sm:px-5 py-3.5 sm:py-4 text-xs sm:text-sm font-bold border-b-2 transition-all whitespace-nowrap ${activeTab === "drafts" ? "border-amber-500 text-amber-600" : "border-transparent text-gray-500 hover:text-gray-800"}`}
-              >
-                <Lock size={13} /><span>Drafts</span>
-                {draftBlogs.length > 0 && (
-                  <span className="text-[10px] sm:text-xs font-bold px-1.5 sm:px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">{draftBlogs.length}</span>
-                )}
-              </button>
-
-              <button
-                onClick={() => { resetForm(); setActiveTab("create"); }}
-                className={`flex items-center gap-1.5 px-3 sm:px-5 py-3.5 sm:py-4 text-xs sm:text-sm font-bold border-b-2 transition-all whitespace-nowrap ${activeTab === "create" ? "border-[#6B4A2D] text-[#6B4A2D]" : "border-transparent text-gray-500 hover:text-gray-800"}`}
-              >
-                <Plus size={14} /><span>{editingId ? "Edit Blog" : "New Blog"}</span>
-                {editingId && <span className="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-full font-bold">Editing</span>}
-              </button>
-            </div>
-
-            <button onClick={handleLogout} className="hidden sm:flex items-center gap-2 px-4 py-2.5 bg-gray-900 hover:bg-red-600 text-white rounded-xl font-semibold text-sm transition-all shrink-0">
-              <LogOut size={15} /> Logout
-            </button>
-            <button onClick={() => setMobileMenuOpen((p) => !p)} className="sm:hidden p-2 hover:bg-gray-100 rounded-lg shrink-0">
-              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
-            </button>
-          </div>
-          {mobileMenuOpen && (
-            <div className="sm:hidden pb-3 pt-1">
-              <button onClick={handleLogout} className="w-full flex items-center justify-center gap-2 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl font-semibold text-sm transition">
-                <LogOut size={15} /> Logout
-              </button>
-            </div>
-          )}
-        </div>
-      </nav>
+      <AdminNav
+        active={activeTab}
+        publishedCount={publishedBlogs.length}
+        draftCount={draftBlogs.length}
+        editing={Boolean(editingId)}
+        onSelect={handleNavSelect}
+        onLogout={handleLogout}
+      />
 
       {(activeTab === "published" || activeTab === "drafts") && (
         <section className="max-w-7xl mx-auto px-3 sm:px-6 py-6 sm:py-10">
@@ -953,58 +929,43 @@ export default function AdminBlogs() {
               </Field>
 
               <Field label="Featured Image" icon={Image}>
-                <label htmlFor="blog-image-upload"
-                  className="flex flex-col items-center justify-center gap-2 w-full border-2 border-dashed border-gray-300 rounded-xl py-6 px-4 cursor-pointer hover:border-[#6B4A2D] hover:bg-[#6B4A2D]/5 transition group">
-                  <div className="w-10 h-10 rounded-xl bg-gray-100 group-hover:bg-[#6B4A2D]/10 flex items-center justify-center transition">
-                    <Image size={18} className="text-gray-400 group-hover:text-[#6B4A2D] transition" />
-                  </div>
-                  <div className="text-center">
-                    <p className="text-sm font-semibold text-gray-600 group-hover:text-[#6B4A2D] transition">
-                      {form.image
-                        ? form.image.name
-                        : editingId && form.existingImageUrl
-                          ? "✅ Image saved — click to replace with a new one"
-                          : "Click to upload image"}
-                    </p>
-                    <p className="text-xs text-gray-400 mt-0.5">JPG, PNG, WebP · max 5MB · recommended 1200×675px</p>
-                  </div>
-                  <input id="blog-image-upload" type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
-                </label>
-
-                <div className="mt-2.5 bg-blue-50 border border-blue-200 rounded-xl overflow-hidden">
-                  <div className="px-4 py-2 bg-blue-100 border-b border-blue-200">
-                    <p className="text-xs font-bold text-blue-900 flex items-center gap-1.5"><Image size={12} /> 📐 Required Image Specifications</p>
-                  </div>
-                  <div className="px-4 py-3 grid grid-cols-3 gap-3 text-xs">
-                    {[["Dimensions", "1200 × 675", "pixels"], ["Ratio", "16 : 9", "landscape"], ["Format", "JPG / WebP", "max 500 KB"]].map(([label, val, sub]) => (
-                      <div key={label} className="bg-white rounded-lg p-2.5 border border-blue-100 text-center">
-                        <p className="text-[10px] text-blue-500 font-semibold uppercase tracking-wide mb-1">{label}</p>
-                        <p className="font-bold text-blue-900 text-sm">{val}</p>
-                        <p className="text-[10px] text-blue-600">{sub}</p>
-                      </div>
-                    ))}
-                  </div>
+                {/* ✅ NEW: upload a fresh file, or reuse one already on Hostinger */}
+                <div className="flex flex-col sm:flex-row gap-2 mb-2.5">
+                  <label
+                    htmlFor="blog-image-upload"
+                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-bold border-2 border-[#6B4A2D] bg-[#6B4A2D] text-white cursor-pointer hover:bg-[#5a3e26] transition"
+                  >
+                    <Upload size={13} /> Upload New Image
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setLibraryOpen(true)}
+                    className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-bold border-2 border-gray-200 text-gray-600 hover:border-[#6B4A2D] hover:text-[#6B4A2D] transition"
+                  >
+                    <Images size={13} /> Select From Library
+                  </button>
                 </div>
 
-                {form.imagePreview && (
-                  <div className="mt-3">
-                    <p className="text-xs font-semibold text-gray-500 mb-1.5 flex items-center gap-1.5">
-                      {form.image
-                        ? <><CheckCircle size={11} className="text-green-500" /> New image selected — 16:9 preview</>
-                        : <><CheckCircle size={11} className="text-blue-500" /> Current saved image — click upload area above to replace</>
-                      }
-                    </p>
-                    <div className="relative rounded-xl overflow-hidden border-2 border-gray-200 bg-gray-100 w-full" style={{ aspectRatio: "16/9" }}>
-                      <img src={form.imagePreview} alt="Preview" className="w-full h-full object-cover"
-                        onError={(e) => { e.target.style.display = "none"; }} />
-                      <button type="button" onClick={handleRemoveImage}
-                        className="absolute top-2 right-2 w-7 h-7 bg-black/60 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition"
-                        title="Remove image">
-                        <X size={13} />
-                      </button>
-                    </div>
-                  </div>
-                )}
+                {/* Same uploader component used by /admin/images */}
+                <ImageUploader
+                  inputId="blog-image-upload"
+                  value={form.imagePreview}
+                  statusText={
+                    form.image
+                      ? form.image.name
+                      : editingId && form.existingImageUrl
+                        ? "✅ Image saved — click to replace with a new one"
+                        : "Click to upload image"
+                  }
+                  previewCaption={
+                    form.image
+                      ? <><CheckCircle size={11} className="text-green-500" /> New image selected — 16:9 preview</>
+                      : <><CheckCircle size={11} className="text-blue-500" /> Current saved image — click upload area above to replace</>
+                  }
+                  onSelect={handleImageSelect}
+                  onRemove={handleRemoveImage}
+                  onError={(msg) => showToast(msg, "error")}
+                />
               </Field>
 
               <Field label="Blog Content" required icon={FileText}>

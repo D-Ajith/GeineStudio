@@ -20,6 +20,7 @@ import Professionalshoots from './pages/Professionalshoots';
 import Businessportfolioshoots from './pages/Businessportfolioshoots';
 import AdminLogin from "./pages/AdminLogin";
 import AdminBlogs from "./pages/AdminBlogs";
+import AdminImages from "./pages/AdminImages";
 import Blogs from "./pages/Blogs";
 import BlogDetail from "./pages/Blogdetail";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -67,6 +68,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <AdminBlogs />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin/images"
+            element={
+              <ProtectedRoute>
+                <AdminImages />
               </ProtectedRoute>
             }
           />
