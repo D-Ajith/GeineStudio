@@ -20,6 +20,7 @@
     "@use-gesture/react": "^10.3.1",
     "aos": "^2.3.4",
     "axios": "^1.13.4",
+    "browser-image-compression": "^2.0.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dompurify": "^3.3.3",

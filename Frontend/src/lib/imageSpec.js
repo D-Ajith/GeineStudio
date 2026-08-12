@@ -80,9 +80,15 @@ export const readImageDimensions = (file) =>
 /**
  * Validates a picked file against IMAGE_SPEC.
  *
+ * @param {File}   file
+ * @param {object} [options]
+ * @param {boolean} [options.enforceMaxSize=true]
+ *        Set false to skip the 5 MB check — used by the bulk uploader, which
+ *        compresses oversized files first and then re-validates the result
+ *        with the check switched back on.
  * @returns {Promise<{ok:boolean, error:string|null, warnings:string[], width:number|null, height:number|null}>}
  */
-export async function validateImageFile(file) {
+export async function validateImageFile(file, { enforceMaxSize = true } = {}) {
   const result = { ok: false, error: null, warnings: [], width: null, height: null };
 
   if (!file) {
@@ -96,7 +102,7 @@ export async function validateImageFile(file) {
     return result;
   }
 
-  if (file.size > IMAGE_SPEC.maxBytes) {
+  if (enforceMaxSize && file.size > IMAGE_SPEC.maxBytes) {
     result.error = IMAGE_MESSAGES.tooLarge;
     return result;
   }

@@ -3,6 +3,7 @@ import { Image as ImageIcon, X, CheckCircle, AlertCircle, Loader } from "lucide-
 
 import { IMAGE_SPEC, IMAGE_MESSAGES, validateImageFile } from "../lib/imageSpec";
 import { uploadImage } from "../lib/imageApi";
+import ImageSpecsTable from "./ImageSpecsTable";
 
 /**
  * The ONE image uploader in the app.
@@ -162,28 +163,7 @@ export default function ImageUploader({
       )}
 
       {/* ── Required Image Specifications ────────────────────────────────── */}
-      {showSpecs && (
-        <div className="mt-2.5 bg-blue-50 border border-blue-200 rounded-xl overflow-hidden">
-          <div className="px-4 py-2 bg-blue-100 border-b border-blue-200">
-            <p className="text-xs font-bold text-blue-900 flex items-center gap-1.5">
-              <ImageIcon size={12} /> 📐 Required Image Specifications
-            </p>
-          </div>
-          <div className="px-4 py-3 grid grid-cols-3 gap-3 text-xs">
-            {[
-              ["Dimensions", "1200 × 675", "pixels"],
-              ["Ratio", "16 : 9", "landscape"],
-              ["Format", "JPG / WebP", "max 500 KB"],
-            ].map(([label, val, sub]) => (
-              <div key={label} className="bg-white rounded-lg p-2.5 border border-blue-100 text-center">
-                <p className="text-[10px] text-blue-500 font-semibold uppercase tracking-wide mb-1">{label}</p>
-                <p className="font-bold text-blue-900 text-sm">{val}</p>
-                <p className="text-[10px] text-blue-600">{sub}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      {showSpecs && <ImageSpecsTable className="mt-2.5" />}
 
       {/* ── 16:9 preview ─────────────────────────────────────────────────── */}
       {showPreview && value && (

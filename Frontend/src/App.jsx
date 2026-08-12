@@ -21,6 +21,7 @@ import Businessportfolioshoots from './pages/Businessportfolioshoots';
 import AdminLogin from "./pages/AdminLogin";
 import AdminBlogs from "./pages/AdminBlogs";
 import AdminImages from "./pages/AdminImages";
+import AdminPortfolio from "./pages/AdminPortfolio";
 import Blogs from "./pages/Blogs";
 import BlogDetail from "./pages/Blogdetail";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -77,6 +78,15 @@ function App() {
             element={
               <ProtectedRoute>
                 <AdminImages />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/admin/portfolio"
+            element={
+              <ProtectedRoute>
+                <AdminPortfolio />
               </ProtectedRoute>
             }
           />

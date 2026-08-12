@@ -62,32 +62,80 @@ const describeNetworkError = (err, action) => {
 };
 
 /**
- * Uploads a file immediately and returns the stored image record:
+ * Uploads a file and returns the stored image record:
  * { id, filename, url, width, height, file_size, mime_type, created_at }
+ *
+ * THE upload call — single-file and bulk both go through here, so there is one
+ * endpoint, one payload shape and one set of error messages.
+ *
+ * Uses XMLHttpRequest rather than fetch purely because fetch cannot report
+ * upload progress; `onProgress` receives 0–100 as the bytes go out. Pass an
+ * AbortSignal to cancel an in-flight upload.
  */
-export async function uploadImage(file, meta = {}) {
-  const formData = new FormData();
-  formData.append("image", file);
-  if (meta.width) formData.append("width", String(meta.width));
-  if (meta.height) formData.append("height", String(meta.height));
+export function uploadImage(file, meta = {}, { onProgress, signal } = {}) {
+  return new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(new Error("Upload cancelled."));
+      return;
+    }
 
-  let res;
-  try {
-    res = await fetch(`${BASE_URL}/api/images`, {
-      method: "POST",
-      headers: authHeader(),
-      body: formData,
-    });
-  } catch (err) {
-    throw new Error(describeNetworkError(err, "upload the image"));
-  }
+    const formData = new FormData();
+    formData.append("image", file);
+    if (meta.width) formData.append("width", String(meta.width));
+    if (meta.height) formData.append("height", String(meta.height));
 
-  const data = await parseJson(res);
-  if (!res.ok) throw new Error(describeHttpError(res, data, "upload the image"));
-  if (!data?.success || !data?.image) {
-    throw new Error(data?.message || IMAGE_MESSAGES.uploadFailed);
-  }
-  return data.image;
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", `${BASE_URL}/api/images`);
+
+    const { Authorization } = authHeader();
+    if (Authorization) xhr.setRequestHeader("Authorization", Authorization);
+
+    const onAbort = () => xhr.abort();
+    signal?.addEventListener("abort", onAbort);
+    const cleanup = () => signal?.removeEventListener("abort", onAbort);
+
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) onProgress?.(Math.round((e.loaded / e.total) * 100));
+    };
+
+    xhr.onload = () => {
+      cleanup();
+      let data = null;
+      try {
+        data = JSON.parse(xhr.responseText);
+      } catch {
+        data = null;
+      }
+
+      if (xhr.status < 200 || xhr.status >= 300) {
+        reject(new Error(describeHttpError({ status: xhr.status }, data, "upload the image")));
+        return;
+      }
+      if (!data?.success || !data?.image) {
+        reject(new Error(data?.message || IMAGE_MESSAGES.uploadFailed));
+        return;
+      }
+      onProgress?.(100);
+      resolve(data.image);
+    };
+
+    xhr.onerror = () => {
+      cleanup();
+      reject(new Error(
+        `Could not reach the server at ${BASE_URL}. Check that it is running and that it allows requests from this origin (CORS).`
+      ));
+    };
+    xhr.ontimeout = () => {
+      cleanup();
+      reject(new Error("The upload timed out. Please try again."));
+    };
+    xhr.onabort = () => {
+      cleanup();
+      reject(new Error("Upload cancelled."));
+    };
+
+    xhr.send(formData);
+  });
 }
 
 /** Lists every image in the library, newest first. */

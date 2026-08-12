@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Upload, CheckCircle, Copy, X, Link2,
+  Upload, CheckCircle, Copy, X, Link2, Layers, Image as ImageIcon,
 } from "lucide-react";
 
 import BASE_URL from "../api";
 import AdminNav from "../components/AdminNav";
 import AdminToast from "../components/AdminToast";
 import ImageUploader from "../components/ImageUploader";
+import BulkImageUploader from "../components/BulkImageUploader";
 import ImageLibrarySection from "../components/ImageLibrarySection";
 import useImageLibrary from "../lib/useImageLibrary";
 import { copyToClipboard } from "../lib/imageApi";
@@ -19,6 +20,7 @@ export default function AdminImages() {
   // Same hook the Blog Management page uses — one source of truth
   const library = useImageLibrary();
 
+  const [uploadMode, setUploadMode] = useState("bulk"); // "bulk" | "single"
   const [lastUploaded, setLastUploaded] = useState(null);
   const [copied, setCopied] = useState(false);
   const [toast, setToast] = useState(null);
@@ -73,6 +75,7 @@ export default function AdminImages() {
 
   const handleNav = (tab) => {
     if (tab === "images") return;
+    if (tab === "portfolio") return navigate("/admin/portfolio");
     navigate("/admin/blogs", { state: { tab } });
   };
 
@@ -143,7 +146,7 @@ export default function AdminImages() {
               <Upload size={18} color="#fff" />
             </div>
             <div className="flex-1">
-              <h2 className="text-lg sm:text-xl font-extrabold text-gray-900">Upload Image</h2>
+              <h2 className="text-lg sm:text-xl font-extrabold text-gray-900">Upload Images</h2>
               <p className="text-xs sm:text-sm text-gray-400 mt-0.5">
                 Uploads straight to Hostinger — no blog required
               </p>
@@ -151,16 +154,50 @@ export default function AdminImages() {
           </div>
 
           <div className="px-4 sm:px-8 py-6 sm:py-8">
-            <ImageUploader
-              autoUpload
-              showPreview={false}
-              inputId="library-image-upload"
-              onUpload={handleUploaded}
-              onError={(msg) => showToast(msg, "error")}
-            />
+            {/* ── Bulk / single toggle ──────────────────────────────────── */}
+            <div className="flex flex-col sm:flex-row gap-2 mb-4">
+              <button
+                type="button"
+                onClick={() => setUploadMode("bulk")}
+                className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-bold border-2 transition ${
+                  uploadMode === "bulk"
+                    ? "border-[#6B4A2D] bg-[#6B4A2D] text-white"
+                    : "border-gray-200 text-gray-600 hover:border-[#6B4A2D] hover:text-[#6B4A2D]"
+                }`}
+              >
+                <Layers size={13} /> Bulk Upload
+              </button>
+              <button
+                type="button"
+                onClick={() => setUploadMode("single")}
+                className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-bold border-2 transition ${
+                  uploadMode === "single"
+                    ? "border-[#6B4A2D] bg-[#6B4A2D] text-white"
+                    : "border-gray-200 text-gray-600 hover:border-[#6B4A2D] hover:text-[#6B4A2D]"
+                }`}
+              >
+                <ImageIcon size={13} /> Single Image
+              </button>
+            </div>
 
-            {/* ── Upload successful ─────────────────────────────────────── */}
-            {uploadedPanel && (
+            {uploadMode === "bulk" ? (
+              <BulkImageUploader
+                existingImages={library.images}
+                onUploaded={library.addImage}
+                onToast={showToast}
+              />
+            ) : (
+              <ImageUploader
+                autoUpload
+                showPreview={false}
+                inputId="library-image-upload"
+                onUpload={handleUploaded}
+                onError={(msg) => showToast(msg, "error")}
+              />
+            )}
+
+            {/* ── Upload successful (single mode) ───────────────────────── */}
+            {uploadMode === "single" && uploadedPanel && (
               <div className="mt-5 rounded-2xl border-2 border-green-200 bg-green-50 overflow-hidden animate-fadeIn">
                 <div className="px-4 py-2.5 bg-green-100 border-b border-green-200 flex items-center gap-2">
                   <CheckCircle size={14} className="text-green-600" />

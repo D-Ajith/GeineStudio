@@ -85,6 +85,80 @@ db.query(
   }
 );
 
+// ================= PORTFOLIO =================
+// Categories the public Portfolio page filters by. "all" is a view, not a
+// stored category, so it is intentionally absent.
+const PORTFOLIO_CATEGORIES = [
+  "corporate",
+  "events",
+  "product",
+  "podcast",
+  "professional",
+  "business",
+];
+
+// The images the Portfolio page shipped with, used to seed the table on first
+// run so the public page looks identical the moment this goes live.
+const PORTFOLIO_SEED = [
+  ["corporate", "https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?w=800&q=80", "Corporate Leadership Portraits", "Professional portraits crafted for executives and leadership branding."],
+  ["corporate", "https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg?w=800&q=80", "Office & Workplace Culture", "Authentic visuals showcasing company culture and work environment."],
+  ["corporate", "https://images.pexels.com/photos/1181345/pexels-photo-1181345.jpeg?w=800&q=80", "Team & Staff Photography", "Clean and consistent team photos for websites and corporate profiles."],
+  ["events", "https://images.pexels.com/photos/1190298/pexels-photo-1190298.jpeg?w=800&q=80", "Corporate Conferences", "Complete coverage of conferences, seminars, and business summits."],
+  ["events", "https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg?w=800&q=80", "Brand Launch Events", "High-energy visuals capturing brand launches and promotions."],
+  ["events", "https://images.pexels.com/photos/2747449/pexels-photo-2747449.jpeg?w=800&q=80", "Corporate Celebrations", "Professional documentation of corporate gatherings and milestones."],
+  ["product", "https://images.pexels.com/photos/1667088/pexels-photo-1667088.jpeg?w=800&q=80", "E-commerce Product Shoots", "Clean, conversion-focused product photography for online stores."],
+  ["product", "https://images.pexels.com/photos/1342609/pexels-photo-1342609.jpeg?w=800&q=80", "Lifestyle Product Photography", "Products captured in real-life environments for stronger storytelling."],
+  ["product", "https://images.pexels.com/photos/1170986/pexels-photo-1170986.jpeg?w=800&q=80", "Food & Commercial Products", "Stylized product visuals designed for marketing and advertising."],
+  ["podcast", "https://images.pexels.com/photos/7586659/pexels-photo-7586659.jpeg?w=800&q=80", "Podcast Studio Setup", "Professional podcast visuals with studio lighting and clean framing."],
+  ["podcast", "https://images.pexels.com/photos/7648047/pexels-photo-7648047.jpeg?w=800&q=80", "Video Podcast Recording", "High-quality video podcasts ready for YouTube and social platforms."],
+  ["podcast", "https://images.pexels.com/photos/7988086/pexels-photo-7988086.jpeg?w=800&q=80", "Interview Podcast Sessions", "Clean, cinematic podcast interviews with professional audio setup."],
+  ["professional", "https://images.pexels.com/photos/3778603/pexels-photo-3778603.jpeg?w=800&q=80", "Personal Branding Portraits", "Premium portraits for professionals, founders, and creators."],
+  ["professional", "https://images.pexels.com/photos/1130626/pexels-photo-1130626.jpeg?w=800&q=80", "Studio Portrait Sessions", "Well-lit studio portraits with a polished professional finish."],
+  ["professional", "https://images.pexels.com/photos/1065084/pexels-photo-1065084.jpeg?w=800&q=80", "Creative Professional Portraits", "Stylish portraits designed to stand out across platforms."],
+  ["business", "https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?w=800&q=80", "Brand Portfolio Photography", "Visual storytelling crafted for business portfolios and websites."],
+  ["business", "https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg?w=800&q=80", "Startup & Company Showcases", "End-to-end business visuals highlighting products, teams, and spaces."],
+  ["business", "https://images.pexels.com/photos/3182765/pexels-photo-3182765.jpeg?w=800&q=80", "Corporate Brand Storytelling", "Consistent imagery designed to reflect brand identity and vision."],
+];
+
+db.query(
+  `CREATE TABLE IF NOT EXISTS portfolio_images (
+     id          INT AUTO_INCREMENT PRIMARY KEY,
+     category    VARCHAR(50)  NOT NULL,
+     image_url   VARCHAR(500) NOT NULL,
+     title       VARCHAR(255) DEFAULT NULL,
+     description TEXT         NULL,
+     sort_order  INT          DEFAULT 0,
+     created_at  BIGINT       DEFAULT NULL,
+     updated_at  BIGINT       DEFAULT NULL,
+     UNIQUE KEY uniq_category_url (category, image_url(191)),
+     KEY idx_category (category)
+   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`,
+  (err) => {
+    if (err) return console.log("❌ portfolio_images table error:", err.message);
+    console.log("✅ portfolio_images table ready");
+
+    // Seed once — only when the table is completely empty, so an admin who
+    // deletes images never gets them silently restored on the next restart.
+    db.query("SELECT COUNT(*) AS n FROM portfolio_images", (err2, rows) => {
+      if (err2 || rows[0].n > 0) return;
+      const now = Date.now();
+      const values = PORTFOLIO_SEED.map(([cat, url, title, desc], i) => [
+        cat, url, title, desc, i, now, now,
+      ]);
+      db.query(
+        `INSERT INTO portfolio_images
+           (category, image_url, title, description, sort_order, created_at, updated_at)
+         VALUES ?`,
+        [values],
+        (err3) => {
+          if (err3) console.log("❌ portfolio seed error:", err3.message);
+          else console.log(`✅ portfolio seeded with ${values.length} images`);
+        }
+      );
+    });
+  }
+);
+
 // ================= MULTER =================
 // Multer is only used as a temp buffer before uploading to Hostinger
 const storage = multer.diskStorage({
@@ -338,6 +412,192 @@ app.delete("/api/images/:id", verifyToken, async (req, res) => {
   } catch (err) {
     console.error("DB error deleting image:", err.message);
     res.status(500).json({ success: false, message: "Failed to delete image" });
+  }
+});
+
+// ================= PORTFOLIO API =================
+// Public read — the Portfolio page fetches this instead of hardcoding images.
+app.get("/api/portfolio", async (req, res) => {
+  try {
+    const { category } = req.query;
+    const where = category && category !== "all" ? "WHERE category = ?" : "";
+    const params = where ? [category] : [];
+
+    const items = await dbQuery(
+      `SELECT * FROM portfolio_images ${where} ORDER BY category ASC, sort_order ASC, id ASC`,
+      params
+    );
+    res.json({ success: true, items });
+  } catch (err) {
+    console.error("DB error fetching portfolio:", err.message);
+    res.status(500).json({ success: false, message: "Failed to fetch portfolio images" });
+  }
+});
+
+/**
+ * Bulk add / replace a category from a list of pasted URLs.
+ *
+ * body: { category, urls: string[], mode: "append" | "replace", title?, description? }
+ *
+ * mode "append"  — adds the new URLs after the existing ones
+ * mode "replace" — wipes the category first, then inserts
+ *
+ * Duplicates are skipped in both directions: repeats inside the pasted list,
+ * and URLs already stored in that category.
+ */
+app.post("/api/portfolio/bulk", verifyToken, async (req, res) => {
+  try {
+    const category = String(req.body.category || "").trim().toLowerCase();
+    const mode = req.body.mode === "replace" ? "replace" : "append";
+
+    if (!PORTFOLIO_CATEGORIES.includes(category)) {
+      return res.status(400).json({
+        success: false,
+        message: `Unknown category. Use one of: ${PORTFOLIO_CATEGORIES.join(", ")}`,
+      });
+    }
+
+    const raw = Array.isArray(req.body.urls)
+      ? req.body.urls
+      : String(req.body.urls || "").split(/\r?\n/);
+
+    // Trim, drop blanks, keep only real http(s) URLs, de-dupe within the paste
+    const seen = new Set();
+    const invalid = [];
+    const urls = [];
+    let repeated = 0; // duplicated within the pasted list itself
+    for (const line of raw) {
+      const url = String(line || "").trim();
+      if (!url) continue;
+      if (!/^https?:\/\/\S+$/i.test(url)) { invalid.push(url); continue; }
+      if (seen.has(url)) { repeated += 1; continue; }
+      seen.add(url);
+      urls.push(url);
+    }
+
+    if (urls.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: invalid.length
+          ? "No valid URLs found — each line must start with http:// or https://"
+          : "Paste at least one image URL.",
+      });
+    }
+
+    if (mode === "replace") {
+      await dbQuery("DELETE FROM portfolio_images WHERE category = ?", [category]);
+    }
+
+    const existing = await dbQuery(
+      "SELECT image_url FROM portfolio_images WHERE category = ?",
+      [category]
+    );
+    const already = new Set(existing.map((r) => r.image_url));
+
+    const [{ maxOrder }] = await dbQuery(
+      "SELECT COALESCE(MAX(sort_order), -1) AS maxOrder FROM portfolio_images WHERE category = ?",
+      [category]
+    );
+
+    const now = Date.now();
+    const title = String(req.body.title || "").trim() || null;
+    const description = String(req.body.description || "").trim() || null;
+
+    let order = Number(maxOrder) + 1;
+    const rows = [];
+    // Count both kinds of duplicate — repeats inside the paste AND URLs already
+    // stored — so the reported number matches what the admin actually pasted.
+    let skipped = repeated;
+    for (const url of urls) {
+      if (already.has(url)) { skipped += 1; continue; }
+      rows.push([category, url, title, description, order++, now, now]);
+    }
+
+    if (rows.length > 0) {
+      await dbQuery(
+        `INSERT IGNORE INTO portfolio_images
+           (category, image_url, title, description, sort_order, created_at, updated_at)
+         VALUES ?`,
+        [rows]
+      );
+    }
+
+    const items = await dbQuery(
+      "SELECT * FROM portfolio_images WHERE category = ? ORDER BY sort_order ASC, id ASC",
+      [category]
+    );
+
+    res.json({
+      success: true,
+      message: `${rows.length} image${rows.length === 1 ? "" : "s"} added${skipped ? `, ${skipped} duplicate skipped` : ""}`,
+      added: rows.length,
+      skipped,
+      invalid,
+      items,
+    });
+  } catch (err) {
+    console.error("DB error bulk-saving portfolio:", err.message);
+    res.status(500).json({ success: false, message: "Failed to update portfolio" });
+  }
+});
+
+// Reorder — declared BEFORE /:id so "reorder" is never read as an id
+app.put("/api/portfolio/reorder", verifyToken, async (req, res) => {
+  try {
+    const ids = Array.isArray(req.body.ids) ? req.body.ids.map(Number).filter(Boolean) : [];
+    if (ids.length === 0)
+      return res.status(400).json({ success: false, message: "No image order provided" });
+
+    const now = Date.now();
+    await Promise.all(
+      ids.map((id, index) =>
+        dbQuery("UPDATE portfolio_images SET sort_order = ?, updated_at = ? WHERE id = ?", [index, now, id])
+      )
+    );
+    res.json({ success: true, message: "Order saved" });
+  } catch (err) {
+    console.error("DB error reordering portfolio:", err.message);
+    res.status(500).json({ success: false, message: "Failed to save the new order" });
+  }
+});
+
+// Edit a single entry (URL, title or description)
+app.put("/api/portfolio/:id", verifyToken, async (req, res) => {
+  try {
+    const url = String(req.body.image_url || "").trim();
+    if (!/^https?:\/\/\S+$/i.test(url))
+      return res.status(400).json({ success: false, message: "Enter a valid http:// or https:// image URL." });
+
+    const result = await dbQuery(
+      "UPDATE portfolio_images SET image_url = ?, title = ?, description = ?, updated_at = ? WHERE id = ?",
+      [
+        url,
+        String(req.body.title || "").trim() || null,
+        String(req.body.description || "").trim() || null,
+        Date.now(),
+        req.params.id,
+      ]
+    );
+    if (result.affectedRows === 0)
+      return res.status(404).json({ success: false, message: "Portfolio image not found" });
+
+    const [item] = await dbQuery("SELECT * FROM portfolio_images WHERE id = ?", [req.params.id]);
+    res.json({ success: true, message: "Portfolio image updated", item });
+  } catch (err) {
+    if (err.code === "ER_DUP_ENTRY")
+      return res.status(409).json({ success: false, message: "That URL is already in this category." });
+    console.error("DB error updating portfolio image:", err.message);
+    res.status(500).json({ success: false, message: "Failed to update the image" });
+  }
+});
+
+app.delete("/api/portfolio/:id", verifyToken, async (req, res) => {
+  try {
+    await dbQuery("DELETE FROM portfolio_images WHERE id = ?", [req.params.id]);
+    res.json({ success: true, message: "Portfolio image removed" });
+  } catch (err) {
+    console.error("DB error deleting portfolio image:", err.message);
+    res.status(500).json({ success: false, message: "Failed to delete the image" });
   }
 });
 

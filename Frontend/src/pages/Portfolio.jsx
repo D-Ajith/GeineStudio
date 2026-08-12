@@ -1,5 +1,6 @@
-import DomeGallery from "@/components/DomeGallery";
 import { useState, useMemo, useEffect } from "react";
+import { fetchPortfolio } from "../lib/portfolioApi";
+
 const Portfolio = () => {
   const optimizeImage = (url) =>
     url?.includes("cloudinary")
@@ -12,9 +13,35 @@ const Portfolio = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isMobile, setIsMobile] = useState(false);
   const [shuffledAll, setShuffledAll] = useState([]);
+  const [portfolioItems, setPortfolioItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Images come from the admin Portfolio Manager (/admin/portfolio) — nothing
+  // about this page is hardcoded any more.
   useEffect(() => {
-    setShuffledAll(shuffleArray(portfolioItems));
+    let cancelled = false;
+    (async () => {
+      try {
+        const rows = await fetchPortfolio();
+        if (cancelled) return;
+        const items = rows.map((row) => ({
+          id: row.id,
+          category: row.category,
+          image: row.image_url,
+          title: row.title || "",
+          description: row.description || "",
+        }));
+        setPortfolioItems(items);
+        setShuffledAll(shuffleArray(items));
+      } catch {
+        if (!cancelled) setPortfolioItems([]);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
   }, []);
+
   useEffect(() => {
     const resize = () => setIsMobile(window.innerWidth < 768);
     resize();
@@ -32,140 +59,6 @@ const Portfolio = () => {
     { id: "business", name: "Business Portfolio" },
   ];
 
-  const portfolioItems = [
-    {
-      id: 1,
-      category: "corporate",
-      image: "https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?w=800&q=80",
-      title: "Corporate Leadership Portraits",
-      description: "Professional portraits crafted for executives and leadership branding.",
-    },
-    {
-      id: 2,
-      category: "corporate",
-      image: "https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg?w=800&q=80",
-      title: "Office & Workplace Culture",
-      description: "Authentic visuals showcasing company culture and work environment.",
-    },
-    {
-      id: 3,
-      category: "corporate",
-      image: "https://images.pexels.com/photos/1181345/pexels-photo-1181345.jpeg?w=800&q=80",
-      title: "Team & Staff Photography",
-      description: "Clean and consistent team photos for websites and corporate profiles.",
-    },
-
-    {
-      id: 4,
-      category: "events",
-      image: "https://images.pexels.com/photos/1190298/pexels-photo-1190298.jpeg?w=800&q=80",
-      title: "Corporate Conferences",
-      description: "Complete coverage of conferences, seminars, and business summits.",
-    },
-    {
-      id: 5,
-      category: "events",
-      image: "https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg?w=800&q=80",
-      title: "Brand Launch Events",
-      description: "High-energy visuals capturing brand launches and promotions.",
-    },
-    {
-      id: 6,
-      category: "events",
-      image: "https://images.pexels.com/photos/2747449/pexels-photo-2747449.jpeg?w=800&q=80",
-      title: "Corporate Celebrations",
-      description: "Professional documentation of corporate gatherings and milestones.",
-    },
-
-    {
-      id: 7,
-      category: "product",
-      image: "https://images.pexels.com/photos/1667088/pexels-photo-1667088.jpeg?w=800&q=80",
-      title: "E-commerce Product Shoots",
-      description: "Clean, conversion-focused product photography for online stores.",
-    },
-    {
-      id: 8,
-      category: "product",
-      image: "https://images.pexels.com/photos/1342609/pexels-photo-1342609.jpeg?w=800&q=80",
-      title: "Lifestyle Product Photography",
-      description: "Products captured in real-life environments for stronger storytelling.",
-    },
-    {
-      id: 9,
-      category: "product",
-      image: "https://images.pexels.com/photos/1170986/pexels-photo-1170986.jpeg?w=800&q=80",
-      title: "Food & Commercial Products",
-      description: "Stylized product visuals designed for marketing and advertising.",
-    },
-
-    {
-      id: 10,
-      category: "podcast",
-      image: "https://images.pexels.com/photos/7586659/pexels-photo-7586659.jpeg?w=800&q=80",
-      title: "Podcast Studio Setup",
-      description: "Professional podcast visuals with studio lighting and clean framing.",
-    },
-    {
-      id: 11,
-      category: "podcast",
-      image: "https://images.pexels.com/photos/7648047/pexels-photo-7648047.jpeg?w=800&q=80",
-      title: "Video Podcast Recording",
-      description: "High-quality video podcasts ready for YouTube and social platforms.",
-    },
-    {
-      id: 12,
-      category: "podcast",
-      image: "https://images.pexels.com/photos/7988086/pexels-photo-7988086.jpeg?w=800&q=80",
-      title: "Interview Podcast Sessions",
-      description: "Clean, cinematic podcast interviews with professional audio setup.",
-    },
-
-    {
-      id: 13,
-      category: "professional",
-      image: "https://images.pexels.com/photos/3778603/pexels-photo-3778603.jpeg?w=800&q=80",
-      title: "Personal Branding Portraits",
-      description: "Premium portraits for professionals, founders, and creators.",
-    },
-    {
-      id: 14,
-      category: "professional",
-      image: "https://images.pexels.com/photos/1130626/pexels-photo-1130626.jpeg?w=800&q=80",
-      title: "Studio Portrait Sessions",
-      description: "Well-lit studio portraits with a polished professional finish.",
-    },
-    {
-      id: 15,
-      category: "professional",
-      image: "https://images.pexels.com/photos/1065084/pexels-photo-1065084.jpeg?w=800&q=80",
-      title: "Creative Professional Portraits",
-      description: "Stylish portraits designed to stand out across platforms.",
-    },
-
-    {
-      id: 16,
-      category: "business",
-      image: "https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?w=800&q=80",
-      title: "Brand Portfolio Photography",
-      description: "Visual storytelling crafted for business portfolios and websites.",
-    },
-    {
-      id: 17,
-      category: "business",
-      image: "https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg?w=800&q=80",
-      title: "Startup & Company Showcases",
-      description: "End-to-end business visuals highlighting products, teams, and spaces.",
-    },
-    {
-      id: 18,
-      category: "business",
-      image: "https://images.pexels.com/photos/3182765/pexels-photo-3182765.jpeg?w=800&q=80",
-      title: "Corporate Brand Storytelling",
-      description: "Consistent imagery designed to reflect brand identity and vision.",
-    },
-  ];
-
   const shuffleArray = (array) => {
     const arr = [...array];
     for (let i = arr.length - 1; i > 0; i--) {
@@ -181,7 +74,7 @@ const Portfolio = () => {
     return portfolioItems.filter(
       (item) => item.category === activeCategory
     );
-  }, [activeCategory, shuffledAll]);
+  }, [activeCategory, shuffledAll, portfolioItems]);
 
 
 
@@ -251,14 +144,20 @@ const Portfolio = () => {
               className="max-h-[75vh] w-auto object-contain rounded-lg"
             />
 
-            <div className="text-center text-white mt-4 px-2">
-              <h3 className="text-xl sm:text-2xl font-bold">
-                {selectedImage.title}
-              </h3>
-              <p className="text-slate-300 text-sm sm:text-base">
-                {selectedImage.description}
-              </p>
-            </div>
+            {(selectedImage.title || selectedImage.description) && (
+              <div className="text-center text-white mt-4 px-2">
+                {selectedImage.title && (
+                  <h3 className="text-xl sm:text-2xl font-bold">
+                    {selectedImage.title}
+                  </h3>
+                )}
+                {selectedImage.description && (
+                  <p className="text-slate-300 text-sm sm:text-base">
+                    {selectedImage.description}
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -271,7 +170,6 @@ const Portfolio = () => {
               key={cat.id}
               onClick={() => {
                 setActiveCategory(cat.id);
-                setVisibleCount(6);
 
                 if (cat.id === "all") {
                   setShuffledAll(shuffleArray(portfolioItems));
@@ -292,6 +190,19 @@ const Portfolio = () => {
       <section className="py-6 sm:py-10 md:py-16 bg-[#F7F6F3]">
         <div className="max-w-[1300px] mx-auto px-2 sm:px-6">
 
+          {loading ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-[3px] sm:gap-3 lg:gap-5">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="rounded-lg sm:rounded-xl overflow-hidden bg-gray-200 animate-pulse">
+                  <div className="aspect-[3/4]" />
+                </div>
+              ))}
+            </div>
+          ) : allItems.length === 0 ? (
+            <p className="text-center text-slate-500 py-16">
+              No images in this category yet.
+            </p>
+          ) : (
           <div className=" grid grid-cols-2 md:grid-cols-3 gap-[3px] sm:gap-3 lg:gap-5 " >
             {allItems.map((item, index) => (
               <div
@@ -317,6 +228,7 @@ const Portfolio = () => {
               </div>
             ))}
           </div>
+          )}
 
         </div>
       </section>

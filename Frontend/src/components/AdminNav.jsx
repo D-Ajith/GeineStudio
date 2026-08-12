@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Menu, X, LogOut, Plus, Globe, Lock, Images } from "lucide-react";
+import { Menu, X, LogOut, Plus, Globe, Lock, Images, LayoutGrid } from "lucide-react";
 
 /**
  * Shared admin navigation bar — identical styling, spacing and typography on
@@ -47,6 +47,10 @@ export default function AdminNav({
 
             <button onClick={() => onSelect?.("images")} className={tabCls(active === "images")}>
               <Images size={14} /><span>Images</span>
+            </button>
+
+            <button onClick={() => onSelect?.("portfolio")} className={tabCls(active === "portfolio")}>
+              <LayoutGrid size={14} /><span>Portfolio</span>
             </button>
 
             <button onClick={() => onSelect?.("create")} className={tabCls(active === "create")}>
