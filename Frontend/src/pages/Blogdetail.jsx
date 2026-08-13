@@ -206,6 +206,9 @@ export default function BlogDetail() {
                         alt={blog.title}
                         onError={() => setImgError(true)}
                         loading="eager"
+                        /* This is the LCP element on a blog page — tell the
+                           browser to fetch it ahead of everything else. */
+                        fetchPriority="high"
                         decoding="async"
                         className="absolute inset-0 w-full h-full object-cover"
                     />

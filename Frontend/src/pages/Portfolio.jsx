@@ -1,5 +1,10 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
+import AOS from "aos";
 import { fetchPortfolio } from "../lib/portfolioApi";
+import OptimizedImage from "../components/OptimizedImage";
+
+/** Images rendered per batch — the rest stream in as the visitor scrolls. */
+const BATCH = 12;
 
 const Portfolio = () => {
   const optimizeImage = (url) =>
@@ -15,6 +20,9 @@ const Portfolio = () => {
   const [shuffledAll, setShuffledAll] = useState([]);
   const [portfolioItems, setPortfolioItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  // Progressive loading: only this many tiles are mounted at a time
+  const [visibleCount, setVisibleCount] = useState(BATCH);
+  const sentinelRef = useRef(null);
 
   // Images come from the admin Portfolio Manager (/admin/portfolio) — nothing
   // about this page is hardcoded any more.
@@ -76,6 +84,39 @@ const Portfolio = () => {
     );
   }, [activeCategory, shuffledAll, portfolioItems]);
 
+  // Only the first `visibleCount` tiles are mounted; the sentinel below the
+  // grid pulls in the next batch as it approaches the viewport. Without this
+  // the "All" tab mounted every image at once.
+  const shownItems = useMemo(
+    () => allItems.slice(0, visibleCount),
+    [allItems, visibleCount]
+  );
+  const hasMore = visibleCount < allItems.length;
+
+  // AOS hides [data-aos] elements until it animates them, and it only tracks
+  // elements it has already scanned. Newly appended batches must be re-scanned
+  // or they stay at opacity:0 forever.
+  useEffect(() => {
+    AOS.refreshHard();
+  }, [shownItems.length]);
+
+  useEffect(() => {
+    if (!hasMore) return;
+    const el = sentinelRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setVisibleCount((c) => Math.min(c + BATCH, allItems.length));
+        }
+      },
+      // Start fetching before the sentinel is actually on screen
+      { rootMargin: "800px 0px" }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [hasMore, allItems.length]);
+
 
 
 
@@ -89,7 +130,7 @@ const Portfolio = () => {
           className="absolute inset-0 bg-cover bg-center"
           style={{
             backgroundImage:
-              "url('https://images.unsplash.com/photo-1615567250006-de1875d0c61c?q=80&w=1331&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
+              "url('https://geniestudio.in/uploads/1786602496_1786602495549-844717374.jpg')",
           }}
         />
 
@@ -170,6 +211,7 @@ const Portfolio = () => {
               key={cat.id}
               onClick={() => {
                 setActiveCategory(cat.id);
+                setVisibleCount(BATCH);   // start each category from the top
 
                 if (cat.id === "all") {
                   setShuffledAll(shuffleArray(portfolioItems));
@@ -203,31 +245,40 @@ const Portfolio = () => {
               No images in this category yet.
             </p>
           ) : (
-          <div className=" grid grid-cols-2 md:grid-cols-3 gap-[3px] sm:gap-3 lg:gap-5 " >
-            {allItems.map((item, index) => (
-              <div
-                key={`${item.category}-${item.id}-${index}`}
-                onClick={() => setSelectedImage(item)}
-                data-aos={
-                  !isMobile
-                    ? index % 2 === 0
-                      ? 'fade-right'
-                      : 'fade-left'
-                    : undefined
-                }
-                data-aos-delay={!isMobile ? index * 80 : undefined}
-                className=" group overflow-hidden rounded-lg sm:rounded-xl bg-black cursor-pointer " >
-                <div className="aspect-[3/4]">
-                  <img
+            <div className=" grid grid-cols-2 md:grid-cols-3 gap-[3px] sm:gap-3 lg:gap-5 " >
+              {shownItems.map((item, index) => (
+                <div
+                  key={`${item.category}-${item.id}-${index}`}
+                  onClick={() => setSelectedImage(item)}
+                  data-aos={
+                    !isMobile
+                      ? index % 2 === 0
+                        ? 'fade-right'
+                        : 'fade-left'
+                      : undefined
+                  }
+                  data-aos-delay={!isMobile ? (index % BATCH) * 80 : undefined}
+                  className=" group overflow-hidden rounded-lg sm:rounded-xl bg-black cursor-pointer " >
+                  <OptimizedImage
                     src={optimizeImage(item.image)}
+                    variants={item.variants}
                     alt={item.title}
-                    loading="lazy"
-                    decoding="async"
-                    className=" w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                    aspectRatio="3 / 4"
+                    /* The first row is above the fold on most screens */
+                    priority={index < 3}
+                    sizes="(max-width: 768px) 50vw, (max-width: 1300px) 33vw, 420px"
+                    imgClassName="transition-transform duration-500 group-hover:scale-105"
+                  />
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
+
+          {/* Pulls in the next batch as it nears the viewport */}
+          {!loading && hasMore && (
+            <div ref={sentinelRef} className="flex justify-center py-8">
+              <span className="text-xs text-slate-400">Loading more…</span>
+            </div>
           )}
 
         </div>

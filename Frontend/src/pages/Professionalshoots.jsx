@@ -26,19 +26,19 @@ const Professionalshoots = () => {
   const deliverables = [
     {
       label: "30–50 edited portraits",
-      img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&auto=format&fit=crop&q=80",
+      img: "https://geniestudio.in/uploads/1786520944_1786520943318-748703480.webp",
     },
     {
       label: "Multiple outfit options",
-      img: "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=600&auto=format&fit=crop&q=80",
+      img: "https://geniestudio.in/uploads/1786520956_1786520952898-405075150.webp",
     },
     {
       label: "Retouching included",
-      img: "https://images.unsplash.com/photo-1512314889357-e157c22f938d?w=600&auto=format&fit=crop&q=80",
+      img: "https://geniestudio.in/uploads/1786519468_1786519468526-962658427.jpg",
     },
     {
       label: "Digital & print formats",
-      img: "https://images.unsplash.com/photo-1586953208448-b95a79798f07?w=600&auto=format&fit=crop&q=80",
+      img: "https://geniestudio.in/uploads/1786522551_1786522551131-390094297.webp",
     },
   ];
 
@@ -51,7 +51,7 @@ const Professionalshoots = () => {
           ref={heroRef}
           className="absolute inset-0 w-full h-[110%] -top-[5%]"
           style={{
-            backgroundImage: "url('https://i.pinimg.com/736x/f0/c5/39/f0c539dd262f06f932a2d1882a4944f1.jpg')",
+            backgroundImage: "url('https://geniestudio.in/uploads/1786608030_1786608028512-709035430.png')",
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',

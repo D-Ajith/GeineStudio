@@ -1,7 +1,7 @@
 import React from 'react'
 import { useState } from 'react';
 import { Mail, Phone, MapPin, Clock, Send, Loader2 } from 'lucide-react';
-import emailjs from '@emailjs/browser';
+// import emailjs from '@emailjs/browser';
 const Contact = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -19,46 +19,128 @@ const Contact = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   setLoading(true);
+  //   setStatus(null);
+  //   emailjs
+  //     .send(
+  //       import.meta.env.VITE_EMAILJS_SERVICE_ID,
+  //       import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+  //       {
+  //         from_name: formData.name,
+  //         from_email: formData.email,
+  //         phone: formData.phone || 'Not provided',
+  //         service: formData.service,
+  //         booking_date: new Date(formData.bookingDate).toLocaleDateString('en-IN', {
+  //           day: '2-digit',
+  //           month: 'short',
+  //           year: 'numeric',
+  //         }),
+  //         message: formData.message,
+  //         date: new Date().toLocaleDateString('en-IN', {
+  //           day: '2-digit',
+  //           month: 'short',
+  //           year: 'numeric',
+  //         }),
+  //       },
+  //       import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+  //     )
+  //     .then(() => {
+  //       setStatus('success');
+  //       setFormData({
+  //         name: '',
+  //         email: '',
+  //         phone: '',
+  //         service: '',
+  //         bookingDate: '',
+  //         message: '',
+  //       });
+  //     })
+  //     .catch(() => setStatus('error'))
+  //     .finally(() => setLoading(false));
+  // };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // The button lives outside a <form>, so the `required` attributes never
+    // run — check here before hitting the network.
+    const { name, email, phone, service, bookingDate } = formData;
+    if (!name.trim() || !email.trim() || !phone.trim() || !service || !bookingDate) {
+      setStatus("error");
+      console.warn("Contact form: please fill in all required fields.");
+      return;
+    }
+
     setLoading(true);
     setStatus(null);
-    emailjs
-      .send(
-        import.meta.env.VITE_EMAILJS_SERVICE_ID,
-        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
-        {
-          from_name: formData.name,
-          from_email: formData.email,
-          phone: formData.phone || 'Not provided',
+
+    // Abort rather than spin forever if the server hangs.
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+    try {
+      const response = await fetch("https://geniestudio.in/contact.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
           service: formData.service,
-          booking_date: new Date(formData.bookingDate).toLocaleDateString('en-IN', {
-            day: '2-digit',
-            month: 'short',
-            year: 'numeric',
-          }),
+          bookingDate: formData.bookingDate,
           message: formData.message,
-          date: new Date().toLocaleDateString('en-IN', {
-            day: '2-digit',
-            month: 'short',
-            year: 'numeric',
-          }),
-        },
-        import.meta.env.VITE_EMAILJS_PUBLIC_KEY
-      )
-      .then(() => {
-        setStatus('success');
+        }),
+        signal: controller.signal,
+      });
+
+      // Read as text first. response.json() throws "Unexpected end of JSON
+      // input" on an empty or HTML body (PHP fatal, 500 page, WAF block),
+      // which would surface as a confusing crash instead of a clean error.
+      const rawBody = await response.text();
+
+      let result = null;
+      if (rawBody) {
+        try {
+          result = JSON.parse(rawBody);
+        } catch {
+          console.error(
+            "Contact form: server returned non-JSON response",
+            response.status,
+            rawBody.slice(0, 500)
+          );
+        }
+      }
+
+      if (response.ok && result?.success) {
+        setStatus("success");
         setFormData({
-          name: '',
-          email: '',
-          phone: '',
-          service: '',
-          bookingDate: '',
-          message: '',
+          name: "",
+          email: "",
+          phone: "",
+          service: "",
+          bookingDate: "",
+          message: "",
         });
-      })
-      .catch(() => setStatus('error'))
-      .finally(() => setLoading(false));
+      } else {
+        setStatus("error");
+        console.error("Contact form failed:", {
+          status: response.status,
+          message: result?.message ?? "Server did not return a valid JSON response.",
+        });
+      }
+    } catch (error) {
+      if (error.name === "AbortError") {
+        console.error("Contact form: request timed out after 30s.");
+      } else {
+        console.error("Contact form error:", error);
+      }
+      setStatus("error");
+    } finally {
+      clearTimeout(timeoutId);
+      setLoading(false);
+    }
   };
 
   const contactInfo = [
@@ -96,7 +178,7 @@ const Contact = () => {
           className="absolute inset-0 bg-cover bg-center"
           style={{
             backgroundImage:
-              "url('https://images.unsplash.com/photo-1508599589920-14cfa1c1fe4d?q=80&w=1103&auto=format&fit=crop')",
+              "url('https://geniestudio.in/uploads/1786602496_1786602495602-162665034.jpg')",
           }}
         />
 

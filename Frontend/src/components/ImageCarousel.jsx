@@ -8,37 +8,37 @@ export default function imageCarousel() {
   const slides = [
     {
       id: 1,
-      image: "https://i.pinimg.com/1200x/03/79/f1/0379f10c7de915ae64bca35ffa7f59e0.jpg",
+      image: "https://geniestudio.in/uploads/1786524726_1786524725461-113127996.JPG",
       title: "Podcast Shoots",
       description: "Studio-grade podcast video and audio production."
     },
     {
       id: 2,
-      image: "https://i.pinimg.com/736x/44/70/5c/44705c6700132d6e6c27edee1b800c34.jpg",
+      image: "https://geniestudio.in/uploads/1786533208_1786533208074-71190126.webp",
       title: "Product Shoots",
       description: "High-quality product photography built for impact and conversion."
     },
     {
       id: 3,
-      image: "https://i.pinimg.com/1200x/8a/5c/1d/8a5c1ded741ab3a3a3b05bc11f4bf048.jpg",
+      image: "https://geniestudio.in/uploads/1786601041_1786601041120-705832864.png",
       title: "Corporate Shoots",
       description: "Professional visuals that elevate brands, teams, and workplaces."
     },
     {
       id: 4,
-      image: "https://i.pinimg.com/736x/e4/2f/d6/e42fd65fa4584ed088d924f9a024bafc.jpg",
+      image: "https://geniestudio.in/uploads/1786601438_1786601436150-15515106.png",
       title: "Event Shoots",
       description: "Seamless coverage of corporate events, launches, and conferences."
     },
     {
       id: 5,
-      image: "https://i.pinimg.com/1200x/00/f8/09/00f80924ca315eec7ff96e30c297a280.jpg",
+      image: "https://geniestudio.in/uploads/1786531718_1786531716883-563738109.webp",
       title: "Professional Shoots",
       description: "Personal branding portraits for professionals and leaders."
     },
     {
       id: 6,
-      image: "https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg?w=1200&q=80",
+      image: "https://geniestudio.in/uploads/1786531726_1786531724729-939039825.webp",
       title: "Business Portfolio Shoots",
       description: "Complete visual storytelling for brands and businesses."
     }

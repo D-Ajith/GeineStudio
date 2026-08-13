@@ -26,19 +26,19 @@ const Eventshoots = () => {
   const deliverables = [
     {
       label: "Full day event coverage",
-      img: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&auto=format&fit=crop&q=80",
+      img: "https://geniestudio.in/uploads/1786522545_1786522545086-797270712.webp",
     },
     {
       label: "Photo & video combined",
-      img: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&auto=format&fit=crop&q=80",
+      img: "https://geniestudio.in/uploads/1786531747_1786531746636-336880294.webp",
     },
     {
       label: "Edited highlights video",
-      img: "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=600&auto=format&fit=crop&q=80",
+      img: "https://geniestudio.in/uploads/1786607657_1786607656901-332159277.jpg",
     },
     {
       label: "500+ high-res images",
-      img: "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=600&auto=format&fit=crop&q=80",
+      img: "https://geniestudio.in/uploads/1786607742_1786607741286-655224356.jpg",
     },
   ];
 
@@ -51,7 +51,7 @@ const Eventshoots = () => {
           ref={heroRef}
           className="absolute inset-0 w-full h-[110%] -top-[5%]"
           style={{
-            backgroundImage: "url('https://i.pinimg.com/1200x/c7/ab/66/c7ab662f7e8be65eb1855cac206e00e7.jpg')",
+            backgroundImage: "url('https://geniestudio.in/uploads/1786601438_1786601436150-15515106.png')",
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',

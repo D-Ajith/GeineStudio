@@ -20,14 +20,14 @@ const Services = () => {
     {
       title: "Podcast Shoots",
       description: "End-to-end podcast production with professional audio, video, lighting, and post-production support.",
-      image: "https://i.pinimg.com/1200x/ac/8e/d1/ac8ed1fdb943b1e8d4058ef7c54fd92d.jpg",
+      image: "https://geniestudio.in/uploads/1786530713_1786530711207-616205262.jpg",
       Icon: FaPodcast,
       route: "/services/podcast-shoots",
     },
-     {
+    {
       title: "Product Shoots",
       description: "High-impact product photography designed to increase engagement, trust, and conversions across digital platforms.",
-      image: "https://images.pexels.com/photos/1667088/pexels-photo-1667088.jpeg?auto=compress&cs=tinysrgb&w=800",
+      image: "https://geniestudio.in/uploads/1786601780_1786601778626-797870812.png",
       Icon: FaBoxOpen,
       route: "/services/product-shoots",
     },
@@ -41,21 +41,21 @@ const Services = () => {
     {
       title: "Event Shoots",
       description: "Professional photo and video coverage for corporate events, conferences, product launches, and brand activations.",
-      image: "https://images.pexels.com/photos/1190298/pexels-photo-1190298.jpeg?auto=compress&cs=tinysrgb&w=800",
+      image: "https://geniestudio.in/uploads/1786601438_1786601436150-15515106.png",
       Icon: FaCalendarCheck,
       route: "/services/event-shoots",
     },
     {
       title: "Professional Shoots",
       description: "Premium portrait photography for professionals, founders, creators, and executives to elevate personal branding.",
-      image: "https://i.pinimg.com/736x/80/59/0b/80590b75c2104fe676fe95ef5beeec41.jpg",
+      image: "https://geniestudio.in/uploads/1786520942_1786520939441-392375551.webp",
       Icon: FaUserTie,
       route: "/services/professional-shoots",
     },
     {
       title: "Business Portfolio Shoots",
       description: "Complete visual storytelling solutions for brands, startups, and businesses to showcase their work, people, and vision.",
-      image: "https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg?auto=compress&cs=tinysrgb&w=800",
+      image: "https://geniestudio.in/uploads/1786519476_1786519476246-824255335.jpg",
       Icon: FaBriefcase,
       route: "/services/business-portfolio-shoots",
     },
@@ -70,7 +70,7 @@ const Services = () => {
           className="absolute inset-0 bg-cover bg-center"
           style={{
             backgroundImage:
-              "url('https://images.unsplash.com/photo-1606857521015-7f9fcf423740?q=80&w=1170&auto=format&fit=crop')",
+              "url('https://geniestudio.in/uploads/1786602495_1786602495498-147900462.jpg')",
           }}
         />
 
@@ -112,13 +112,13 @@ const Services = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900/95 via-slate-900/50 to-transparent">
                     <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 md:p-8 text-white">
                       <service.Icon className="text-2xl sm:text-3xl mb-2 sm:mb-3" />
-                         <h3 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold mb-1.5 sm:mb-2">
+                      <h3 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold mb-1.5 sm:mb-2">
                         {service.title}
                       </h3>
                       <p className="hidden sm:block sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300 text-sm sm:text-base md:text-lg text-slate-200 mb-3 sm:mb-4 line-clamp-2">
                         {service.description}
                       </p>
-                     <div className="inline-flex items-center gap-1 text-[10px] sm:text-sm font-medium">
+                      <div className="inline-flex items-center gap-1 text-[10px] sm:text-sm font-medium">
                         <span>View Details</span>
                         <FaArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
                       </div>

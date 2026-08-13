@@ -26,19 +26,19 @@ const Podcastshoots = () => {
   const deliverables = [
     {
       label: "4K video recording",
-      img: "https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?w=600&auto=format&fit=crop&q=80",
+      img: "https://geniestudio.in/uploads/1786531742_1786531741887-833036636.webp",
     },
     {
       label: "Professional audio mix",
-      img: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&auto=format&fit=crop&q=80",
+      img: "https://geniestudio.in/uploads/1786531738_1786531737915-76485310.webp",
     },
     {
       label: "Podcast artwork design",
-      img: "https://images.unsplash.com/photo-1590602847861-f357a9332bbc?w=600&auto=format&fit=crop&q=80",
+      img: "https://geniestudio.in/uploads/1786531741_1786531740123-858872067.webp",
     },
     {
       label: "Multiple format exports",
-      img: "https://images.unsplash.com/photo-1614680376573-df3480f0c6ff?w=600&auto=format&fit=crop&q=80",
+      img: "https://geniestudio.in/uploads/1786531739_1786531738826-206533018.webp",
     },
   ];
 
@@ -50,7 +50,7 @@ const Podcastshoots = () => {
           ref={heroRef}
           className="absolute inset-0 w-full h-[110%] -top-[5%]"
           style={{
-            backgroundImage: "url('https://i.pinimg.com/736x/6a/eb/f5/6aebf518cb88690433f83dc5fc8ded08.jpg')",
+            backgroundImage: "url('https://geniestudio.in/uploads/1786531745_1786531742798-721756481.webp')",
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',

@@ -23,7 +23,7 @@ const Home = () => {
       description: "Transform your corporate identity with stunning visuals that speak volumes about your business.",
       buttonText: "Explore Services",
       route: "/services",
-      image: "https://images.unsplash.com/photo-1556761175-b413da4baf72?w=1920&h=1080&fit=crop&q=80",
+      image: "https://geniestudio.in/uploads/1786601041_1786601041120-705832864.png",
     },
     {
       id: 2,
@@ -33,7 +33,7 @@ const Home = () => {
       description: "From conferences to celebrations, we immortalize the energy and emotion of your special events.",
       buttonText: "View Gallery",
       route: "/gallery",
-      image: "https://images.unsplash.com/photo-1511578314322-379afb476865?w=1920&h=1080&fit=crop&q=80",
+      image: "https://geniestudio.in/uploads/1786601438_1786601436150-15515106.png",
     },
     {
       id: 3,
@@ -43,7 +43,7 @@ const Home = () => {
       description: "High-end product photography that drives engagement and elevates your e-commerce success.",
       buttonText: "See Portfolio",
       route: "/portfolio",
-      image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1920&h=1080&fit=crop&q=80",
+      image: "https://geniestudio.in/uploads/1786601780_1786601778626-797870812.png",
     },
   ];
   const services = [
@@ -102,25 +102,25 @@ const Home = () => {
       icon: Camera,
       title: "Professional Cameras",
       description: "Canon EOS R5, Sony A7R IV, Nikon Z9 for stunning 45MP+ resolution",
-      image: "https://i.pinimg.com/1200x/e0/aa/57/e0aa57a9941e93208a544dd6106d701a.jpg"
+      image: "https://geniestudio.in/uploads/1786531746_1786531746647-991825491.webp"
     },
     {
       icon: Aperture,
       title: "Premium Lenses",
       description: "Professional-grade L-series and G Master lenses for every scenario",
-      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdqMQCz252ibO-0Yndb5UhBEju9SN-ov4CvQ&s"
+      image: "https://geniestudio.in/uploads/1786531747_1786531746636-336880294.webp"
     },
     {
       icon: Lightbulb,
       title: "Studio Lighting",
       description: "Profoto and Godox strobe systems with modifiers for perfect illumination",
-      image: "https://i.pinimg.com/736x/4c/bc/7c/4cbc7c70ec76df186826ad302a470083.jpg"
+      image: "https://geniestudio.in/uploads/1786531741_1786531740098-646092175.webp"
     },
     {
       icon: Film,
       title: "Video Equipment",
       description: "4K/8K cinema cameras, gimbals, and professional audio gear",
-      image: "https://i.pinimg.com/736x/f6/a3/87/f6a387f7561a4b9bdb0e9f8d31b64797.jpg"
+      image: "https://geniestudio.in/uploads/1786530714_1786530711205-339283661.jpg"
     }
   ];
 
@@ -179,32 +179,32 @@ const Home = () => {
     {
       title: "Podcast Studio Production",
       category: "Podcast / Studio",
-      image: "https://i.pinimg.com/736x/65/88/b6/6588b6fc9bb70ef48ba65f0be15c20bd.jpg"
+      image: "https://geniestudio.in/uploads/1786524726_1786524725461-113127996.JPG"
     },
     {
       title: "Product Photography",
       category: "Commercial / Products",
-      image: "https://i.pinimg.com/736x/f8/8e/88/f88e88f7ccdad77b46f6d471c9332b58.jpg"
+      image: "https://geniestudio.in/uploads/1786524727_1786524727071-219313124.JPG"
     },
     {
       title: "Corporate Branding Shoot",
       category: "Corporate / Branding",
-      image: "https://i.pinimg.com/736x/c6/ef/3d/c6ef3d665b0844f2711e886e6eada37c.jpg"
+      image: "https://geniestudio.in/uploads/1786533202_1786533201910-902353578.webp"
     },
     {
       title: "Corporate Event Coverage",
       category: "Events / Conferences",
-      image: "https://i.pinimg.com/736x/c6/6a/7c/c66a7c264f2a970e0c461b3175c419ee.jpg"
+      image: "https://geniestudio.in/uploads/1786522543_1786522543152-698768911.webp"
     },
     {
       title: "Professional Portraits",
       category: "Personal Branding",
-      image: "https://i.pinimg.com/736x/b5/91/c4/b591c4e45306485fbccd883a84faa8dc.jpg"
+      image: "https://geniestudio.in/uploads/1786520957_1786520953868-540240767.webp"
     },
     {
       title: "Business Portfolio Shoot",
       category: "Brand Storytelling",
-      image: "https://i.pinimg.com/736x/b7/ea/36/b7ea36cd7c205608159cac07e033fe49.jpg"
+      image: "https://geniestudio.in/uploads/1786519472_1786519472788-977568825.jpg"
     }
   ];
 
@@ -358,7 +358,7 @@ const Home = () => {
 
                   <div className="carousel-item flex-shrink-0 w-[300px] sm:w-[340px] h-[280px] sm:h-[320px] relative rounded-2xl overflow-hidden cursor-pointer group">
                     <img
-                      src="https://images.unsplash.com/photo-1590602847861-f357a9332bbc?w=800&q=80"
+                      src="https://geniestudio.in/uploads/1786524726_1786524725461-113127996.JPG"
                       alt="Podcast Production"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
@@ -373,7 +373,7 @@ const Home = () => {
                   </div>
                   <div className="carousel-item flex-shrink-0 w-[300px] sm:w-[340px] h-[280px] sm:h-[320px] relative rounded-2xl overflow-hidden cursor-pointer group">
                     <img
-                      src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80"
+                      src="https://geniestudio.in/uploads/1786519473_1786519471789-580284373.jpg"
                       alt="Product Shoots"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
@@ -388,7 +388,7 @@ const Home = () => {
                   </div>
                   <div className="carousel-item flex-shrink-0 w-[300px] sm:w-[340px] h-[280px] sm:h-[320px] relative rounded-2xl overflow-hidden cursor-pointer group">
                     <img
-                      src="https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=800&q=80"
+                      src="https://geniestudio.in/uploads/1786520942_1786520939441-392375551.webp"
                       alt="Corporate Shoots"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
@@ -404,7 +404,7 @@ const Home = () => {
 
                   <div className="carousel-item flex-shrink-0 w-[300px] sm:w-[340px] h-[280px] sm:h-[320px] relative rounded-2xl overflow-hidden cursor-pointer group">
                     <img
-                      src="https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&q=80"
+                      src="https://geniestudio.in/uploads/1786522543_1786522542765-76055353.webp"
                       alt="Event Photography"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
@@ -420,7 +420,7 @@ const Home = () => {
 
                   <div className="carousel-item flex-shrink-0 w-[300px] sm:w-[340px] h-[280px] sm:h-[320px] relative rounded-2xl overflow-hidden cursor-pointer group">
                     <img
-                      src="https://images.unsplash.com/photo-1556761175-b413da4baf72?w=800&q=80"
+                      src="https://geniestudio.in/uploads/1786520942_1786520939442-30465918.webp"
                       alt="Professional Shoots"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
@@ -436,7 +436,7 @@ const Home = () => {
 
                   <div className="carousel-item flex-shrink-0 w-[300px] sm:w-[340px] h-[280px] sm:h-[320px] relative rounded-2xl overflow-hidden cursor-pointer group">
                     <img
-                      src="https://images.unsplash.com/photo-1664575602276-acd073f104c1?w=800&q=80"
+                      src="https://geniestudio.in/uploads/1786533204_1786533201915-325514601.webp"
                       alt="Business Portfolio"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
@@ -452,7 +452,7 @@ const Home = () => {
 
                   <div className="carousel-item flex-shrink-0 w-[300px] sm:w-[340px] h-[280px] sm:h-[320px] relative rounded-2xl overflow-hidden cursor-pointer group">
                     <img
-                      src="https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=800&q=80"
+                      src="https://geniestudio.in/uploads/1786519473_1786519473117-884148224.jpg"
                       alt="Corporate Shoots"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
@@ -468,7 +468,7 @@ const Home = () => {
 
                   <div className="carousel-item flex-shrink-0 w-[300px] sm:w-[340px] h-[280px] sm:h-[320px] relative rounded-2xl overflow-hidden cursor-pointer group">
                     <img
-                      src="https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&q=80"
+                      src="https://geniestudio.in/uploads/1786522545_1786522545182-756687474.webp"
                       alt="Event Photography"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
@@ -705,12 +705,12 @@ const Home = () => {
 
         <div className="grid grid-cols-2 sm:grid-cols-3 w-full ">
           {[
-            "https://i.pinimg.com/1200x/d0/a6/f7/d0a6f7e1b4b4c0d256d30cdc3d742788.jpg",
-            "https://i.pinimg.com/1200x/24/22/52/2422527b1750d24b9fca96edeb321c01.jpg",
-            "https://i.pinimg.com/736x/34/78/8f/34788fd14dfdc5cefea3497c8e9c55ae.jpg",
-            "https://i.pinimg.com/1200x/3d/88/11/3d88113817e6b4e49bc8e8251628f22c.jpg",
-            "https://i.pinimg.com/736x/6b/97/8f/6b978ff8cdc4bcfbadfeb464a74604b7.jpg",
-            "https://i.pinimg.com/1200x/f5/3b/81/f53b81a89c2b086da2f30cd83d5f7ad2.jpg",
+            "https://geniestudio.in/uploads/1786522543_1786522542888-63592060.webp",
+            "https://geniestudio.in/uploads/1786520942_1786520939456-72574430.webp",
+            "https://geniestudio.in/uploads/1786530714_1786530711205-339283661.jpg",
+            "https://geniestudio.in/uploads/1786519472_1786519472788-977568825.jpg",
+            "https://geniestudio.in/uploads/1786522544_1786522544183-789140313.webp",
+            "https://geniestudio.in/uploads/1786522551_1786522551131-390094297.webp",
           ].map((src, i) => (
             <div key={i} className="aspect-square w-full overflow-hidden group relative" onMouseEnter={() => setHoveredIndex(i)} onMouseLeave={() => setHoveredIndex(null)} >
               <img src={src} alt={`photo-${i}`}
@@ -942,7 +942,7 @@ const Home = () => {
         <div
           className="absolute inset-0 bg-cover bg-center bg-fixed"
           style={{
-            backgroundImage: "url('https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=1920&h=1080&fit=crop&q=80')"
+            backgroundImage: "url('https://geniestudio.in/uploads/1786601936_1786601934919-89162093.jpg')"
           }}
         >
           <div className="absolute inset-0 bg-[#6B4A2D]/80" />

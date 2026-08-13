@@ -628,7 +628,12 @@ export default function DomeGallery({
                   onClick={onTileClick}
                   onPointerUp={onTilePointerUp}
                 >
-                  <img src={it.src} draggable={false} alt={it.alt} />
+                  {/* Not lazy on purpose: dome tiles are 3D-transformed, and
+                      browsers judge lazy-loading by layout position — lazy
+                      here leaves tiles blank until they are dragged into
+                      place. The dome repeats only a handful of unique URLs,
+                      so the browser fetches each one once and reuses it. */}
+                  <img src={it.src} draggable={false} alt={it.alt} decoding="async" />
                 </div>
               </div>
             ))}

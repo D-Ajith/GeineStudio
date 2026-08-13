@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, Calendar, Tag } from "lucide-react";
 import BASE_URL from "../api";
+import OptimizedImage from "../components/OptimizedImage";
 
 export default function Blogs() {
   const [blogs, setBlogs] = useState([]);
@@ -19,8 +20,8 @@ export default function Blogs() {
         // Backend already filters published only, but guard anyway
         const formatted = Array.isArray(data)
           ? data
-              .filter((b) => b.status === "published")
-              .sort((a, b) => b.createdAt - a.createdAt)
+            .filter((b) => b.status === "published")
+            .sort((a, b) => b.createdAt - a.createdAt)
           : [];
         setBlogs(formatted);
       } catch (err) {
@@ -61,8 +62,8 @@ export default function Blogs() {
   const formatDate = (ts) =>
     ts
       ? new Date(Number(ts)).toLocaleDateString("en-US", {
-          year: "numeric", month: "short", day: "numeric",
-        })
+        year: "numeric", month: "short", day: "numeric",
+      })
       : "Just now";
 
   const handleReadMore = (blog) => {
@@ -86,7 +87,7 @@ export default function Blogs() {
           className="absolute inset-0 bg-cover bg-center"
           style={{
             backgroundImage:
-              "url('https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1200&h=600&fit=crop&auto=format&ixlib=rb-4.1.0')",
+              "url('https://geniestudio.in/uploads/1786602495_1786602495551-770257142.jpg')",
           }}
         />
         <div className="absolute inset-0 bg-black/60" />
@@ -110,11 +111,10 @@ export default function Blogs() {
                   <button
                     key={cat}
                     onClick={() => setSelectedCategory(cat)}
-                    className={`px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 rounded-lg font-semibold text-xs sm:text-sm md:text-base transition-all duration-300 ${
-                      selectedCategory === cat
+                    className={`px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 rounded-lg font-semibold text-xs sm:text-sm md:text-base transition-all duration-300 ${selectedCategory === cat
                         ? "bg-[#6B4A2D] text-white shadow-lg scale-105"
                         : "bg-[#F7F6F3] text-slate-700 hover:bg-slate-200"
-                    }`}
+                      }`}
                   >
                     {cat}
                   </button>
@@ -168,12 +168,13 @@ export default function Blogs() {
                       className="relative w-full overflow-hidden bg-[#f5f0eb]"
                       style={{ aspectRatio: "4/3" }}
                     >
-                      <img
+                      <OptimizedImage
                         src={imgSrc}
                         alt={blog.title || "Blog cover"}
-                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
-                        loading="lazy"
-                        decoding="async"
+                        imgClassName="group-hover:scale-105 transition-transform duration-500"
+                        objectFit="contain"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 380px"
+                        className="w-full h-full"
                         onError={(e) => { e.currentTarget.src = FALLBACK; }}
                       />
 

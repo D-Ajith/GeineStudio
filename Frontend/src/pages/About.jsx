@@ -41,37 +41,37 @@ const About = () => {
       title: "Podcast Shoots",
       description: "Studio-grade podcast video and audio production.",
       image:
-        "https://i.pinimg.com/736x/5c/e3/5d/5ce35d0889ef345c506e7fa37e79d8fa.jpg"
+        "https://geniestudio.in/uploads/1786531745_1786531742798-721756481.webp"
     },
     {
       title: "Product Shoots",
       description: "High-quality product images for ads and e-commerce.",
       image:
-        "https://i.pinimg.com/1200x/e0/61/e4/e061e43416d96e8a601a0de529f0a520.jpg"
+        "https://geniestudio.in/uploads/1786531740_1786531740110-988555456.webp"
     },
     {
       title: "Corporate Shoots",
       description: "Professional visuals for brands, teams, and workspaces.",
       image:
-        "https://i.pinimg.com/1200x/4f/2a/2f/4f2a2f3a9b31d006c159ef66a6618f3d.jpg"
+        "https://geniestudio.in/uploads/1786520942_1786520939442-30465918.webp"
     },
     {
       title: "Event Shoots",
       description: "Complete coverage for corporate events and launches.",
       image:
-        "https://images.pexels.com/photos/1190298/pexels-photo-1190298.jpeg?w=800&q=80"
+        "https://geniestudio.in/uploads/1786522543_1786522542765-76055353.webp"
     },
     {
       title: "Professional Shoots",
       description: "Personal branding portraits for professionals.",
       image:
-        "https://images.pexels.com/photos/3778603/pexels-photo-3778603.jpeg?w=800&q=80"
+        "https://geniestudio.in/uploads/1786520948_1786520946061-981315709.webp"
     },
     {
       title: "Business Portfolio Shoots",
       description: "Visual storytelling for brands and businesses.",
       image:
-        "https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg?w=800&q=80"
+        "https://geniestudio.in/uploads/1786519473_1786519473117-884148224.jpg"
     }
   ];
 
@@ -139,7 +139,7 @@ const About = () => {
           className="absolute inset-0 bg-cover bg-center"
           style={{
             backgroundImage:
-              "url('https://images.unsplash.com/39/lIZrwvbeRuuzqOoWJUEn_Photoaday_CSD%20%281%20of%201%29-5.jpg?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')",
+              "url('https://geniestudio.in/uploads/1786602774_1786602774122-495403358.jpg')",
           }}
         />
 
@@ -211,7 +211,7 @@ const About = () => {
             >
               <div className="relative group overflow-hidden rounded-2xl shadow-lg h-64 sm:h-72 cursor-pointer">
                 <img
-                  src="https://i.pinimg.com/736x/b2/c6/9b/b2c69b972599048fc2df5ce3b7ef5dfd.jpg"
+                  src="https://geniestudio.in/uploads/1786531745_1786531742798-721756481.webp"
                   alt="Podcast Studio"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
@@ -224,7 +224,7 @@ const About = () => {
               </div>
               <div className="relative group overflow-hidden rounded-2xl shadow-lg h-64 sm:h-72 cursor-pointer">
                 <img
-                  src="https://i.pinimg.com/736x/3c/cf/4a/3ccf4a1912458df31a0645616e942585.jpg"
+                  src="https://geniestudio.in/uploads/1786601780_1786601778626-797870812.png"
                   alt="Product Studio"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
@@ -237,7 +237,7 @@ const About = () => {
               </div>
               <div className="relative group overflow-hidden rounded-2xl shadow-lg h-64 sm:h-72 cursor-pointer">
                 <img
-                  src="https://i.pinimg.com/1200x/17/16/37/1716377cd614f7b416d16c5d8c264a97.jpg"
+                  src="https://geniestudio.in/uploads/1786522542_1786522540558-872910330.webp"
                   alt="Corporate Studio"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
@@ -251,7 +251,7 @@ const About = () => {
 
               <div className="relative group overflow-hidden rounded-2xl shadow-lg h-64 sm:h-72 cursor-pointer">
                 <img
-                  src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=800&q=80"
+                  src="https://geniestudio.in/uploads/1786601438_1786601436150-15515106.png"
                   alt="Event Production"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
@@ -276,7 +276,7 @@ const About = () => {
             <div className=" grid grid-cols-2 gap-1 sm:gap-2 order-2 lg:order-1 w-full rounded-2xl shadow-lg overflow-hidden">
               <div className="relative group overflow-hidden h-[180px] sm:h-[210px] md:h-[240px]">
                 <img
-                  src="https://i.pinimg.com/736x/1a/1f/b9/1a1fb96c5cfa4263b8106be30c6bfa55.jpg"
+                  src="https://geniestudio.in/uploads/1786531739_1786531738826-206533018.webp"
                   alt="Podcast Shoots"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
@@ -289,7 +289,7 @@ const About = () => {
               </div>
               <div className="relative group overflow-hidden h-[180px] sm:h-[210px] md:h-[240px]">
                 <img
-                  src="https://i.pinimg.com/736x/13/5e/5f/135e5fb7a6fb24e98a8cb5fa65a89281.jpg"
+                  src="https://geniestudio.in/uploads/1786601780_1786601778626-797870812.png"
                   alt="Product Shoots"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
@@ -302,7 +302,7 @@ const About = () => {
               </div>
               <div className="relative group overflow-hidden h-[180px] sm:h-[210px] md:h-[240px]">
                 <img
-                  src="https://images.unsplash.com/photo-1542038784456-1ea8e935640e?w=800&q=80"
+                  src="https://geniestudio.in/uploads/1786601041_1786601041120-705832864.png"
                   alt="Corporate Shoots"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
@@ -316,7 +316,7 @@ const About = () => {
 
               <div className="relative group overflow-hidden h-[180px] sm:h-[210px] md:h-[240px]">
                 <img
-                  src="https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&q=80"
+                  src="https://geniestudio.in/uploads/1786601438_1786601436150-15515106.png"
                   alt="Event Shoots"
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
@@ -541,7 +541,7 @@ const About = () => {
             </div>
             <div className="relative order-first lg:order-last" data-aos="slide-left">
               <img
-                src="https://i.pinimg.com/1200x/10/b9/e2/10b9e26a26f412c0111eda2bc51f0d96.jpg"
+                src="https://geniestudio.in/uploads/1786604019_1786604018546-87413699.jpg"
                 alt="Photography equipment"
                 className="rounded-xl sm:rounded-2xl shadow-xl sm:shadow-2xl w-full h-[350px] sm:h-[400px] md:h-[500px] lg:h-[550px] object-cover"
                 loading="lazy"
@@ -608,7 +608,7 @@ const About = () => {
         <div className="grid grid-cols-2 md:grid-cols-3 gap-0">
           <div className="relative group aspect-square overflow-hidden cursor-pointer">
             <img
-              src="https://i.pinimg.com/736x/ef/9f/d2/ef9fd29ac0ddc799bc758d0533280371.jpg"
+              src="https://geniestudio.in/uploads/1786520942_1786520939456-72574430.webp"
               alt="Photography showcase"
               className="w-full h-full object-cover group-hover:scale-110 group-hover:brightness-90 transition-all duration-700"
               loading="lazy"
@@ -618,7 +618,7 @@ const About = () => {
           </div>
           <div className="relative group aspect-square overflow-hidden cursor-pointer">
             <img
-              src="https://i.pinimg.com/1200x/e8/60/10/e8601052408064fcd21333f0666142e4.jpg"
+              src="https://geniestudio.in/uploads/1786531747_1786531746636-336880294.webp"
               alt="Photography showcase"
               className="w-full h-full object-cover group-hover:scale-110 group-hover:brightness-90 transition-all duration-700"
               loading="lazy"
@@ -628,7 +628,7 @@ const About = () => {
           </div>
           <div className="relative group aspect-square overflow-hidden cursor-pointer">
             <img
-              src="https://i.pinimg.com/736x/8a/06/aa/8a06aa07a6dd61f6e13d3ccad1115108.jpg"
+              src="https://geniestudio.in/uploads/1786530714_1786530711205-339283661.jpg"
               alt="Photography showcase"
               className="w-full h-full object-cover group-hover:scale-110 group-hover:brightness-90 transition-all duration-700"
               loading="lazy"

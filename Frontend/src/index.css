@@ -146,3 +146,19 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* ── OptimizedImage placeholder shimmer ─────────────────────────────────── */
+.oi-shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #ece9e4 25%, #f5f3f0 37%, #ece9e4 63%);
+  background-size: 400% 100%;
+  animation: oi-shimmer 1.4s ease infinite;
+}
+@keyframes oi-shimmer {
+  0%   { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .oi-shimmer { animation: none; }
+}

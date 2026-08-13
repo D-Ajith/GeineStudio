@@ -26,19 +26,19 @@ const Productshoots = () => {
   const deliverables = [
     {
       label: "Multiple angles per product",
-      img: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&auto=format&fit=crop&q=80",
+      img: "https://geniestudio.in/uploads/1786533208_1786533208088-576412932.webp",
     },
     {
       label: "Lifestyle & context shots",
-      img: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=600&auto=format&fit=crop&q=80",
+      img: "https://geniestudio.in/uploads/1786533193_1786533192518-337638744.webp",
     },
     {
       label: "Background variations",
-      img: "https://i.pinimg.com/1200x/ed/18/94/ed1894fe0a11fed3a79bc5aba2f0d8ba.jpg",
+      img: "https://geniestudio.in/uploads/1786519473_1786519471789-580284373.jpg",
     },
     {
       label: "Social media optimized files",
-      img: "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=600&auto=format&fit=crop&q=80",
+      img: "https://geniestudio.in/uploads/1786605558_1786605557565-709229691.jpg",
     },
   ];
 
@@ -51,7 +51,7 @@ const Productshoots = () => {
           ref={heroRef}
           className="absolute inset-0 w-full h-[110%] -top-[5%]"
           style={{
-            backgroundImage: "url('https://i.pinimg.com/736x/1d/f5/76/1df576e4a76a980fd185d49e4d3c0c2a.jpg')",
+            backgroundImage: "url('https://geniestudio.in/uploads/1786531726_1786531724729-939039825.webp')",
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
