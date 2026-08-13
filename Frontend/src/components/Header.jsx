@@ -25,7 +25,7 @@ const Header = () => {
     { name: "Services", path: "/services" },
     { name: "Gallery", path: "/gallery" },
     { name: "Contact", path: "/contact" },
-    {name:"Blog",path:"/blogs"}
+    { name: "Blog", path: "/blogs" }
 
   ];
   const serviceItems = [
@@ -47,8 +47,8 @@ const Header = () => {
             {/* 117×264 WebP rather than the 409×921 PNG the favicon still uses —
                 the logo never renders above 44px tall. width/height are set so
                 the header does not reflow while it loads. */}
-              <img src="/GenieStudio-logo.webp" alt="Genie Studio" width="117" height="264"
-                className="h-10 md:h-11 w-cover" fetchPriority="high" decoding="async" />
+            <img src="/GenieStudio-logo.webp" alt="Genie Studio" width="30" height="93"
+              className="h-10 md:h-11 w-cover" fetchPriority="high" decoding="async" />
             <span className="text-lg md:text-2xl lg:text-3xl font-semibold text-white">
               Genie<span className="text-[var(--accent-color)]">Studio</span>
             </span>

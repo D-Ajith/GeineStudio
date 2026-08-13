@@ -11,8 +11,7 @@ const Footer = () => {
               <img
                 src="/GenieStudio-logo.webp"
                 alt="Genie Studio"
-                width="117"
-                height="264"
+                width="30" height="93"
                 loading="lazy"
                 decoding="async"
                 className="h-8 sm:h-9 w-cover"
