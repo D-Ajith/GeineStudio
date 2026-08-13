@@ -4,6 +4,8 @@ import { FaCalendarCheck, FaArrowLeft, FaCheckCircle, FaWhatsapp } from 'react-i
 import OptimizedImage from "../components/OptimizedImage";
 import { useTargetWidth } from "../lib/useResponsiveImage";
 import { bestVariantUrl } from "../lib/imageManifest";
+import Seo from "../components/Seo";
+import { SERVICE_SEO, serviceSchema } from "../lib/seoConfig";
 
 const Eventshoots = () => {
   const navigate = useNavigate();
@@ -49,6 +51,20 @@ const Eventshoots = () => {
 
   return (
     <main className="w-full overflow-x-hidden bg-white">
+      <Seo
+        {...SERVICE_SEO.event}
+        schema={serviceSchema({
+          name: SERVICE_SEO.event.name,
+          description: SERVICE_SEO.event.description,
+          path: SERVICE_SEO.event.path,
+        })}
+        breadcrumbs={[
+          { name: "Home", path: "/" },
+          { name: "Services", path: "/services" },
+          { name: "Event Shoots", path: SERVICE_SEO.event.path },
+        ]}
+      />
+
 
       {/* HERO */}
       <section className="relative min-h-[75vh] flex items-end overflow-hidden" style={{ background: '#1C1A2E' }}>

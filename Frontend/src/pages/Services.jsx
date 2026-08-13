@@ -15,6 +15,8 @@ import {
 import OptimizedImage from "../components/OptimizedImage";
 import { useTargetWidth } from "../lib/useResponsiveImage";
 import { bestVariantUrl } from "../lib/imageManifest";
+import Seo from "../components/Seo";
+import { SEO } from "../lib/seoConfig";
 
 const Services = () => {
   // Hero paints via CSS background-image, which cannot carry a srcSet.
@@ -68,6 +70,14 @@ const Services = () => {
 
   return (
     <main className="w-full overflow-x-hidden bg-white">
+      <Seo
+        {...SEO.services}
+        breadcrumbs={[
+          { name: "Home", path: "/" },
+          { name: "Services", path: SEO.services.path },
+        ]}
+      />
+
 
 
       <section className="relative min-h-[50vh] md:min-h-[60vh] lg:min-h-[55vh] xl:min-h-[50vh] text-white overflow-hidden flex items-center">

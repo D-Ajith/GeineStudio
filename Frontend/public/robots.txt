@@ -1,15 +1,19 @@
 User-agent: *
 Allow: /
 
-# Disallow admin or private pages (edit if needed)
+# Admin is behind a login and has no public value — keep it out of the index.
+Disallow: /admin
 Disallow: /admin/
-Disallow: /login/
-Disallow: /dashboard/
-Disallow: /private/
 
-# Allow important resources
+# Query-string variants of the blog listing would otherwise be crawled as
+# separate near-duplicate URLs.
+Disallow: /*?q=
+
+# Explicitly allow the build output, so nothing blocks Google from rendering
+# the JS it needs to see per-route titles and content.
 Allow: /assets/
-Allow: /images/
+Allow: /uploads/
+Allow: /*.js$
+Allow: /*.css$
 
-# Sitemap location
-Sitemap: https://geinestudio.in/sitemap.xml
+Sitemap: https://geniestudio.in/sitemap.xml

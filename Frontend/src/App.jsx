@@ -38,6 +38,7 @@ const AdminGallery = lazy(() => import("./pages/AdminGallery"));
 import Blogs from "./pages/Blogs";
 import BlogDetail from "./pages/Blogdetail";
 import ProtectedRoute from "./components/ProtectedRoute";
+import NotFound from "./pages/NotFound";
 import "aos/dist/aos.css";
 function App() {
   const location = useLocation();
@@ -118,7 +119,12 @@ function App() {
           />
 
           <Route path="/blogs" element={<Blogs />} />
-          <Route path="/blog/*" element={<BlogDetail />} />        </Routes>
+          <Route path="/blog/*" element={<BlogDetail />} />
+          {/* Apache rewrites unmatched paths to index.html, so without this a
+              bad URL rendered a blank page on a 200 — a soft 404 to Google.
+              NotFound sends noindex instead. Must stay last. */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
         </Suspense>
       </main>
       <FloatingSocial />

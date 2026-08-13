@@ -6,6 +6,8 @@ import OptimizedImage from "../components/OptimizedImage";
 import { useTargetWidth } from "../lib/useResponsiveImage";
 import { bestVariantUrl } from "../lib/imageManifest";
 import { useNavigate } from "react-router-dom";
+import Seo from "../components/Seo";
+import { SEO } from "../lib/seoConfig";
 const Home = () => {
   const [active, setActive] = useState(0);
   const [isVisible, setIsVisible] = useState({});
@@ -38,7 +40,7 @@ const Home = () => {
       id: 2,
       title: "Capture Every Moment",
       subtitle: "That Matters",
-      tag: "Event Photography",
+      tag: "Event Shoots",
       description: "From conferences to celebrations, we immortalize the energy and emotion of your special events.",
       buttonText: "View Gallery",
       route: "/gallery",
@@ -60,7 +62,7 @@ const Home = () => {
       icon: Mic,
       title: "Podcast Shoots",
       link: "/services/podcast-shoots",
-      description: "Professional video...",
+      description: "Multi-camera podcast video and studio-grade audio, edited end to end.",
       features: ["Studio Setup", "Multi-Camera", "Thumbnail Creation", "Behind-the-Scenes"],
       color: "from-green-500 to-teal-500",
     },
@@ -68,7 +70,7 @@ const Home = () => {
       icon: Package,
       title: "Product Shoots",
       link: "/services/product-shoots",
-      description: "Stunning product photography...",
+      description: "E-commerce, catalogue and lifestyle product photography built to sell.",
       features: ["E-commerce Photos", "Catalog Shots", "Lifestyle Products", "360° Photography"],
       color: "from-orange-500 to-red-500",
     },
@@ -76,7 +78,7 @@ const Home = () => {
       icon: Briefcase,
       title: "Corporate Shoots",
       link: "/services/corporate-shoots",
-      description: "Professional headshots...",
+      description: "Executive headshots, team portraits and office culture photography.",
       features: ["Executive Portraits", "Team Photography", "Office Culture", "Annual Reports"],
       color: "from-blue-500 to-cyan-500",
     },
@@ -84,7 +86,7 @@ const Home = () => {
       icon: Calendar,
       title: "Event Shoots",
       link: "/services/event-shoots",
-      description: "Comprehensive event coverage...",
+      description: "Full coverage of conferences, launches and awards, delivered fast.",
       features: ["Conferences", "Galas & Awards", "Product Launches", "Networking Events"],
       color: "from-purple-500 to-pink-500",
     },
@@ -92,7 +94,7 @@ const Home = () => {
       icon: User,
       title: "Professional Shoots",
       link: "/services/professional-shoots",
-      description: "Personal branding photography...",
+      description: "Personal branding portraits and headshots for founders and leaders.",
       features: ["Personal Branding", "LinkedIn Profiles", "Speaker Photos", "Author Headshots"],
       color: "from-indigo-500 to-purple-500",
     },
@@ -100,7 +102,7 @@ const Home = () => {
       icon: TrendingUp,
       title: "Business Portfolio",
       link: "/services/business-portfolio-shoots",
-      description: "Complete visual documentation...",
+      description: "Complete visual storytelling for your brand, team and product range.",
       features: ["Brand Story", "Process Documentation", "Testimonial Videos", "Social Media Content"],
       color: "from-pink-500 to-rose-500",
     },
@@ -245,6 +247,20 @@ const Home = () => {
 
   return (
     <div className="min-h-screen">
+      <Seo
+        {...SEO.home}
+        breadcrumbs={[{ name: "Home", path: "/" }]}
+      />
+
+      {/* The one H1 for the homepage. The hero slider cannot supply it — its
+          copy rotates and all three slides are in the DOM together — so the
+          page states what GenieStudio actually does, once, in a stable string
+          that names the five services. sr-only keeps the design untouched. */}
+      <h1 className="sr-only">
+        GenieStudio — Podcast Shoots, Product Shoots, Corporate Shoots, Event
+        Shoots and Professional Shoots in Visakhapatnam
+      </h1>
+
       <section className="relative h-[70vh] sm:h-[80vh] lg:h-screen overflow-hidden">
         {slides.map((slide, index) => (
           <div
@@ -276,13 +292,19 @@ const Home = () => {
                     <span className=" inline-block px-3 py-1.5 bg-white/10 backdrop-blur-md text-white rounded-full text-xs sm:text-sm font-medium mb-4 sm:mb-6 border border-white/20">
                       {slide.tag}
                     </span>
-                    <h1 className=" text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-3 sm:mb-4 leading-tight sm:leading-snug">
+                    {/* h2, not h1: all three slides are in the DOM at once
+                        (the inactive ones just sit at opacity-0), so an h1 here
+                        gave the homepage three competing H1s with rotating
+                        marketing copy. The page's single H1 is the sr-only one
+                        below. Tailwind's preflight makes headings inherit their
+                        size and weight, so h1 → h2 renders identically. */}
+                    <h2 className=" text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-3 sm:mb-4 leading-tight sm:leading-snug">
                       {slide.title}
                       <br />
                       <span className=" bg-[#ffffff] bg-clip-text text-transparent text-3xl sm:text-4xl md:text-5xl lg:text-7xl">
                         {slide.subtitle}
                       </span>
-                    </h1>
+                    </h2>
                     <p className=" text-base sm:text-lg lg:text-xl text-gray-200 mb-6 sm:mb-8 leading-relaxed">
                       {slide.description}
                     </p>
@@ -339,7 +361,7 @@ const Home = () => {
               <p className="text-gray-700 text-sm sm:text-base md:text-lg leading-relaxed max-w-xl">
                 Genie Studio is a full-service creative studio
                 <br className="block md:hidden" />specializing in Corporate Shoots, Event Coverage
-                <br className="block md:hidden" />, Product, Photography, Podcast Production,
+                <br className="block md:hidden" />, Product, Photography, Podcast Shoots,
                 <br className="block md:hidden" />Professional Portraits, and Business
                 <br className="block md:hidden" /> Portfolio Shoots. We help brands,
                 professionals,
@@ -368,7 +390,7 @@ const Home = () => {
                   <div className="carousel-item flex-shrink-0 w-[300px] sm:w-[340px] h-[280px] sm:h-[320px] relative rounded-2xl overflow-hidden cursor-pointer group">
                     <OptimizedImage
                       src="https://geniestudio.in/uploads/1786524726_1786524725461-113127996.JPG"
-                      alt="Podcast Production"
+                      alt="Podcast Shoots"
                       className="w-full h-full"
                       sizes="(max-width: 640px) 300px, 340px"
                       imgClassName="transition-transform duration-500 group-hover:scale-110"
@@ -378,7 +400,7 @@ const Home = () => {
                         Podcast
                       </span>
                       <h3 className="text-white text-lg font-extrabold uppercase leading-tight">
-                        Podcast Production
+                        Podcast Shoots
                       </h3>
                     </div>
                   </div>
@@ -420,7 +442,7 @@ const Home = () => {
                   <div className="carousel-item flex-shrink-0 w-[300px] sm:w-[340px] h-[280px] sm:h-[320px] relative rounded-2xl overflow-hidden cursor-pointer group">
                     <OptimizedImage
                       src="https://geniestudio.in/uploads/1786522543_1786522542765-76055353.webp"
-                      alt="Event Photography"
+                      alt="Event Shoots"
                       className="w-full h-full"
                       sizes="(max-width: 640px) 300px, 340px"
                       imgClassName="transition-transform duration-500 group-hover:scale-110"
@@ -430,7 +452,7 @@ const Home = () => {
                         Events
                       </span>
                       <h3 className="text-white text-lg font-extrabold uppercase leading-tight">
-                        Event Photography
+                        Event Shoots
                       </h3>
                     </div>
                   </div>
@@ -492,7 +514,7 @@ const Home = () => {
                   <div className="carousel-item flex-shrink-0 w-[300px] sm:w-[340px] h-[280px] sm:h-[320px] relative rounded-2xl overflow-hidden cursor-pointer group">
                     <OptimizedImage
                       src="https://geniestudio.in/uploads/1786522545_1786522545182-756687474.webp"
-                      alt="Event Photography"
+                      alt="Event Shoots"
                       className="w-full h-full"
                       sizes="(max-width: 640px) 300px, 340px"
                       imgClassName="transition-transform duration-500 group-hover:scale-110"
@@ -502,7 +524,7 @@ const Home = () => {
                         Events
                       </span>
                       <h3 className="text-white text-lg font-extrabold uppercase leading-tight">
-                        Event Photography
+                        Event Shoots
                       </h3>
                     </div>
                   </div>
@@ -528,7 +550,7 @@ const Home = () => {
                   <div className="carousel-item flex-shrink-0 w-[300px] sm:w-[340px] h-[280px] sm:h-[320px] relative rounded-2xl overflow-hidden cursor-pointer group">
                     <OptimizedImage
                       src="https://images.unsplash.com/photo-1590602847861-f357a9332bbc?w=800&q=80"
-                      alt="Podcast Production"
+                      alt="Podcast Shoots"
                       className="w-full h-full"
                       sizes="(max-width: 640px) 300px, 340px"
                       imgClassName="transition-transform duration-500 group-hover:scale-110"
@@ -538,7 +560,7 @@ const Home = () => {
                         Podcast
                       </span>
                       <h3 className="text-white text-lg font-extrabold uppercase leading-tight">
-                        Podcast Production
+                        Podcast Shoots
                       </h3>
                     </div>
                   </div>

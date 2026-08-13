@@ -4,6 +4,8 @@ import { FaBoxOpen, FaArrowLeft, FaCheckCircle, FaWhatsapp } from 'react-icons/f
 import OptimizedImage from "../components/OptimizedImage";
 import { useTargetWidth } from "../lib/useResponsiveImage";
 import { bestVariantUrl } from "../lib/imageManifest";
+import Seo from "../components/Seo";
+import { SERVICE_SEO, serviceSchema } from "../lib/seoConfig";
 
 const Productshoots = () => {
   const navigate = useNavigate();
@@ -49,6 +51,20 @@ const Productshoots = () => {
 
   return (
     <main className="w-full overflow-x-hidden bg-white">
+      <Seo
+        {...SERVICE_SEO.product}
+        schema={serviceSchema({
+          name: SERVICE_SEO.product.name,
+          description: SERVICE_SEO.product.description,
+          path: SERVICE_SEO.product.path,
+        })}
+        breadcrumbs={[
+          { name: "Home", path: "/" },
+          { name: "Services", path: "/services" },
+          { name: "Product Shoots", path: SERVICE_SEO.product.path },
+        ]}
+      />
+
 
       {/* HERO */}
       <section className="relative min-h-[75vh] flex items-end overflow-hidden" style={{ background: '#0F1F0F' }}>

@@ -6,6 +6,7 @@ import {
 import DOMPurify from "dompurify";
 import BASE_URL from "../api";
 import OptimizedImage from "../components/OptimizedImage";
+import Seo from "../components/Seo";
 
 const FALLBACK =
     "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1200&q=80";
@@ -196,6 +197,44 @@ export default function BlogDetail() {
 
     return (
         <main className="w-full overflow-x-hidden bg-white">
+
+            {/* Without this every blog post inherits the homepage title and
+                description, so posts compete with each other as duplicates
+                instead of ranking for their own topic. */}
+            <Seo
+                title={`${blog.title} | GenieStudio`}
+                description={
+                    blog.metaDescription ||
+                    `${blog.title} — insights from GenieStudio, a creative studio in Visakhapatnam.`
+                }
+                path={`/blog/${blog.permalink || slug}`}
+                image={blog.image || FALLBACK}
+                type="article"
+                schema={{
+                    "@context": "https://schema.org",
+                    "@type": "BlogPosting",
+                    headline: blog.title,
+                    description: blog.metaDescription || undefined,
+                    image: blog.image || FALLBACK,
+                    datePublished: blog.createdAt
+                        ? new Date(Number(blog.createdAt)).toISOString()
+                        : undefined,
+                    dateModified: blog.updatedAt
+                        ? new Date(Number(blog.updatedAt)).toISOString()
+                        : undefined,
+                    author: { "@type": "Organization", name: "GenieStudio" },
+                    publisher: { "@id": "https://geniestudio.in/#organization" },
+                    mainEntityOfPage: {
+                        "@type": "WebPage",
+                        "@id": `https://geniestudio.in/blog/${blog.permalink || slug}`,
+                    },
+                }}
+                breadcrumbs={[
+                    { name: "Home", path: "/" },
+                    { name: "Blog", path: "/blogs" },
+                    { name: blog.title, path: `/blog/${blog.permalink || slug}` },
+                ]}
+            />
 
             {/* ══════════════════════════════════════════════
                 HERO IMAGE

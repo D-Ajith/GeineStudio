@@ -6,6 +6,8 @@ import ImageCarousel from "../components/ImageCarousel"
 import OptimizedImage from "../components/OptimizedImage";
 import { useTargetWidth } from "../lib/useResponsiveImage";
 import { bestVariantUrl } from "../lib/imageManifest";
+import Seo from "../components/Seo";
+import { SEO } from "../lib/seoConfig";
 const About = () => {
   const [activeTab, setActiveTab] = useState('mission');
 
@@ -140,6 +142,14 @@ const About = () => {
 
   return (
     <main className="w-full overflow-x-hidden">
+      <Seo
+        {...SEO.about}
+        breadcrumbs={[
+          { name: "Home", path: "/" },
+          { name: "About", path: SEO.about.path },
+        ]}
+      />
+
       <section className="relative min-h-[50vh] md:min-h-[60vh] lg:min-h-[55vh] xl:min-h-[50vh] text-white overflow-hidden flex items-center">
         <div
           className="absolute inset-0 bg-cover bg-center"

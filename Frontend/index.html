@@ -11,8 +11,56 @@
     gtag('config', 'G-WCR1MCHLMK');
   </script>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/png" sizes="16x16" href="/GenieStudio.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       PRIMARY SEO
+       This is a client-rendered SPA, so every route is served this same
+       HTML. Googlebot runs the JS and picks up the per-route <title> and
+       <meta> that the <Seo> component renders (React 19 hoists those into
+       <head>). Crawlers that do NOT run JS — Facebook, LinkedIn, WhatsApp,
+       Slack — only ever see what is written here, which is why the homepage
+       values are the static defaults.
+       ══════════════════════════════════════════════════════════════════ -->
+  <title>GenieStudio | Podcast Shoots, Product Shoots, Corporate Shoots &amp; Event Shoots</title>
+  <meta name="description"
+    content="GenieStudio is a professional creative studio offering Podcast Shoots, Product Shoots, Corporate Shoots, Event Shoots and Professional Shoots in Visakhapatnam." />
+  <link rel="canonical" href="https://geniestudio.in/" />
+
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  <meta name="author" content="GenieStudio" />
+  <meta name="theme-color" content="#6B4A2D" />
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       FAVICON / APP ICONS
+       ══════════════════════════════════════════════════════════════════ -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/GenieStudio.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/GenieStudio.png" />
+  <link rel="apple-touch-icon" href="/GenieStudio.png" />
+  <link rel="shortcut icon" href="/GenieStudio.png" />
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       OPEN GRAPH / TWITTER
+       ══════════════════════════════════════════════════════════════════ -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="GenieStudio" />
+  <meta property="og:locale" content="en_IN" />
+  <meta property="og:title"
+    content="GenieStudio | Podcast Shoots, Product Shoots, Corporate Shoots &amp; Event Shoots" />
+  <meta property="og:description"
+    content="GenieStudio is a professional creative studio offering Podcast Shoots, Product Shoots, Corporate Shoots, Event Shoots and Professional Shoots in Visakhapatnam." />
+  <meta property="og:url" content="https://geniestudio.in/" />
+  <meta property="og:image" content="https://geniestudio.in/uploads/1786601041_1786601041120-705832864.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="GenieStudio — professional photography and video studio in Visakhapatnam" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title"
+    content="GenieStudio | Podcast Shoots, Product Shoots, Corporate Shoots &amp; Event Shoots" />
+  <meta name="twitter:description"
+    content="GenieStudio is a professional creative studio offering Podcast Shoots, Product Shoots, Corporate Shoots, Event Shoots and Professional Shoots in Visakhapatnam." />
+  <meta name="twitter:image" content="https://geniestudio.in/uploads/1786601041_1786601041120-705832864.png" />
 
   <!-- Every photo on the site comes from this origin. Opening the TCP + TLS
        connection during HTML parse saves a full round trip before the first
@@ -32,7 +80,116 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap"
     rel="stylesheet" />
-  <title>Genie Studio</title>
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       STRUCTURED DATA
+       Kept in the static HTML rather than rendered by React so that it is
+       present on the very first byte, with no dependency on JS execution.
+
+       WebSite carries the SearchAction so Google can offer a sitelinks
+       search box; LocalBusiness is what makes the studio eligible for local
+       and map results, which is the point of naming Visakhapatnam.
+       ══════════════════════════════════════════════════════════════════ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://geniestudio.in/#website",
+        "name": "GenieStudio",
+        "url": "https://geniestudio.in/",
+        "description": "GenieStudio is a professional creative studio offering Podcast Shoots, Product Shoots, Corporate Shoots, Event Shoots and Professional Shoots in Visakhapatnam.",
+        "inLanguage": "en-IN",
+        "publisher": { "@id": "https://geniestudio.in/#organization" },
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://geniestudio.in/blogs?q={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        }
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://geniestudio.in/#organization",
+        "name": "GenieStudio",
+        "url": "https://geniestudio.in/",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://geniestudio.in/GenieStudio.png"
+        },
+        "description": "Professional creative studio offering Podcast Shoots, Product Shoots, Corporate Shoots, Event Shoots and Professional Shoots."
+      },
+      {
+        "@type": "LocalBusiness",
+        "@id": "https://geniestudio.in/#localbusiness",
+        "name": "GenieStudio",
+        "url": "https://geniestudio.in/",
+        "image": "https://geniestudio.in/GenieStudio.png",
+        "description": "GenieStudio is a professional creative studio offering Podcast Shoots, Product Shoots, Corporate Shoots, Event Shoots and Professional Shoots in Visakhapatnam.",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Visakhapatnam",
+          "addressRegion": "Andhra Pradesh",
+          "addressCountry": "IN"
+        },
+        "areaServed": {
+          "@type": "City",
+          "name": "Visakhapatnam"
+        },
+        "parentOrganization": { "@id": "https://geniestudio.in/#organization" },
+        "hasOfferCatalog": {
+          "@type": "OfferCatalog",
+          "name": "Photography and Video Production Services",
+          "itemListElement": [
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "Podcast Shoots",
+                "url": "https://geniestudio.in/services/podcast-shoots"
+              }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "Product Shoots",
+                "url": "https://geniestudio.in/services/product-shoots"
+              }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "Corporate Shoots",
+                "url": "https://geniestudio.in/services/corporate-shoots"
+              }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "Event Shoots",
+                "url": "https://geniestudio.in/services/event-shoots"
+              }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "Professional Shoots",
+                "url": "https://geniestudio.in/services/professional-shoots"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+  </script>
 </head>
 
 <body>

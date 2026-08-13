@@ -2,6 +2,8 @@ import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaBriefcase, FaArrowLeft, FaCheckCircle, FaWhatsapp } from 'react-icons/fa';
 import OptimizedImage from "../components/OptimizedImage";
+import Seo from "../components/Seo";
+import { SEO, serviceSchema } from "../lib/seoConfig";
 
 const Businessportfolioshoots = () => {
   const navigate = useNavigate();
@@ -45,6 +47,20 @@ const Businessportfolioshoots = () => {
 
   return (
     <main className="w-full overflow-x-hidden bg-white">
+      <Seo
+        {...SEO.businessPortfolio}
+        schema={serviceSchema({
+          name: "Business Portfolio Shoots",
+          description: SEO.businessPortfolio.description,
+          path: SEO.businessPortfolio.path,
+        })}
+        breadcrumbs={[
+          { name: "Home", path: "/" },
+          { name: "Services", path: "/services" },
+          { name: "Business Portfolio Shoots", path: SEO.businessPortfolio.path },
+        ]}
+      />
+
 
       <section className="relative min-h-[75vh] flex items-end overflow-hidden" style={{ background: '#1A1A14' }}>
         <div

@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { Mail, Phone, MapPin, Clock, Send, Loader2 } from 'lucide-react';
 import { useTargetWidth } from "../lib/useResponsiveImage";
 import { bestVariantUrl } from "../lib/imageManifest";
+import Seo from "../components/Seo";
+import { SEO } from "../lib/seoConfig";
 // import emailjs from '@emailjs/browser';
 const Contact = () => {
   // Hero paints via CSS background-image, which cannot carry a srcSet.
@@ -175,6 +177,14 @@ const Contact = () => {
   ];
   return (
     <main className="w-full overflow-x-hidden">
+      <Seo
+        {...SEO.contact}
+        breadcrumbs={[
+          { name: "Home", path: "/" },
+          { name: "Contact", path: SEO.contact.path },
+        ]}
+      />
+
 
 
       <section className="relative min-h-[50vh] md:min-h-[60vh] lg:min-h-[55vh] xl:min-h-[50vh] text-white overflow-hidden flex items-center bg-white">

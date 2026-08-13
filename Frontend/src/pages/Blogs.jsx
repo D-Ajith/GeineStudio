@@ -5,6 +5,8 @@ import BASE_URL from "../api";
 import OptimizedImage from "../components/OptimizedImage";
 import { useTargetWidth } from "../lib/useResponsiveImage";
 import { bestVariantUrl } from "../lib/imageManifest";
+import Seo from "../components/Seo";
+import { SEO } from "../lib/seoConfig";
 
 export default function Blogs() {
   // Hero paints via CSS background-image, which cannot carry a srcSet.
@@ -85,6 +87,14 @@ export default function Blogs() {
 
   return (
     <main className="w-full overflow-x-hidden">
+      <Seo
+        {...SEO.blogs}
+        breadcrumbs={[
+          { name: "Home", path: "/" },
+          { name: "Blog", path: SEO.blogs.path },
+        ]}
+      />
+
 
       <section className="relative min-h-[45vh] sm:min-h-[50vh] md:min-h-[60vh] lg:min-h-[55vh] flex items-center text-white overflow-hidden">
         <div

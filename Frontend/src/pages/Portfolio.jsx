@@ -4,6 +4,8 @@ import { fetchPortfolio } from "../lib/portfolioApi";
 import OptimizedImage from "../components/OptimizedImage";
 import { useTargetWidth } from "../lib/useResponsiveImage";
 import { bestVariantUrl } from "../lib/imageManifest";
+import Seo from "../components/Seo";
+import { SEO } from "../lib/seoConfig";
 
 /** Images rendered per batch — the rest stream in as the visitor scrolls. */
 const BATCH = 12;
@@ -128,6 +130,14 @@ const Portfolio = () => {
 
   return (
     <main className="w-full overflow-x-hidden">
+      <Seo
+        {...SEO.portfolio}
+        breadcrumbs={[
+          { name: "Home", path: "/" },
+          { name: "Portfolio", path: SEO.portfolio.path },
+        ]}
+      />
+
 
       <section className="relative min-h-[50vh] md:min-h-[60vh] lg:min-h-[55vh] xl:min-h-[50vh] text-white overflow-hidden flex items-center">
         <div
