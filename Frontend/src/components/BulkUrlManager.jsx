@@ -3,6 +3,7 @@ import {
   ClipboardPaste, Eye, Loader, CheckCircle, AlertCircle, X, Copy, Trash2,
   Pencil, ArrowUp, ArrowDown, RefreshCw, Save, ExternalLink, Images, LayoutGrid,
 } from "lucide-react";
+import { bestVariantUrl } from "../lib/imageManifest";
 
 /**
  * Bulk image-URL manager — paste many URLs, preview them, then save.
@@ -61,7 +62,7 @@ function EditModal({ item, fields, thumbAspect, onConfirm, onCancel, loading }) 
 
         <div className="rounded-xl overflow-hidden border-2 border-gray-200 bg-gray-100 w-full mb-4 mx-auto"
           style={{ aspectRatio: thumbAspect, maxHeight: 220, maxWidth: 200 }}>
-          <img src={url} alt="" className="w-full h-full object-cover"
+          <img src={bestVariantUrl(url, 400)} alt="" className="w-full h-full object-cover"
             onError={(e) => { e.target.style.opacity = "0.25"; }} />
         </div>
 
@@ -170,7 +171,7 @@ function UrlRow({ item, index, total, labelKey, thumbAspect, onEdit, onDelete, o
       <span className="text-[10px] font-bold text-gray-400 w-5 text-center shrink-0">{index + 1}</span>
 
       <div className="w-14 shrink-0 rounded-lg overflow-hidden bg-gray-100 border border-gray-200" style={{ aspectRatio: thumbAspect }}>
-        <img src={item.image_url} alt={item[labelKey] || ""} loading="lazy" className="w-full h-full object-cover"
+        <img src={bestVariantUrl(item.image_url, 400)} alt={item[labelKey] || ""} loading="lazy" className="w-full h-full object-cover"
           onError={(e) => { e.target.style.opacity = "0.25"; }} />
       </div>
 
@@ -408,7 +409,7 @@ export default function BulkUrlManager({
                     <div key={`${p.url}-${i}`} className="bg-white rounded-xl border-2 border-gray-200 overflow-hidden">
                       <div className="bg-gray-100 relative" style={{ aspectRatio: thumbAspect }}>
                         {p.status !== "invalid" ? (
-                          <img src={p.url} alt="" loading="lazy" className="w-full h-full object-cover"
+                          <img src={bestVariantUrl(p.url, 400)} alt="" loading="lazy" className="w-full h-full object-cover"
                             onError={(e) => { e.target.style.opacity = "0.2"; }} />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">

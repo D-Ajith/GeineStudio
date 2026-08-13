@@ -3,8 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { ArrowRight, Calendar, Tag } from "lucide-react";
 import BASE_URL from "../api";
 import OptimizedImage from "../components/OptimizedImage";
+import { useTargetWidth } from "../lib/useResponsiveImage";
+import { bestVariantUrl } from "../lib/imageManifest";
 
 export default function Blogs() {
+  // Hero paints via CSS background-image, which cannot carry a srcSet.
+  const targetWidth = useTargetWidth();
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -86,8 +90,10 @@ export default function Blogs() {
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage:
-              "url('https://geniestudio.in/uploads/1786602495_1786602495551-770257142.jpg')",
+            backgroundImage: `url('${bestVariantUrl(
+              "https://geniestudio.in/uploads/1786602495_1786602495551-770257142.jpg",
+              targetWidth
+            )}')`,
           }}
         />
         <div className="absolute inset-0 bg-black/60" />

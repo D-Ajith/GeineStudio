@@ -13,6 +13,21 @@
   <meta charset="UTF-8" />
   <link rel="icon" type="image/png" sizes="16x16" href="/GenieStudio.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Every photo on the site comes from this origin. Opening the TCP + TLS
+       connection during HTML parse saves a full round trip before the first
+       image byte arrives — worth ~100-300ms on mobile networks. -->
+  <link rel="preconnect" href="https://geniestudio.in" crossorigin>
+  <link rel="dns-prefetch" href="https://geniestudio.in">
+
+  <!-- Blog/portfolio/gallery data comes from Render, whose free tier cold
+       starts; warming the connection early overlaps some of that latency. -->
+  <link rel="preconnect" href="https://geinestudio-czl3.onrender.com" crossorigin>
+
+  <!-- The header logo renders on every route, so it is always in the critical
+       path. -->
+  <link rel="preload" as="image" href="/GenieStudio-logo.webp" fetchpriority="high">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap"

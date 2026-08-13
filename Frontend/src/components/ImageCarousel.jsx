@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import OptimizedImage from './OptimizedImage';
 
 export default function imageCarousel() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -82,7 +83,15 @@ export default function imageCarousel() {
           {slides.map((slide, index) => (
             <div key={slide.id} className={`absolute inset-0 transition-opacity duration-1000 ${index === currentSlide ? 'opacity-100' : 'opacity-0'}`}>
 
-              <img src={slide.image} alt={slide.title} className="w-full h-full object-cover" />
+              {/* Only the first slide is on screen at load; the rest sit at
+                  opacity-0 behind it, so they must not compete for bandwidth. */}
+              <OptimizedImage
+                src={slide.image}
+                alt={slide.title}
+                className="w-full h-full"
+                sizes="100vw"
+                priority={index === 0}
+              />
 
 
               <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useCallback, useState } from 'react';
 import { useGesture } from '@use-gesture/react';
 import './DomeGallery.css';
 import { fetchGallery } from '../lib/galleryApi';
+import { bestVariantUrl } from '../lib/imageManifest';
 
 const DEFAULTS = {
   maxVerticalRotationDeg: 5,
@@ -608,7 +609,10 @@ export default function DomeGallery({
               <div
                 key={`${it.x},${it.y},${i}`}
                 className="item"
-                data-src={it.src}
+                /* The enlarged overlay reads this (see onTileClick), so it gets
+                   a bigger rung than the tile itself — but still not the
+                   multi-megabyte original. */
+                data-src={bestVariantUrl(it.src, 1600)}
                 data-offset-x={it.x}
                 data-offset-y={it.y}
                 data-size-x={it.sizeX}
@@ -633,7 +637,12 @@ export default function DomeGallery({
                       here leaves tiles blank until they are dragged into
                       place. The dome repeats only a handful of unique URLs,
                       so the browser fetches each one once and reuses it. */}
-                  <img src={it.src} draggable={false} alt={it.alt} decoding="async" />
+                  {/* Dome tiles render at a few hundred pixels even on a large
+                      screen, so the 800px rung covers 2× density with room to
+                      spare. OptimizedImage is deliberately NOT used here: its
+                      wrapper div would sit between .item__image and the <img>
+                      that the 3D transform CSS targets. */}
+                  <img src={bestVariantUrl(it.src, 800)} draggable={false} alt={it.alt} decoding="async" />
                 </div>
               </div>
             ))}

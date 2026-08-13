@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Images, RefreshCw, Search, X, AlertCircle, Loader, Trash2, Pencil } from "lucide-react";
 
 import ImageLibraryGrid from "./ImageLibraryGrid";
+import { bestVariantUrl } from "../lib/imageManifest";
 
 /**
  * "Uploaded Images" section — the identical block rendered on /admin/images and
@@ -30,7 +31,7 @@ function RenameImageModal({ image, onConfirm, onCancel, loading }) {
 
         <div className="rounded-xl overflow-hidden border-2 border-gray-200 bg-gray-100 w-full mb-4" style={{ aspectRatio: "16/9" }}>
           <img
-            src={image.file_url || image.url}
+            src={bestVariantUrl(image.file_url || image.url, 400)}
             alt={image.original_name || image.filename}
             className="w-full h-full object-cover"
           />

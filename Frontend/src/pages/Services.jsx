@@ -12,8 +12,13 @@ import {
   FaDollarSign,
   FaArrowRight
 } from 'react-icons/fa';
+import OptimizedImage from "../components/OptimizedImage";
+import { useTargetWidth } from "../lib/useResponsiveImage";
+import { bestVariantUrl } from "../lib/imageManifest";
 
 const Services = () => {
+  // Hero paints via CSS background-image, which cannot carry a srcSet.
+  const targetWidth = useTargetWidth();
   const navigate = useNavigate();
 
   const services = [
@@ -69,8 +74,10 @@ const Services = () => {
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage:
-              "url('https://geniestudio.in/uploads/1786602495_1786602495498-147900462.jpg')",
+            backgroundImage: `url('${bestVariantUrl(
+              "https://geniestudio.in/uploads/1786602495_1786602495498-147900462.jpg",
+              targetWidth
+            )}')`,
           }}
         />
 
@@ -103,11 +110,12 @@ const Services = () => {
                 onClick={() => navigate(service.route)}
               >
                 <div className="relative overflow-hidden aspect-[4/5] sm:aspect-[3/4]">
-                  <img
+                  <OptimizedImage
                     src={service.image}
                     alt={service.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                    loading="lazy"
+                    className="w-full h-full"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    imgClassName="group-hover:scale-110 transition-transform duration-700"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900/95 via-slate-900/50 to-transparent">
                     <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 md:p-8 text-white">

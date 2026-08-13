@@ -5,6 +5,7 @@ import {
 } from "lucide-react";
 import DOMPurify from "dompurify";
 import BASE_URL from "../api";
+import OptimizedImage from "../components/OptimizedImage";
 
 const FALLBACK =
     "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1200&q=80";
@@ -201,16 +202,15 @@ export default function BlogDetail() {
             ══════════════════════════════════════════════ */}
             <section className="w-full bg-stone-100 overflow-hidden">
                 <div className="relative w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[2/1] lg:aspect-[21/9]">
-                    <img
+                    <OptimizedImage
                         src={heroSrc}
                         alt={blog.title}
                         onError={() => setImgError(true)}
-                        loading="eager"
-                        /* This is the LCP element on a blog page — tell the
-                           browser to fetch it ahead of everything else. */
-                        fetchPriority="high"
-                        decoding="async"
-                        className="absolute inset-0 w-full h-full object-cover"
+                        /* This is the LCP element on a blog page — `priority`
+                           makes it eager + fetchpriority="high". */
+                        priority
+                        sizes="100vw"
+                        className="absolute inset-0 w-full h-full"
                     />
                     <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-stone-900/30 to-transparent pointer-events-none" />
 
@@ -461,13 +461,13 @@ export default function BlogDetail() {
                                     className="group flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1.5 cursor-pointer border border-slate-100 hover:border-stone-200"
                                 >
                                     <div className="relative w-full overflow-hidden aspect-[4/3]">
-                                        <img
+                                        <OptimizedImage
                                             src={rb.image || FALLBACK}
                                             alt={rb.title || "Related blog"}
-                                            loading="lazy"
-                                            decoding="async"
                                             onError={(e) => { e.currentTarget.src = FALLBACK; }}
-                                            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                                            className="absolute inset-0 w-full h-full"
+                                            imgClassName="group-hover:scale-105 transition-transform duration-500"
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                         {rb.category && (

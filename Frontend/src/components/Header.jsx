@@ -44,7 +44,11 @@ const Header = () => {
         <div className="flex items-center justify-between h-16 md:h-20">
 
           <Link to="/" className="flex items-center gap-3">
-            <img src="/GenieStudio.png" alt="Genie Studio" className="h-10 md:h-11 w-cover" />
+            {/* 117×264 WebP rather than the 409×921 PNG the favicon still uses —
+                the logo never renders above 44px tall. width/height are set so
+                the header does not reflow while it loads. */}
+              <img src="/GenieStudio-logo.webp" alt="Genie Studio" width="117" height="264"
+                className="h-10 md:h-11 w-cover" fetchPriority="high" decoding="async" />
             <span className="text-lg md:text-2xl lg:text-3xl font-semibold text-white">
               Genie<span className="text-[var(--accent-color)]">Studio</span>
             </span>

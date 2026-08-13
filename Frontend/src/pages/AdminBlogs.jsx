@@ -14,6 +14,7 @@ import {
   Calendar, Tag, Link2, Image, FileText, AlignLeft, ArrowLeft,
   MoreVertical, RefreshCw, Globe, EyeOff, Lock, Copy, Share2, Images, Upload,
 } from "lucide-react";
+import { bestVariantUrl } from "../lib/imageManifest";
 
 function DeleteModal({ blog, onConfirm, onCancel, loading }) {
   if (!blog) return null;
@@ -123,7 +124,7 @@ const shareUrl = `https://geniestudio.in/og.php?slug=${blog.permalink}`;
     <div className="bg-white rounded-2xl overflow-hidden shadow-md border border-gray-100 hover:shadow-xl hover:-translate-y-0.5 sm:hover:-translate-y-1 transition-all duration-300 flex flex-col group">
       <div className="relative w-full overflow-hidden" style={{ aspectRatio: "16/9" }}>
         <img
-          src={blog.image || FALLBACK}
+          src={bestVariantUrl(blog.image || FALLBACK, 400)}
           alt={blog.title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           onError={(e) => { e.target.onerror = null; e.target.src = FALLBACK; }}

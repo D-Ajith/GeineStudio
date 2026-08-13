@@ -10,6 +10,7 @@ const path = require("path");
 const fs = require("fs");
 const axios = require("axios");
 const FormData = require("form-data");
+const { generateAndUploadVariants } = require("./lib/imagePipeline");
 
 const PORT = process.env.PORT || 5000;
 const app = express();
@@ -60,6 +61,61 @@ const dbQuery = (sql, params = []) =>
     db.query(sql, params, (err, result) => (err ? reject(err) : resolve(result)));
   });
 
+/**
+ * `images.variants` is stored as a JSON string in a TEXT column. Rows written
+ * before the responsive pipeline existed hold NULL, and a hand-edited row could
+ * hold something unparseable — in both cases the caller should just get null and
+ * fall back to the plain `file_url`, never a 500.
+ */
+const parseVariants = (raw) => {
+  if (!raw) return null;
+  if (typeof raw === "object") return raw;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * Attaches variants/lqip to any list of rows carrying an image URL, by looking
+ * the URL up in the `images` registry.
+ *
+ * Gallery and portfolio rows store only a URL — many were added as raw URLs via
+ * the bulk manager and have no `images` row of their own. One IN() query keeps
+ * this to a single round trip instead of one per item.
+ */
+const attachImageVariants = async (rows, urlKey = "image_url") => {
+  const urls = [...new Set(rows.map((r) => r[urlKey]).filter(Boolean))];
+  if (urls.length === 0) return rows;
+
+  let byUrl = new Map();
+  try {
+    const found = await dbQuery(
+      `SELECT file_url, variants, lqip, width, height FROM images WHERE file_url IN (?)`,
+      [urls]
+    );
+    byUrl = new Map(found.map((r) => [r.file_url, r]));
+  } catch (err) {
+    // A lookup failure must never take down the public page — the items still
+    // render from their original URL, just without a srcSet.
+    console.error("Variant lookup failed:", err.message);
+    return rows;
+  }
+
+  return rows.map((row) => {
+    const match = byUrl.get(row[urlKey]);
+    if (!match) return row;
+    return {
+      ...row,
+      variants: parseVariants(match.variants),
+      lqip: match.lqip || null,
+      width: match.width || null,
+      height: match.height || null,
+    };
+  });
+};
+
 // ================= IMAGES TABLE =================
 // Central registry of every image pushed to Hostinger — used by the standalone
 // Image Library (/admin/images) and by the Blog Editor's Featured Image.
@@ -84,6 +140,34 @@ db.query(
     else console.log("✅ images table ready");
   }
 );
+
+// Responsive derivatives live alongside the original row. Added by migration
+// rather than in CREATE TABLE above, because the table already exists in
+// production and CREATE TABLE IF NOT EXISTS would skip the new columns.
+//
+//   variants — JSON: { webp: { 400: url, … }, avif: { 400: url, … } }
+//   lqip     — base64 data URI of the ~24px blur-up placeholder
+//
+// Both are nullable: an image with no derivatives yet still renders from
+// file_url, it just does not get a srcSet.
+const addColumnIfMissing = (table, column, definition) => {
+  db.query(
+    `SELECT COUNT(*) AS n FROM information_schema.COLUMNS
+      WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?`,
+    [table, column],
+    (err, rows) => {
+      if (err) return console.log(`❌ ${table}.${column} check failed:`, err.message);
+      if (rows[0].n > 0) return;
+      db.query(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`, (alterErr) => {
+        if (alterErr) console.log(`❌ ${table}.${column} add failed:`, alterErr.message);
+        else console.log(`✅ ${table}.${column} added`);
+      });
+    }
+  );
+};
+
+addColumnIfMissing("images", "variants", "TEXT DEFAULT NULL");
+addColumnIfMissing("images", "lqip", "TEXT DEFAULT NULL");
 
 // ================= PORTFOLIO =================
 // Categories the public Portfolio page filters by. "all" is a view, not a
@@ -260,10 +344,32 @@ const uploadToHostinger = async (tempFilePath) => {
 // The DB row is a convenience index; if the insert fails the upload itself is
 // still returned so blog creation never breaks because of the library.
 const uploadAndRegisterImage = async (file, meta = {}) => {
+  // Read the bytes before uploadToHostinger runs — it deletes the temp file.
+  let sourceBuffer = null;
+  try {
+    sourceBuffer = fs.readFileSync(file.path);
+  } catch (readErr) {
+    console.error("Could not read temp file for variants:", readErr.message);
+  }
+
   const url = await uploadToHostinger(file.path);
   if (!url) throw new Error("Upload service did not return a URL");
 
   const filename = String(url).split("/").pop().split("?")[0];
+
+  // Responsive derivatives. Deliberately best-effort: if sharp runs out of
+  // memory on a 33-megapixel original, or Hostinger rejects a variant, the
+  // original has already uploaded successfully and the admin still gets a
+  // working URL back. The image simply renders without a srcSet until the
+  // backfill script picks it up.
+  let derived = null;
+  if (sourceBuffer) {
+    try {
+      derived = await generateAndUploadVariants(sourceBuffer, filename);
+    } catch (variantErr) {
+      console.error("Variant generation failed (original still uploaded):", variantErr.message);
+    }
+  }
   const record = {
     id: null,
     filename,
@@ -273,8 +379,12 @@ const uploadAndRegisterImage = async (file, meta = {}) => {
     file_path: `public_html/uploads/${filename}`,
     mime_type: file.mimetype || null,
     file_size: file.size || null,
-    width: Number(meta.width) || null,
-    height: Number(meta.height) || null,
+    // Prefer the dimensions sharp measured (post EXIF-rotation) over whatever
+    // the client reported, so width/height always match the bytes on disk.
+    width: derived?.width || Number(meta.width) || null,
+    height: derived?.height || Number(meta.height) || null,
+    variants: derived?.variants || null,
+    lqip: derived?.lqip || null,
     created_at: Date.now(),
   };
 
@@ -288,8 +398,8 @@ const uploadAndRegisterImage = async (file, meta = {}) => {
 
     const result = await dbQuery(
       `INSERT INTO images
-        (filename, original_name, file_url, file_path, mime_type, file_size, width, height, source, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        (filename, original_name, file_url, file_path, mime_type, file_size, width, height, variants, lqip, source, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         record.filename,
         record.original_name,
@@ -299,6 +409,8 @@ const uploadAndRegisterImage = async (file, meta = {}) => {
         record.file_size,
         record.width,
         record.height,
+        record.variants ? JSON.stringify(record.variants) : null,
+        record.lqip,
         meta.source || "library",
         record.created_at,
       ]
@@ -409,7 +521,11 @@ app.get("/api/images", verifyToken, async (req, res) => {
     );
     res.json({
       success: true,
-      images: images.map((img) => ({ ...img, url: img.file_url })),
+      images: images.map((img) => ({
+        ...img,
+        url: img.file_url,
+        variants: parseVariants(img.variants),
+      })),
     });
   } catch (err) {
     console.error("DB error listing images:", err.message);
@@ -494,7 +610,7 @@ app.get("/api/portfolio", async (req, res) => {
       `SELECT * FROM portfolio_images ${where} ORDER BY category ASC, sort_order ASC, id ASC`,
       params
     );
-    res.json({ success: true, items });
+    res.json({ success: true, items: await attachImageVariants(items) });
   } catch (err) {
     console.error("DB error fetching portfolio:", err.message);
     res.status(500).json({ success: false, message: "Failed to fetch portfolio images" });
@@ -659,7 +775,7 @@ app.get("/api/gallery", async (req, res) => {
     const items = await dbQuery(
       "SELECT * FROM gallery_images ORDER BY sort_order ASC, id ASC"
     );
-    res.json({ success: true, items });
+    res.json({ success: true, items: await attachImageVariants(items) });
   } catch (err) {
     console.error("DB error fetching gallery:", err.message);
     res.status(500).json({ success: false, message: "Failed to fetch gallery images" });

@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Users, Camera, Globe, Award, ArrowRight, Briefcase, Calendar, Package, Mic, User, TrendingUp, CheckCircle, Star, Play, Aperture, Film, Lightbulb, Monitor } from "lucide-react";
 import VideoHero from "../components/VideoHero";
 import Headings from "../components/Headings"
+import OptimizedImage from "../components/OptimizedImage";
+import { useTargetWidth } from "../lib/useResponsiveImage";
+import { bestVariantUrl } from "../lib/imageManifest";
 import { useNavigate } from "react-router-dom";
 const Home = () => {
   const [active, setActive] = useState(0);
@@ -12,6 +15,12 @@ const Home = () => {
   const handleSlideChange = (index) => {
     setActiveIndex(index);
   };
+
+  // The hero and parallax sections paint through CSS background-image, which
+  // cannot carry a srcSet — so pick the right pre-generated file for this
+  // viewport instead. Phones end up on the 800px file rather than the 7008px
+  // original.
+  const targetWidth = useTargetWidth();
 
 
   const slides = [
@@ -247,7 +256,7 @@ const Home = () => {
               <div
                 className={`w-full h-full bg-cover bg-center ${active === index ? "animate-ken-burns" : ""
                   }`}
-                style={{ backgroundImage: `url(${slide.image})` }}
+                style={{ backgroundImage: `url(${bestVariantUrl(slide.image, targetWidth)})` }}
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent" />
               </div>
@@ -357,10 +366,12 @@ const Home = () => {
                 <div className="carousel-track flex gap-5">
 
                   <div className="carousel-item flex-shrink-0 w-[300px] sm:w-[340px] h-[280px] sm:h-[320px] relative rounded-2xl overflow-hidden cursor-pointer group">
-                    <img
+                    <OptimizedImage
                       src="https://geniestudio.in/uploads/1786524726_1786524725461-113127996.JPG"
                       alt="Podcast Production"
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      className="w-full h-full"
+                      sizes="(max-width: 640px) 300px, 340px"
+                      imgClassName="transition-transform duration-500 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-6 flex flex-col justify-end pointer-events-none">
                       <span className="bg-orange-500 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
@@ -372,10 +383,12 @@ const Home = () => {
                     </div>
                   </div>
                   <div className="carousel-item flex-shrink-0 w-[300px] sm:w-[340px] h-[280px] sm:h-[320px] relative rounded-2xl overflow-hidden cursor-pointer group">
-                    <img
+                    <OptimizedImage
                       src="https://geniestudio.in/uploads/1786519473_1786519471789-580284373.jpg"
                       alt="Product Shoots"
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      className="w-full h-full"
+                      sizes="(max-width: 640px) 300px, 340px"
+                      imgClassName="transition-transform duration-500 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-6 flex flex-col justify-end pointer-events-none">
                       <span className="bg-orange-500 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
@@ -387,10 +400,12 @@ const Home = () => {
                     </div>
                   </div>
                   <div className="carousel-item flex-shrink-0 w-[300px] sm:w-[340px] h-[280px] sm:h-[320px] relative rounded-2xl overflow-hidden cursor-pointer group">
-                    <img
+                    <OptimizedImage
                       src="https://geniestudio.in/uploads/1786520942_1786520939441-392375551.webp"
                       alt="Corporate Shoots"
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      className="w-full h-full"
+                      sizes="(max-width: 640px) 300px, 340px"
+                      imgClassName="transition-transform duration-500 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-6 flex flex-col justify-end pointer-events-none">
                       <span className="bg-orange-500 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
@@ -403,10 +418,12 @@ const Home = () => {
                   </div>
 
                   <div className="carousel-item flex-shrink-0 w-[300px] sm:w-[340px] h-[280px] sm:h-[320px] relative rounded-2xl overflow-hidden cursor-pointer group">
-                    <img
+                    <OptimizedImage
                       src="https://geniestudio.in/uploads/1786522543_1786522542765-76055353.webp"
                       alt="Event Photography"
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      className="w-full h-full"
+                      sizes="(max-width: 640px) 300px, 340px"
+                      imgClassName="transition-transform duration-500 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-6 flex flex-col justify-end pointer-events-none">
                       <span className="bg-orange-500 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
@@ -419,10 +436,12 @@ const Home = () => {
                   </div>
 
                   <div className="carousel-item flex-shrink-0 w-[300px] sm:w-[340px] h-[280px] sm:h-[320px] relative rounded-2xl overflow-hidden cursor-pointer group">
-                    <img
+                    <OptimizedImage
                       src="https://geniestudio.in/uploads/1786520942_1786520939442-30465918.webp"
                       alt="Professional Shoots"
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      className="w-full h-full"
+                      sizes="(max-width: 640px) 300px, 340px"
+                      imgClassName="transition-transform duration-500 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-6 flex flex-col justify-end pointer-events-none">
                       <span className="bg-orange-500 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
@@ -435,10 +454,12 @@ const Home = () => {
                   </div>
 
                   <div className="carousel-item flex-shrink-0 w-[300px] sm:w-[340px] h-[280px] sm:h-[320px] relative rounded-2xl overflow-hidden cursor-pointer group">
-                    <img
+                    <OptimizedImage
                       src="https://geniestudio.in/uploads/1786533204_1786533201915-325514601.webp"
                       alt="Business Portfolio"
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      className="w-full h-full"
+                      sizes="(max-width: 640px) 300px, 340px"
+                      imgClassName="transition-transform duration-500 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-6 flex flex-col justify-end pointer-events-none">
                       <span className="bg-orange-500 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
@@ -451,10 +472,12 @@ const Home = () => {
                   </div>
 
                   <div className="carousel-item flex-shrink-0 w-[300px] sm:w-[340px] h-[280px] sm:h-[320px] relative rounded-2xl overflow-hidden cursor-pointer group">
-                    <img
+                    <OptimizedImage
                       src="https://geniestudio.in/uploads/1786519473_1786519473117-884148224.jpg"
                       alt="Corporate Shoots"
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      className="w-full h-full"
+                      sizes="(max-width: 640px) 300px, 340px"
+                      imgClassName="transition-transform duration-500 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-6 flex flex-col justify-end pointer-events-none">
                       <span className="bg-orange-500 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
@@ -467,10 +490,12 @@ const Home = () => {
                   </div>
 
                   <div className="carousel-item flex-shrink-0 w-[300px] sm:w-[340px] h-[280px] sm:h-[320px] relative rounded-2xl overflow-hidden cursor-pointer group">
-                    <img
+                    <OptimizedImage
                       src="https://geniestudio.in/uploads/1786522545_1786522545182-756687474.webp"
                       alt="Event Photography"
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      className="w-full h-full"
+                      sizes="(max-width: 640px) 300px, 340px"
+                      imgClassName="transition-transform duration-500 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-6 flex flex-col justify-end pointer-events-none">
                       <span className="bg-orange-500 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
@@ -483,10 +508,12 @@ const Home = () => {
                   </div>
 
                   <div className="carousel-item flex-shrink-0 w-[300px] sm:w-[340px] h-[280px] sm:h-[320px] relative rounded-2xl overflow-hidden cursor-pointer group">
-                    <img
+                    <OptimizedImage
                       src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80"
                       alt="Product Shoots"
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      className="w-full h-full"
+                      sizes="(max-width: 640px) 300px, 340px"
+                      imgClassName="transition-transform duration-500 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-6 flex flex-col justify-end pointer-events-none">
                       <span className="bg-orange-500 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
@@ -499,10 +526,12 @@ const Home = () => {
                   </div>
 
                   <div className="carousel-item flex-shrink-0 w-[300px] sm:w-[340px] h-[280px] sm:h-[320px] relative rounded-2xl overflow-hidden cursor-pointer group">
-                    <img
+                    <OptimizedImage
                       src="https://images.unsplash.com/photo-1590602847861-f357a9332bbc?w=800&q=80"
                       alt="Podcast Production"
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      className="w-full h-full"
+                      sizes="(max-width: 640px) 300px, 340px"
+                      imgClassName="transition-transform duration-500 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-6 flex flex-col justify-end pointer-events-none">
                       <span className="bg-orange-500 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
@@ -515,10 +544,12 @@ const Home = () => {
                   </div>
 
                   <div className="carousel-item flex-shrink-0 w-[300px] sm:w-[340px] h-[280px] sm:h-[320px] relative rounded-2xl overflow-hidden cursor-pointer group">
-                    <img
+                    <OptimizedImage
                       src="https://images.unsplash.com/photo-1556761175-b413da4baf72?w=800&q=80"
                       alt="Professional Shoots"
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      className="w-full h-full"
+                      sizes="(max-width: 640px) 300px, 340px"
+                      imgClassName="transition-transform duration-500 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-6 flex flex-col justify-end pointer-events-none">
                       <span className="bg-orange-500 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
@@ -531,10 +562,12 @@ const Home = () => {
                   </div>
 
                   <div className="carousel-item flex-shrink-0 w-[300px] sm:w-[340px] h-[280px] sm:h-[320px] relative rounded-2xl overflow-hidden cursor-pointer group">
-                    <img
+                    <OptimizedImage
                       src="https://images.unsplash.com/photo-1664575602276-acd073f104c1?w=800&q=80"
                       alt="Business Portfolio"
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      className="w-full h-full"
+                      sizes="(max-width: 640px) 300px, 340px"
+                      imgClassName="transition-transform duration-500 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-6 flex flex-col justify-end pointer-events-none">
                       <span className="bg-orange-500 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
@@ -713,10 +746,10 @@ const Home = () => {
             "https://geniestudio.in/uploads/1786522551_1786522551131-390094297.webp",
           ].map((src, i) => (
             <div key={i} className="aspect-square w-full overflow-hidden group relative" onMouseEnter={() => setHoveredIndex(i)} onMouseLeave={() => setHoveredIndex(null)} >
-              <img src={src} alt={`photo-${i}`}
-                className={`w-full h-full object-cover transition-all duration-700 ${hoveredIndex === i ? 'scale-110 brightness-75' : 'scale-100 brightness-100'}`}
-                loading="lazy"
-                decoding="async" />
+              <OptimizedImage src={src} alt={`photo-${i}`}
+                className="w-full h-full"
+                sizes="(max-width: 640px) 50vw, 33vw"
+                imgClassName={`transition-all duration-700 ${hoveredIndex === i ? 'scale-110 brightness-75' : 'scale-100 brightness-100'}`} />
               <div className={`absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent transition-opacity duration-500 ${hoveredIndex === i ? 'opacity-100' : 'opacity-0'
                 }`}></div>
             </div>
@@ -750,7 +783,10 @@ const Home = () => {
               return (
                 <div key={i} className=" group relative overflow-hidden rounded-2xl  bg-white  shadow-lg hover:shadow-2xl transition-all duration-500" data-animate id={`equipment-${i}`} >
                   <div className="aspect-[3/4] sm:aspect-[4/5] lg:aspect-[3/4] overflow-hidden">
-                    <img src={item.image} alt={item.title} className=" w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 " />
+                    <OptimizedImage src={item.image} alt={item.title}
+                      className="w-full h-full"
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 25vw"
+                      imgClassName="transition-transform duration-700 group-hover:scale-110" />
                   </div>
 
                   <div className=" absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent flex flex-col justify-end p-4 sm:p-6 " >
@@ -942,7 +978,10 @@ const Home = () => {
         <div
           className="absolute inset-0 bg-cover bg-center bg-fixed"
           style={{
-            backgroundImage: "url('https://geniestudio.in/uploads/1786601936_1786601934919-89162093.jpg')"
+            backgroundImage: `url('${bestVariantUrl(
+              "https://geniestudio.in/uploads/1786601936_1786601934919-89162093.jpg",
+              targetWidth
+            )}')`
           }}
         >
           <div className="absolute inset-0 bg-[#6B4A2D]/80" />
@@ -981,10 +1020,12 @@ const Home = () => {
               <div
                 key={i}
                 className=" group relative overflow-hidden rounded-xl sm:rounded-2xl shadow-md sm:shadow-lg lg:hover:shadow-2xl transition-all duration-300 aspect-[4/3] ">
-                <img
+                <OptimizedImage
                   src={item.image}
                   alt={item.title}
-                  className="w-full h-full object-cover lg:group-hover:scale-110 transition-transform duration-500"
+                  className="w-full h-full"
+                  sizes="(max-width: 768px) 50vw, 33vw"
+                  imgClassName="lg:group-hover:scale-110 transition-transform duration-500"
                 />
 
                 <div

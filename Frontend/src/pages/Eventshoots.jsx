@@ -1,10 +1,15 @@
 import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaCalendarCheck, FaArrowLeft, FaCheckCircle, FaWhatsapp } from 'react-icons/fa';
+import OptimizedImage from "../components/OptimizedImage";
+import { useTargetWidth } from "../lib/useResponsiveImage";
+import { bestVariantUrl } from "../lib/imageManifest";
 
 const Eventshoots = () => {
   const navigate = useNavigate();
   const heroRef = useRef(null);
+  // Hero paints via CSS background-image, which cannot carry a srcSet.
+  const targetWidth = useTargetWidth();
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
@@ -51,7 +56,7 @@ const Eventshoots = () => {
           ref={heroRef}
           className="absolute inset-0 w-full h-[110%] -top-[5%]"
           style={{
-            backgroundImage: "url('https://geniestudio.in/uploads/1786601438_1786601436150-15515106.png')",
+            backgroundImage: `url('${bestVariantUrl("https://geniestudio.in/uploads/1786601438_1786601436150-15515106.png", targetWidth)}')`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
@@ -126,10 +131,12 @@ const Eventshoots = () => {
               >
                 {/* Image */}
                 <div className="w-full h-40 sm:h-44 overflow-hidden">
-                  <img
+                  <OptimizedImage
                     src={item.img}
                     alt={item.label}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="w-full h-full"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    imgClassName="transition-transform duration-500 group-hover:scale-105"
                   />
                 </div>
 

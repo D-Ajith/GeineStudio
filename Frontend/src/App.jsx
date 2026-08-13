@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import AOS from "aos";
 import Header from "./components/Header";
@@ -18,11 +18,23 @@ import Productshoots from './pages/Productshoots';
 import Podcastshoots from './pages/Podcastshoots';
 import Professionalshoots from './pages/Professionalshoots';
 import Businessportfolioshoots from './pages/Businessportfolioshoots';
-import AdminLogin from "./pages/AdminLogin";
-import AdminBlogs from "./pages/AdminBlogs";
-import AdminImages from "./pages/AdminImages";
-import AdminPortfolio from "./pages/AdminPortfolio";
-import AdminGallery from "./pages/AdminGallery";
+/**
+ * Admin screens are split out of the main bundle.
+ *
+ * They are behind a login, so no visitor ever needs them — but statically
+ * imported they pulled the whole TipTap editor and every admin manager into the
+ * one chunk that the homepage has to parse before it can start fetching
+ * images. Splitting them frees that bandwidth and main-thread time for the
+ * photographs, which are what the public pages are actually for.
+ *
+ * Public routes stay eagerly imported on purpose: a visitor navigating
+ * Home → Portfolio should never wait on a chunk request.
+ */
+const AdminLogin = lazy(() => import("./pages/AdminLogin"));
+const AdminBlogs = lazy(() => import("./pages/AdminBlogs"));
+const AdminImages = lazy(() => import("./pages/AdminImages"));
+const AdminPortfolio = lazy(() => import("./pages/AdminPortfolio"));
+const AdminGallery = lazy(() => import("./pages/AdminGallery"));
 import Blogs from "./pages/Blogs";
 import BlogDetail from "./pages/Blogdetail";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -50,6 +62,10 @@ function App() {
       <ScrollToTop />
       <Header />
       <main className="flex-grow">
+        {/* Only the lazy admin routes can suspend; public routes render
+            synchronously exactly as before, so nothing about the visitor-facing
+            pages changes. */}
+        <Suspense fallback={null}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<About />} />
@@ -103,6 +119,7 @@ function App() {
 
           <Route path="/blogs" element={<Blogs />} />
           <Route path="/blog/*" element={<BlogDetail />} />        </Routes>
+        </Suspense>
       </main>
       <FloatingSocial />
       <Footer />

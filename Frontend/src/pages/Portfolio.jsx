@@ -2,11 +2,15 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import AOS from "aos";
 import { fetchPortfolio } from "../lib/portfolioApi";
 import OptimizedImage from "../components/OptimizedImage";
+import { useTargetWidth } from "../lib/useResponsiveImage";
+import { bestVariantUrl } from "../lib/imageManifest";
 
 /** Images rendered per batch — the rest stream in as the visitor scrolls. */
 const BATCH = 12;
 
 const Portfolio = () => {
+  // Hero paints via CSS background-image, which cannot carry a srcSet.
+  const targetWidth = useTargetWidth();
   const optimizeImage = (url) =>
     url?.includes("cloudinary")
       ? url.replace(
@@ -129,8 +133,10 @@ const Portfolio = () => {
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage:
-              "url('https://geniestudio.in/uploads/1786602496_1786602495549-844717374.jpg')",
+            backgroundImage: `url('${bestVariantUrl(
+              "https://geniestudio.in/uploads/1786602496_1786602495549-844717374.jpg",
+              targetWidth
+            )}')`,
           }}
         />
 

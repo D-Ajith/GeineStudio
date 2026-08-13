@@ -3,6 +3,7 @@ import { Copy, CheckCircle, Trash2, Check, ImageOff, Loader, Pencil, Calendar } 
 
 import { copyToClipboard } from "../lib/imageApi";
 import { formatBytes, formatUploadDate } from "../lib/imageSpec";
+import { bestVariantUrl } from "../lib/imageManifest";
 
 const FALLBACK = "https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=800&q=80";
 
@@ -44,7 +45,7 @@ function ImageCard({ image, onSelect, onRename, onDelete, selected }) {
         title={onSelect ? "Use this image" : url}
       >
         <img
-          src={url || FALLBACK}
+          src={bestVariantUrl(url || FALLBACK, 400)}
           alt={displayName}
           loading="lazy"
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"

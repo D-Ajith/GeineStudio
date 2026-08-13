@@ -9,8 +9,12 @@ const Footer = () => {
           <div className="space-y-4">
             <div className="flex items-center gap-3">
               <img
-                src="/GenieStudio.png"
+                src="/GenieStudio-logo.webp"
                 alt="Genie Studio"
+                width="117"
+                height="264"
+                loading="lazy"
+                decoding="async"
                 className="h-8 sm:h-9 w-cover"
               />
               <span className="text-lg sm:text-2xl lg:text-3xl xl:text-4xl font-semibold">

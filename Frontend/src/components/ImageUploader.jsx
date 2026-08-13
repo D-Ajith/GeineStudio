@@ -4,6 +4,7 @@ import { Image as ImageIcon, X, CheckCircle, AlertCircle, Loader } from "lucide-
 import { IMAGE_SPEC, IMAGE_MESSAGES, validateImageFile } from "../lib/imageSpec";
 import { uploadImage } from "../lib/imageApi";
 import ImageSpecsTable from "./ImageSpecsTable";
+import { bestVariantUrl } from "../lib/imageManifest";
 
 /**
  * The ONE image uploader in the app.
@@ -180,7 +181,7 @@ export default function ImageUploader({
             style={{ aspectRatio: "16/9" }}
           >
             <img
-              src={value}
+              src={bestVariantUrl(value, 400)}
               alt="Preview"
               className="w-full h-full object-cover"
               onError={(e) => { e.target.style.display = "none"; }}

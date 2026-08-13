@@ -1,8 +1,12 @@
 import React from 'react'
 import { useState } from 'react';
 import { Mail, Phone, MapPin, Clock, Send, Loader2 } from 'lucide-react';
+import { useTargetWidth } from "../lib/useResponsiveImage";
+import { bestVariantUrl } from "../lib/imageManifest";
 // import emailjs from '@emailjs/browser';
 const Contact = () => {
+  // Hero paints via CSS background-image, which cannot carry a srcSet.
+  const targetWidth = useTargetWidth();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -177,8 +181,10 @@ const Contact = () => {
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage:
-              "url('https://geniestudio.in/uploads/1786602496_1786602495602-162665034.jpg')",
+            backgroundImage: `url('${bestVariantUrl(
+              "https://geniestudio.in/uploads/1786602496_1786602495602-162665034.jpg",
+              targetWidth
+            )}')`,
           }}
         />
 

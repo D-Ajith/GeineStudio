@@ -12,6 +12,7 @@ import BulkImageUploader from "../components/BulkImageUploader";
 import ImageLibrarySection from "../components/ImageLibrarySection";
 import useImageLibrary from "../lib/useImageLibrary";
 import { copyToClipboard } from "../lib/imageApi";
+import { bestVariantUrl } from "../lib/imageManifest";
 
 export default function AdminImages() {
   const navigate = useNavigate();
@@ -207,7 +208,7 @@ export default function AdminImages() {
                 <div className="p-4 grid gap-4 sm:grid-cols-[220px_1fr]">
                   <div className="relative rounded-xl overflow-hidden border-2 border-green-200 bg-gray-100 w-full" style={{ aspectRatio: "16/9" }}>
                     <img
-                      src={uploadedPanel.url || uploadedPanel.file_url}
+                      src={bestVariantUrl(uploadedPanel.url || uploadedPanel.file_url, 800)}
                       alt={uploadedPanel.filename}
                       className="w-full h-full object-cover"
                     />

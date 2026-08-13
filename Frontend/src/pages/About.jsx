@@ -3,8 +3,14 @@ import { ArrowRight } from 'lucide-react';
 import { useState } from 'react';
 import Counter from '../components/Counter';
 import ImageCarousel from "../components/ImageCarousel"
+import OptimizedImage from "../components/OptimizedImage";
+import { useTargetWidth } from "../lib/useResponsiveImage";
+import { bestVariantUrl } from "../lib/imageManifest";
 const About = () => {
   const [activeTab, setActiveTab] = useState('mission');
+
+  // The hero paints through CSS background-image, which cannot carry a srcSet.
+  const targetWidth = useTargetWidth();
 
   const values = [
     {
@@ -138,8 +144,10 @@ const About = () => {
         <div
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage:
-              "url('https://geniestudio.in/uploads/1786602774_1786602774122-495403358.jpg')",
+            backgroundImage: `url('${bestVariantUrl(
+              "https://geniestudio.in/uploads/1786602774_1786602774122-495403358.jpg",
+              targetWidth
+            )}')`,
           }}
         />
 
@@ -192,10 +200,12 @@ const About = () => {
                 </div>
 
                 <div className="relative overflow-hidden rounded-2xl shadow-lg h-28 sm:h-40 md:h-48 w-full" data-aos="fade-right">
-                  <img
+                  <OptimizedImage
                     src="https://i.pinimg.com/736x/87/cd/ae/87cdaefca8bb9eded4cc653ec1c81ccc.jpg"
                     alt="Genie Studio Workspace"
-                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                    className="w-full h-full"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    imgClassName="transition-transform duration-500 group-hover:scale-110"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
                 </div>
@@ -210,10 +220,12 @@ const About = () => {
               data-aos="fade-up"
             >
               <div className="relative group overflow-hidden rounded-2xl shadow-lg h-64 sm:h-72 cursor-pointer">
-                <img
+                <OptimizedImage
                   src="https://geniestudio.in/uploads/1786531745_1786531742798-721756481.webp"
                   alt="Podcast Studio"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  className="w-full h-full"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  imgClassName="transition-transform duration-500 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-5">
@@ -223,10 +235,12 @@ const About = () => {
                 </div>
               </div>
               <div className="relative group overflow-hidden rounded-2xl shadow-lg h-64 sm:h-72 cursor-pointer">
-                <img
+                <OptimizedImage
                   src="https://geniestudio.in/uploads/1786601780_1786601778626-797870812.png"
                   alt="Product Studio"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  className="w-full h-full"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  imgClassName="transition-transform duration-500 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-5">
@@ -236,10 +250,12 @@ const About = () => {
                 </div>
               </div>
               <div className="relative group overflow-hidden rounded-2xl shadow-lg h-64 sm:h-72 cursor-pointer">
-                <img
+                <OptimizedImage
                   src="https://geniestudio.in/uploads/1786522542_1786522540558-872910330.webp"
                   alt="Corporate Studio"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  className="w-full h-full"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  imgClassName="transition-transform duration-500 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-5">
@@ -250,10 +266,12 @@ const About = () => {
               </div>
 
               <div className="relative group overflow-hidden rounded-2xl shadow-lg h-64 sm:h-72 cursor-pointer">
-                <img
+                <OptimizedImage
                   src="https://geniestudio.in/uploads/1786601438_1786601436150-15515106.png"
                   alt="Event Production"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  className="w-full h-full"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  imgClassName="transition-transform duration-500 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-5">
@@ -275,10 +293,12 @@ const About = () => {
 
             <div className=" grid grid-cols-2 gap-1 sm:gap-2 order-2 lg:order-1 w-full rounded-2xl shadow-lg overflow-hidden">
               <div className="relative group overflow-hidden h-[180px] sm:h-[210px] md:h-[240px]">
-                <img
+                <OptimizedImage
                   src="https://geniestudio.in/uploads/1786531739_1786531738826-206533018.webp"
                   alt="Podcast Shoots"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  className="w-full h-full"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  imgClassName="transition-transform duration-500 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
                 <div className="absolute bottom-3 left-3">
@@ -288,10 +308,12 @@ const About = () => {
                 </div>
               </div>
               <div className="relative group overflow-hidden h-[180px] sm:h-[210px] md:h-[240px]">
-                <img
+                <OptimizedImage
                   src="https://geniestudio.in/uploads/1786601780_1786601778626-797870812.png"
                   alt="Product Shoots"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  className="w-full h-full"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  imgClassName="transition-transform duration-500 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
                 <div className="absolute bottom-3 left-3">
@@ -301,10 +323,12 @@ const About = () => {
                 </div>
               </div>
               <div className="relative group overflow-hidden h-[180px] sm:h-[210px] md:h-[240px]">
-                <img
+                <OptimizedImage
                   src="https://geniestudio.in/uploads/1786601041_1786601041120-705832864.png"
                   alt="Corporate Shoots"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  className="w-full h-full"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  imgClassName="transition-transform duration-500 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
                 <div className="absolute bottom-3 left-3">
@@ -315,10 +339,12 @@ const About = () => {
               </div>
 
               <div className="relative group overflow-hidden h-[180px] sm:h-[210px] md:h-[240px]">
-                <img
+                <OptimizedImage
                   src="https://geniestudio.in/uploads/1786601438_1786601436150-15515106.png"
                   alt="Event Shoots"
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  className="w-full h-full"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                  imgClassName="transition-transform duration-500 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
                 <div className="absolute bottom-3 left-3">
@@ -540,12 +566,11 @@ const About = () => {
               </div>
             </div>
             <div className="relative order-first lg:order-last" data-aos="slide-left">
-              <img
+              <OptimizedImage
                 src="https://geniestudio.in/uploads/1786604019_1786604018546-87413699.jpg"
                 alt="Photography equipment"
-                className="rounded-xl sm:rounded-2xl shadow-xl sm:shadow-2xl w-full h-[350px] sm:h-[400px] md:h-[500px] lg:h-[550px] object-cover"
-                loading="lazy"
-                decoding="async"
+                className="rounded-xl sm:rounded-2xl shadow-xl sm:shadow-2xl w-full h-[350px] sm:h-[400px] md:h-[500px] lg:h-[550px]"
+                sizes="(max-width: 1024px) 100vw, 50vw"
               />
             </div>
           </div>
@@ -572,12 +597,12 @@ const About = () => {
                 className="group relative overflow-hidden rounded-xl bg-white shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
               >
                 <div className="aspect-[4/3] overflow-hidden">
-                  <img
+                  <OptimizedImage
                     src={service.image}
                     alt={service.title}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    loading="lazy"
-                    decoding="async"
+                    className="w-full h-full"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    imgClassName="group-hover:scale-110 transition-transform duration-500"
                   />
                 </div>
 
@@ -607,32 +632,32 @@ const About = () => {
       <section className="py-0">
         <div className="grid grid-cols-2 md:grid-cols-3 gap-0">
           <div className="relative group aspect-square overflow-hidden cursor-pointer">
-            <img
+            <OptimizedImage
               src="https://geniestudio.in/uploads/1786520942_1786520939456-72574430.webp"
               alt="Photography showcase"
-              className="w-full h-full object-cover group-hover:scale-110 group-hover:brightness-90 transition-all duration-700"
-              loading="lazy"
-              decoding="async"
+              className="w-full h-full"
+              sizes="(max-width: 768px) 100vw, 50vw"
+              imgClassName="group-hover:scale-110 group-hover:brightness-90 transition-all duration-700"
             />
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-500"></div>
           </div>
           <div className="relative group aspect-square overflow-hidden cursor-pointer">
-            <img
+            <OptimizedImage
               src="https://geniestudio.in/uploads/1786531747_1786531746636-336880294.webp"
               alt="Photography showcase"
-              className="w-full h-full object-cover group-hover:scale-110 group-hover:brightness-90 transition-all duration-700"
-              loading="lazy"
-              decoding="async"
+              className="w-full h-full"
+              sizes="(max-width: 768px) 100vw, 50vw"
+              imgClassName="group-hover:scale-110 group-hover:brightness-90 transition-all duration-700"
             />
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-500"></div>
           </div>
           <div className="relative group aspect-square overflow-hidden cursor-pointer">
-            <img
+            <OptimizedImage
               src="https://geniestudio.in/uploads/1786530714_1786530711205-339283661.jpg"
               alt="Photography showcase"
-              className="w-full h-full object-cover group-hover:scale-110 group-hover:brightness-90 transition-all duration-700"
-              loading="lazy"
-              decoding="async"
+              className="w-full h-full"
+              sizes="(max-width: 768px) 100vw, 50vw"
+              imgClassName="group-hover:scale-110 group-hover:brightness-90 transition-all duration-700"
             />
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-500"></div>
           </div>
@@ -674,12 +699,12 @@ const About = () => {
                 className="bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group"
               >
                 <div className="relative overflow-hidden">
-                  <img
+                  <OptimizedImage
                     src={member.image}
                     alt={member.name}
-                    className="w-full h-56 sm:h-80 md:h-96 object-cover group-hover:scale-105 transition-transform duration-300"
-                    loading="lazy"
-                    decoding="async"
+                    className="w-full h-56 sm:h-80 md:h-96"
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    imgClassName="group-hover:scale-105 transition-transform duration-300"
                   />
 
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900/70 to-transparent"></div>
