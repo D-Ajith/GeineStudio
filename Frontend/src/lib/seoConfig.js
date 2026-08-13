@@ -94,11 +94,15 @@ export const SERVICES = [
  * of the SERVICES list that drives the headline keyword set.
  */
 export const SEO = {
+  // Must stay byte-identical to the <title> and description in index.html.
+  // Non-JS crawlers read index.html; Google reads whichever the React layer
+  // renders last. If the two disagree, Google sees a title that flips between
+  // crawls, which is exactly the state that stops it trusting either one.
   home: {
     path: "/",
-    title: `${BRAND} | Podcast Shoots, Product Shoots, Corporate Shoots & Event Shoots`,
+    title: "Genie Studio | Photography, Podcast, Product & Professional Shoots",
     description:
-      "GenieStudio is a professional creative studio offering Podcast Shoots, Product Shoots, Corporate Shoots, Event Shoots and Professional Shoots in Visakhapatnam.",
+      "Genie Studio is a professional creative studio in Visakhapatnam offering photography, podcast shoots, product shoots, corporate shoots, event shoots, professional shoots and business portfolio photography.",
   },
   about: {
     path: "/about",

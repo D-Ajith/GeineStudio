@@ -257,8 +257,9 @@ const Home = () => {
           page states what GenieStudio actually does, once, in a stable string
           that names the five services. sr-only keeps the design untouched. */}
       <h1 className="sr-only">
-        GenieStudio — Podcast Shoots, Product Shoots, Corporate Shoots, Event
-        Shoots and Professional Shoots in Visakhapatnam
+        Genie Studio — Photography, Podcast Shoots, Product Shoots, Corporate
+        Shoots, Event Shoots, Professional Shoots and Business Portfolio
+        Photography in Yendada, Visakhapatnam
       </h1>
 
       <section className="relative h-[70vh] sm:h-[80vh] lg:h-screen overflow-hidden">
