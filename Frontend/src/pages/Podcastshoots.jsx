@@ -26,7 +26,20 @@ const Podcastshoots = () => {
   useEffect(() => {
     const hero = heroRef.current;
     if (!hero) return;
-    const onScroll = () => { hero.style.transform = `translateY(${window.scrollY * 0.35}px)`; };
+    // Coalesce to one write per frame. A scroll event can fire many times
+    // between paints, and each `style.transform =` invalidates layout — so the
+    // unbatched version did several times more work than the screen could
+    // show, which is what surfaces as "forced reflow". The motion is
+    // identical; it just no longer runs ahead of the compositor.
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        hero.style.transform = `translateY(${window.scrollY * 0.35}px)`;
+        ticking = false;
+      });
+    };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
@@ -183,10 +196,6 @@ const Podcastshoots = () => {
           </h1>
           <p className="text-xl sm:text-2xl font-light italic mb-6" style={{ color: '#E8600A' }}>
             Sound great. Look even better.
-          </p>
-          <p className="text-white/70 text-base sm:text-lg max-w-2xl mb-6 leading-relaxed">
-            Professional podcast shoots, video recording and full podcast
-            production at GenieStudio in Yendada, Visakhapatnam.
           </p>
           <div className="inline-block px-5 py-2 rounded-full text-sm font-bold text-white" style={{ background: '#E8600A' }}>
             Starting from

@@ -26,7 +26,20 @@ const Professionalshoots = () => {
   useEffect(() => {
     const hero = heroRef.current;
     if (!hero) return;
-    const onScroll = () => { hero.style.transform = `translateY(${window.scrollY * 0.35}px)`; };
+    // Coalesce to one write per frame. A scroll event can fire many times
+    // between paints, and each `style.transform =` invalidates layout — so the
+    // unbatched version did several times more work than the screen could
+    // show, which is what surfaces as "forced reflow". The motion is
+    // identical; it just no longer runs ahead of the compositor.
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        hero.style.transform = `translateY(${window.scrollY * 0.35}px)`;
+        ticking = false;
+      });
+    };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);

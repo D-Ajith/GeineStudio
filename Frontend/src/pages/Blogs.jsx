@@ -186,6 +186,8 @@ export default function Blogs() {
                     >
                       <OptimizedImage
                         src={imgSrc}
+                        variants={blog.variants}
+                        lqip={blog.lqip}
                         alt={blog.title || "Blog cover"}
                         imgClassName="group-hover:scale-105 transition-transform duration-500"
                         objectFit="contain"

@@ -9,8 +9,14 @@ const Header = () => {
   const location = useLocation();
 
   useEffect(() => {
+    // passive: without it the browser must wait to see whether the handler
+    // calls preventDefault before it can scroll, which shows up as scroll jank
+    // on touch devices. This handler never prevents anything.
+    //
+    // The boolean means React bails out of re-rendering on every scroll tick
+    // and only commits when the header actually crosses the 30px threshold.
     const onScroll = () => setScrolled(window.scrollY > 30);
-    window.addEventListener("scroll", onScroll);
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 

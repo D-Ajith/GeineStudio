@@ -71,9 +71,13 @@ export default function VideoHero() {
 
       <div className="relative z-30 h-full flex items-end pb-16 px-6 sm:px-12">
         <div className="max-w-3xl">
-          <h1 className="text-3xl sm:text-4xl lg:text-6xl font-semibold text-white mb-4 leading-tight">
+          {/* h2, not h1. This component renders inside Home, which already
+              has its own H1 — two H1s on one page leaves Google guessing what
+              the page is about. Tailwind preflight makes headings inherit size
+              and weight, so this renders identically. */}
+          <h2 className="text-3xl sm:text-4xl lg:text-6xl font-semibold text-white mb-4 leading-tight">
             {slides[active].title}
-          </h1>
+          </h2>
           <p className="text-base sm:text-lg lg:text-xl text-gray-300">
             {slides[active].desc}
           </p>

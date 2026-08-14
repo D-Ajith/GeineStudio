@@ -956,7 +956,7 @@ app.post("/api/blogs", verifyToken, upload.single("image"), async (req, res) => 
 
 // ================= GET PUBLIC BLOGS =================
 app.get("/api/blogs", (req, res) => {
-  db.query("SELECT * FROM blogs WHERE status = 'published' ORDER BY createdAt DESC", (err, results) => {
+  db.query("SELECT * FROM blogs WHERE status = 'published' ORDER BY createdAt DESC", async (err, results) => {
     if (err) return res.status(500).json({ success: false, message: "Failed to fetch blogs" });
 
     const blogs = results.map((blog) => ({
@@ -964,7 +964,10 @@ app.get("/api/blogs", (req, res) => {
       image: getImageUrl(blog.image),
     }));
 
-    res.json(blogs);
+    // Blog images are no longer in the shipped manifest — it now carries only
+    // the URLs hardcoded in the JSX — so the responsive variants have to ride
+    // along with the data instead. One IN() query, same as gallery/portfolio.
+    res.json(await attachImageVariants(blogs, "image"));
   });
 });
 
@@ -988,13 +991,16 @@ app.use("/api/blog", (req, res) => {
   if (!slug)
     return res.status(404).json({ success: false, message: "No slug provided" });
 
-  db.query("SELECT * FROM blogs WHERE permalink = ?", [slug], (err, result) => {
+  db.query("SELECT * FROM blogs WHERE permalink = ?", [slug], async (err, result) => {
     if (err) return res.status(500).json({ success: false, message: "Database error" });
     if (result.length === 0)
       return res.status(404).json({ success: false, message: "Blog not found" });
 
     const blog = { ...result[0], image: getImageUrl(result[0].image) };
-    res.json(blog);
+    // The hero image here is the blog page's LCP element, so it needs its
+    // variants and LQIP attached rather than falling back to the original.
+    const [withVariants] = await attachImageVariants([blog], "image");
+    res.json(withVariants);
   });
 });
 

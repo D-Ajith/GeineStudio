@@ -29,16 +29,23 @@ export default defineConfig({
         manualChunks(id) {
           if (!id.includes("node_modules")) return;
 
+          // Only force a shared chunk for things EVERY route genuinely needs.
           if (id.includes("react-router")) return "vendor-router";
           if (/[\\/]node_modules[\\/](react|react-dom|scheduler)[\\/]/.test(id)) {
             return "vendor-react";
           }
-          if (id.includes("@tiptap") || id.includes("prosemirror")) return "vendor-editor";
-          if (id.includes("gsap") || id.includes("motion")) return "vendor-motion";
-          if (id.includes("swiper")) return "vendor-swiper";
-          if (id.includes("firebase")) return "vendor-firebase";
+          // Icons are pulled by the header and footer, so they load anyway.
           if (id.includes("lucide-react") || id.includes("react-icons")) return "vendor-icons";
-          return "vendor";
+
+          // Everything else: return nothing and let Rollup decide.
+          //
+          // This used to end in `return "vendor"`, a catch-all that swept every
+          // remaining dependency into one chunk loaded on every page. Once the
+          // routes were code-split that became actively harmful — DOMPurify
+          // (blog detail only), EmailJS (contact only) and use-gesture (dome
+          // gallery only) were all being downloaded and parsed by someone who
+          // just opened the homepage. Letting Rollup place them puts each one
+          // in the route chunk that actually imports it.
         },
       },
     },

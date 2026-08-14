@@ -33,7 +33,22 @@ const mysql = require("mysql2");
 
 const { generateAndUploadVariants } = require("../lib/imagePipeline");
 
-const MANIFEST_PATH = path.resolve(
+/**
+ * TWO manifests, on purpose.
+ *
+ * FULL_MANIFEST_PATH is this script's own resume state: every image it has
+ * ever processed. It stays in backend/ and is never shipped to the browser.
+ *
+ * SHIPPED_MANIFEST_PATH is what Vite bundles into the app, and it contains
+ * ONLY the URLs hardcoded in the JSX. That distinction matters a lot: the full
+ * manifest is 249 KB, which was 56% of the entire main JS chunk, and 185 of
+ * its 239 entries were for gallery/portfolio/blog images that already receive
+ * their variants from the API response (see attachImageVariants in server.js).
+ * The browser was parsing a quarter of a megabyte of JSON to answer questions
+ * it was also being told the answer to.
+ */
+const FULL_MANIFEST_PATH = path.resolve(__dirname, "variants-manifest.json");
+const SHIPPED_MANIFEST_PATH = path.resolve(
   __dirname,
   "../../Frontend/src/lib/imageManifest.json"
 );
@@ -62,15 +77,42 @@ const dbQuery = (sql, params = []) =>
 
 const loadManifest = () => {
   try {
-    return JSON.parse(fs.readFileSync(MANIFEST_PATH, "utf8"));
+    return JSON.parse(fs.readFileSync(FULL_MANIFEST_PATH, "utf8"));
   } catch {
-    return {};
+    // Fall back to the shipped file so an existing install migrates cleanly
+    // rather than reprocessing every image from scratch.
+    try {
+      return JSON.parse(fs.readFileSync(SHIPPED_MANIFEST_PATH, "utf8"));
+    } catch {
+      return {};
+    }
+  }
+};
+
+/** The set of URLs written directly into the JSX — the only ones the app bundles. */
+const hardcodedUrls = () => {
+  try {
+    return new Set(
+      fs.readFileSync(EXTRA_URLS_PATH, "utf8")
+        .split(/\r?\n/).map((l) => l.trim()).filter(Boolean)
+    );
+  } catch {
+    return null;
   }
 };
 
 const saveManifest = (manifest) => {
-  fs.mkdirSync(path.dirname(MANIFEST_PATH), { recursive: true });
-  fs.writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, 2) + "\n");
+  fs.mkdirSync(path.dirname(FULL_MANIFEST_PATH), { recursive: true });
+  fs.writeFileSync(FULL_MANIFEST_PATH, JSON.stringify(manifest, null, 2) + "\n");
+
+  // Ship only what the bundle can actually use.
+  const keep = hardcodedUrls();
+  const shipped = keep
+    ? Object.fromEntries(Object.entries(manifest).filter(([url]) => keep.has(url)))
+    : manifest;
+
+  fs.mkdirSync(path.dirname(SHIPPED_MANIFEST_PATH), { recursive: true });
+  fs.writeFileSync(SHIPPED_MANIFEST_PATH, JSON.stringify(shipped, null, 2) + "\n");
 };
 
 /**
@@ -290,7 +332,8 @@ async function main() {
     `\nDone. ${done} processed, ${failed} failed. ` +
       `${(savedBytes / 1024 / 1024).toFixed(1)} MB of originals now have derivatives.`
   );
-  console.log(`Manifest: ${MANIFEST_PATH}`);
+  console.log(`Manifest: ${FULL_MANIFEST_PATH}
+  shipped:  ${SHIPPED_MANIFEST_PATH}`);
   db.end();
 }
 

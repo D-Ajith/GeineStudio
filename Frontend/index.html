@@ -2,15 +2,44 @@
 <html lang="en">
 
 <head>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-WCR1MCHLMK"></script>
+  <meta charset="UTF-8" />
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       ANALYTICS — loaded after the page has finished loading.
+       gtag.js was previously the very first thing in <head>. Even with
+       `async` it still downloaded, parsed and executed during exactly the
+       window that LCP and Total Blocking Time are measured in, on a phone
+       CPU that has better things to do. Queuing the calls up front and
+       injecting the script on `load` keeps every pageview and event intact
+       while moving ~60 KB of third-party JS out of the critical path.
+       ══════════════════════════════════════════════════════════════════ -->
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag() { dataLayer.push(arguments); }
+    // These queue into dataLayer now and are replayed when gtag.js arrives,
+    // so no hit is lost by loading the library later.
     gtag('js', new Date());
-
     gtag('config', 'G-WCR1MCHLMK');
+
+    (function () {
+      var loaded = false;
+      function loadGtag() {
+        if (loaded) return;
+        loaded = true;
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=G-WCR1MCHLMK';
+        document.head.appendChild(s);
+      }
+      // Whichever comes first: the page finishing load, or the visitor doing
+      // something — the latter matters so a fast bounce is still recorded.
+      if (document.readyState === 'complete') loadGtag();
+      else window.addEventListener('load', loadGtag, { once: true });
+      ['pointerdown', 'keydown', 'touchstart'].forEach(function (evt) {
+        window.addEventListener(evt, loadGtag, { once: true, passive: true });
+      });
+    })();
   </script>
-  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- ══════════════════════════════════════════════════════════════════
@@ -81,10 +110,58 @@
        path. -->
   <link rel="preload" as="image" href="/GenieStudio-logo.webp" fetchpriority="high">
 
+  <!-- ══════════════════════════════════════════════════════════════════
+       LCP PRELOAD — the homepage hero.
+       This is a client-rendered SPA: index.html contains no hero markup, so
+       the browser's preload scanner cannot see the hero at all. It only
+       learns about the image after downloading React, parsing it, and
+       rendering the inline background-image — a four-step chain that is
+       exactly what PageSpeed flags as "LCP request discovery". Declaring it
+       here starts the fetch on the first byte instead.
+
+       imagesrcset/imagesizes so a phone still pulls the 400/800 file rather
+       than the desktop one — preloading the wrong size would trade one
+       problem for another.
+
+       TRADE-OFF: this preload also fires on routes that do not use the image,
+       costing them one wasted request. It is worth it because "/" is the
+       primary landing page and its hero is the LCP element; it would not be
+       worth it for an image only used deeper in the site.
+       ══════════════════════════════════════════════════════════════════ -->
+  <link rel="preload" as="image" fetchpriority="high"
+    imagesrcset="https://geniestudio.in/uploads/1786619977_1786601041_1786601041120-705832864-400.webp 400w,
+                 https://geniestudio.in/uploads/1786619978_1786601041_1786601041120-705832864-800.webp 800w,
+                 https://geniestudio.in/uploads/1786619978_1786601041_1786601041120-705832864-1200.webp 1200w"
+    imagesizes="100vw"
+    href="https://geniestudio.in/uploads/1786619978_1786601041_1786601041120-705832864-800.webp">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap"
-    rel="stylesheet" />
+
+  <!-- ══════════════════════════════════════════════════════════════════
+       FONT — non-blocking.
+       Cormorant Garamond styles every h1–h6, so it sits on the LCP path.
+       As a plain <link rel="stylesheet"> it blocked first render until
+       Google's CSS came back; the media="print" swap lets the browser paint
+       immediately and apply the font as soon as it arrives (`display=swap`
+       already governed that hand-off, so the final rendering is identical).
+
+       Weights trimmed 400;500;600;700 -> 600;700: this family is applied ONLY
+       to headings, and every heading in the app carries font-semibold (600),
+       font-bold (700), font-extrabold or font-black. Nothing rendered 400 or
+       500, so those two files were downloaded and never drawn. 800/900 are
+       deliberately still not requested — the browser synthesises them from
+       700 today, and shipping the real cuts would change how those headings
+       look.
+       ══════════════════════════════════════════════════════════════════ -->
+  <link rel="preload" as="style"
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&display=swap">
+  <link rel="stylesheet" media="print" onload="this.media='all'"
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&display=swap">
+  <noscript>
+    <link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&display=swap">
+  </noscript>
 
   <!-- ══════════════════════════════════════════════════════════════════
        STRUCTURED DATA

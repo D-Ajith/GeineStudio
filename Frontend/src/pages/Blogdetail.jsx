@@ -243,6 +243,8 @@ export default function BlogDetail() {
                 <div className="relative w-full aspect-[4/3] sm:aspect-[16/9] md:aspect-[2/1] lg:aspect-[21/9]">
                     <OptimizedImage
                         src={heroSrc}
+                        variants={blog.variants}
+                        lqip={blog.lqip}
                         alt={blog.title}
                         onError={() => setImgError(true)}
                         /* This is the LCP element on a blog page — `priority`

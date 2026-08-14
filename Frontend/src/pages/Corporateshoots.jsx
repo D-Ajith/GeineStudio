@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { FaBuilding, FaArrowLeft, FaCheckCircle, FaWhatsapp } from 'react-icons/fa';
 import OptimizedImage from "../components/OptimizedImage";
 import Breadcrumbs from "../components/Breadcrumbs";
@@ -22,7 +22,20 @@ const Corporateshoots = () => {
   useEffect(() => {
     const hero = heroRef.current;
     if (!hero) return;
-    const onScroll = () => { hero.style.transform = `translateY(${window.scrollY * 0.35}px)`; };
+    // Coalesce to one write per frame. A scroll event can fire many times
+    // between paints, and each `style.transform =` invalidates layout — so the
+    // unbatched version did several times more work than the screen could
+    // show, which is what surfaces as "forced reflow". The motion is
+    // identical; it just no longer runs ahead of the compositor.
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        hero.style.transform = `translateY(${window.scrollY * 0.35}px)`;
+        ticking = false;
+      });
+    };
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
@@ -82,8 +95,12 @@ const Corporateshoots = () => {
         <div
           className="absolute inset-0"
           style={{
+            // Same stops as every other service hero (0.85 @ 25%, 0.45 @ 55%).
+            // This page was on 0.8 @ 20% / 0.4 @ 50%, a weaker overlay that
+            // let the background photo through and left the heading with less
+            // contrast than the rest of the set.
             background:
-              'linear-gradient(to top, rgba(13,27,42,0.8) 20%, rgba(13,27,42,0.4) 50%, transparent 100%)',
+              'linear-gradient(to top, rgba(13,27,42,0.85) 25%, rgba(13,27,42,0.45) 55%, transparent 100%)',
           }}
         />
 

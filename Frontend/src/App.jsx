@@ -6,39 +6,40 @@ import Footer from "./components/Footer";
 import FloatingSocial from "./components/FloatingSocial";
 import ScrollToTop from "./components/ScrollToTop";
 import Home from "./pages/Home";
-import About from "./pages/About";
-import Portfolio from "./pages/Portfolio";
-import Contact from "./pages/Contact";
-import SplashCursor from "@/components/SplashCursor";
-import Gallery from "./pages/Gallery";
-import Services from './pages/Services';
-import Corporateshoots from './pages/Corporateshoots';
-import Eventshoots from './pages/Eventshoots';
-import Productshoots from './pages/Productshoots';
-import Podcastshoots from './pages/Podcastshoots';
-import Professionalshoots from './pages/Professionalshoots';
-import Businessportfolioshoots from './pages/Businessportfolioshoots';
+import DeferredSplashCursor from "./components/DeferredSplashCursor";
 /**
- * Admin screens are split out of the main bundle.
+ * Every route except Home is code-split.
  *
- * They are behind a login, so no visitor ever needs them — but statically
- * imported they pulled the whole TipTap editor and every admin manager into the
- * one chunk that the homepage has to parse before it can start fetching
- * images. Splitting them frees that bandwidth and main-thread time for the
- * photographs, which are what the public pages are actually for.
+ * Home stays eagerly imported because a visitor landing on "/" must not wait an
+ * extra network round trip for its chunk — that would push LCP out, which is
+ * the opposite of the goal.
  *
- * Public routes stay eagerly imported on purpose: a visitor navigating
- * Home → Portfolio should never wait on a chunk request.
+ * Everything else is loaded on navigation. Admin matters most (it dragged the
+ * entire TipTap editor into the initial bundle) but the public pages add up
+ * too: a visitor reading the homepage was downloading and parsing the Portfolio
+ * grid, the Dome gallery and six service pages they may never open.
  */
+const About = lazy(() => import("./pages/About"));
+const Portfolio = lazy(() => import("./pages/Portfolio"));
+const Contact = lazy(() => import("./pages/Contact"));
+const Gallery = lazy(() => import("./pages/Gallery"));
+const Services = lazy(() => import("./pages/Services"));
+const Corporateshoots = lazy(() => import("./pages/Corporateshoots"));
+const Eventshoots = lazy(() => import("./pages/Eventshoots"));
+const Productshoots = lazy(() => import("./pages/Productshoots"));
+const Podcastshoots = lazy(() => import("./pages/Podcastshoots"));
+const Professionalshoots = lazy(() => import("./pages/Professionalshoots"));
+const Businessportfolioshoots = lazy(() => import("./pages/Businessportfolioshoots"));
+const Blogs = lazy(() => import("./pages/Blogs"));
+const BlogDetail = lazy(() => import("./pages/Blogdetail"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+
 const AdminLogin = lazy(() => import("./pages/AdminLogin"));
 const AdminBlogs = lazy(() => import("./pages/AdminBlogs"));
 const AdminImages = lazy(() => import("./pages/AdminImages"));
 const AdminPortfolio = lazy(() => import("./pages/AdminPortfolio"));
 const AdminGallery = lazy(() => import("./pages/AdminGallery"));
-import Blogs from "./pages/Blogs";
-import BlogDetail from "./pages/Blogdetail";
 import ProtectedRoute from "./components/ProtectedRoute";
-import NotFound from "./pages/NotFound";
 import "aos/dist/aos.css";
 function App() {
   const location = useLocation();
@@ -59,7 +60,7 @@ function App() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <SplashCursor />
+      <DeferredSplashCursor />
       <ScrollToTop />
       <Header />
       <main className="flex-grow">
