@@ -21,8 +21,9 @@
 import { writeFileSync, mkdirSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { execFileSync } from "node:child_process";
 
-import { ROUTES } from "../src/lib/seoConfig.js";
+import { ROUTES, ROUTE_SOURCES } from "../src/lib/seoConfig.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT = resolve(__dirname, "../public/sitemap.xml");
@@ -30,6 +31,40 @@ const SITE = "https://geniestudio.in";
 const API = process.env.VITE_API_URL || "https://geinestudio-czl3.onrender.com";
 
 const today = new Date().toISOString().slice(0, 10);
+
+/**
+ * `lastmod` from the page component's last git commit, not from "now".
+ *
+ * Stamping every URL with today's date on every build is a well-known way to
+ * teach Google that your lastmod values mean nothing — after which it ignores
+ * them, including on the occasions when a page genuinely did change. Git
+ * already knows when each page was really last edited, so use that.
+ *
+ * Falls back to today when git is unavailable (a clean CI checkout, a zip
+ * deploy) or the file is untracked — a slightly-too-recent date on a page that
+ * really is new is the harmless direction to be wrong in.
+ */
+const lastModCache = new Map();
+function lastModFor(routePath) {
+  const source = ROUTE_SOURCES[routePath];
+  if (!source) return today;
+  if (lastModCache.has(source)) return lastModCache.get(source);
+
+  let date = today;
+  try {
+    const out = execFileSync(
+      "git",
+      ["log", "-1", "--format=%cs", "--", source],
+      { cwd: resolve(__dirname, ".."), encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }
+    ).trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(out)) date = out;
+  } catch {
+    // git not present or not a repo — keep the fallback.
+  }
+
+  lastModCache.set(source, date);
+  return date;
+}
 
 const escapeXml = (s) =>
   String(s).replace(/[<>&'"]/g, (c) =>
@@ -64,7 +99,7 @@ async function fetchBlogs() {
 const entries = ROUTES.map((route) =>
   urlEntry({
     loc: `${SITE}${route.path}`,
-    lastmod: today,
+    lastmod: lastModFor(route.path),
     changefreq: route.changefreq,
     priority: route.priority,
   })

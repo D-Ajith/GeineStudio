@@ -35,56 +35,99 @@ export const absolute = (path = "/") => {
  * Lives here rather than beside the <Seo> component so that Seo.jsx exports
  * only a component, which is what React Fast Refresh needs.
  */
-export function serviceSchema({ name, description, path }) {
+export function serviceSchema({ name, description, path, serviceType }) {
   return {
     "@context": "https://schema.org",
     "@type": "Service",
     name,
     description,
     url: absolute(path),
-    serviceType: name,
+    // serviceType is the category Google matches against intent, so it can be
+    // narrower than the display name — "Podcast Studio", not "Podcast Shoots".
+    serviceType: serviceType || name,
     provider: { "@id": `${SITE_URL}/#localbusiness` },
-    areaServed: { "@type": "City", name: "Visakhapatnam" },
+    // Both names, because locals search "Vizag" and maps data says
+    // "Visakhapatnam". alternateName keeps them as one place, not two.
+    areaServed: {
+      "@type": "City",
+      name: "Visakhapatnam",
+      alternateName: "Vizag",
+    },
     providerMobility: "static",
   };
 }
 
-/** The five services the site is being optimised around. */
+/**
+ * "Vizag" vs "Visakhapatnam"
+ * -------------------------
+ * Locally, "Vizag" is overwhelmingly the term people type; "Visakhapatnam" is
+ * the formal name and what appears in addresses and maps. They are not
+ * interchangeable to a search engine, so titles lead with Vizag (where the
+ * searches are) and descriptions carry Visakhapatnam (which anchors the
+ * LocalBusiness address). Both appear once, naturally, rather than stacked.
+ *
+ * `keywords` below is documentation of intent for whoever maintains this — it
+ * is deliberately NOT rendered as a <meta name="keywords">, which Google has
+ * ignored for well over a decade and which reads as spam.
+ */
 export const SERVICES = [
   {
     key: "podcast",
     name: "Podcast Shoots",
     path: "/services/podcast-shoots",
+    // Highest-priority page on the site.
+    title: "Podcast Studio in Vizag | Podcast Shoot & Production | GenieStudio",
     description:
-      "Studio-grade Podcast Shoots in Visakhapatnam — multi-camera video, clean audio and full post-production for creators and brands building a podcast.",
+      "Looking for a podcast studio in Vizag? GenieStudio offers professional podcast shoots, video recording, podcast production and studio services in Visakhapatnam.",
+    keywords: {
+      primary: "podcast studio in Vizag",
+      secondary: [
+        "podcast studio Vizag",
+        "podcast studio Visakhapatnam",
+        "podcast shoot Vizag",
+        "podcast recording studio Vizag",
+        "podcast recording Visakhapatnam",
+        "podcast production Vizag",
+        "video podcast studio Vizag",
+        "podcast filming studio Vizag",
+      ],
+    },
   },
   {
     key: "product",
     name: "Product Shoots",
     path: "/services/product-shoots",
+    title: "Product Photography & Product Shoots in Vizag | GenieStudio",
     description:
-      "Product Shoots in Visakhapatnam built to sell — e-commerce, catalogue and lifestyle product photography with lighting and retouching that converts.",
+      "Product photography in Vizag built to sell — e-commerce, catalogue and lifestyle product shoots, shot and retouched at GenieStudio Visakhapatnam.",
+    keywords: { primary: "product photography Vizag", secondary: ["product shoots Vizag"] },
   },
   {
     key: "corporate",
     name: "Corporate Shoots",
     path: "/services/corporate-shoots",
+    title: "Corporate Photography & Corporate Shoots in Vizag | GenieStudio",
     description:
-      "Corporate Shoots in Visakhapatnam — team portraits, office culture photography and brand visuals that give your company real visual authority.",
+      "Corporate photography in Vizag — executive headshots, team portraits and office culture shoots, from GenieStudio in Visakhapatnam.",
+    keywords: { primary: "corporate photography Vizag", secondary: ["corporate shoots Vizag"] },
   },
   {
     key: "event",
     name: "Event Shoots",
     path: "/services/event-shoots",
+    title: "Event Photography & Event Shoots in Vizag | GenieStudio",
     description:
-      "Event Shoots in Visakhapatnam — complete coverage of launches, conferences and corporate events, delivered fast and edited for immediate use.",
+      "Event photography in Vizag — full coverage of launches, conferences and corporate events, edited for immediate use. GenieStudio, Visakhapatnam.",
+    keywords: { primary: "event photography Vizag", secondary: ["event shoots Vizag"] },
   },
   {
     key: "professional",
     name: "Professional Shoots",
     path: "/services/professional-shoots",
+    title: "Professional Photography Services in Vizag | GenieStudio",
     description:
-      "Professional Shoots in Visakhapatnam — personal branding portraits and headshots for founders, leaders and professionals who need to look the part.",
+      "Professional photography in Vizag — personal branding portraits and headshots for founders, leaders and professionals. GenieStudio, Visakhapatnam.",
+    keywords: { primary: "professional photography Vizag", secondary: ["personal branding photography Vizag"] },
   },
 ];
 
@@ -108,7 +151,7 @@ export const SEO = {
     path: "/about",
     title: `About ${BRAND} | Creative Photography & Video Studio`,
     description:
-      "Meet GenieStudio — the Visakhapatnam creative studio behind Podcast Shoots, Product Shoots, Corporate Shoots and Event Shoots for brands that care how they look.",
+      "Meet GenieStudio — the Vizag creative studio behind podcast, product, corporate and event shoots for brands that care how they look.",
   },
   services: {
     path: "/services",
@@ -142,9 +185,9 @@ export const SEO = {
   },
   businessPortfolio: {
     path: "/services/business-portfolio-shoots",
-    title: `Business Portfolio Shoots | ${BRAND}`,
+    title: `Business Portfolio Photography in Vizag | ${BRAND}`,
     description:
-      "Business Portfolio Shoots in Visakhapatnam — complete visual storytelling that packages your brand, team and product into one coherent set of images.",
+      "Business portfolio photography in Vizag — visual storytelling that packages your brand, team and product range into one coherent set of images.",
   },
 };
 
@@ -155,11 +198,33 @@ export const SERVICE_SEO = Object.fromEntries(
     {
       path: service.path,
       name: service.name,
-      title: `${service.name} in Visakhapatnam | ${BRAND}`,
+      title: service.title,
       description: service.description,
     },
   ])
 );
+
+/**
+ * Route → the component that renders it.
+ *
+ * Used only by the sitemap generator, to read each page's real last-modified
+ * date out of git instead of stamping everything with today's date.
+ */
+export const ROUTE_SOURCES = {
+  "/": "src/pages/Home.jsx",
+  "/services": "src/pages/Services.jsx",
+  "/services/podcast-shoots": "src/pages/Podcastshoots.jsx",
+  "/services/product-shoots": "src/pages/Productshoots.jsx",
+  "/services/corporate-shoots": "src/pages/Corporateshoots.jsx",
+  "/services/event-shoots": "src/pages/Eventshoots.jsx",
+  "/services/professional-shoots": "src/pages/Professionalshoots.jsx",
+  "/services/business-portfolio-shoots": "src/pages/Businessportfolioshoots.jsx",
+  "/portfolio": "src/pages/Portfolio.jsx",
+  "/gallery": "src/pages/Gallery.jsx",
+  "/about": "src/pages/About.jsx",
+  "/blogs": "src/pages/Blogs.jsx",
+  "/contact": "src/pages/Contact.jsx",
+};
 
 /** Every indexable route, used to generate sitemap.xml. */
 export const ROUTES = [

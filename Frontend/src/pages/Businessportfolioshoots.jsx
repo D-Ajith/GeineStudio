@@ -1,9 +1,17 @@
 import React, { useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { FaBriefcase, FaArrowLeft, FaCheckCircle, FaWhatsapp } from 'react-icons/fa';
 import OptimizedImage from "../components/OptimizedImage";
+import Breadcrumbs from "../components/Breadcrumbs";
 import Seo from "../components/Seo";
 import { SEO, serviceSchema } from "../lib/seoConfig";
+
+/** Declared once, then used by both <Breadcrumbs> and <Seo>. */
+const CRUMBS = [
+  { name: "Home", path: "/" },
+  { name: "Services", path: "/services" },
+  { name: "Business Portfolio Shoots", path: "/services/business-portfolio-shoots" },
+];
 
 const Businessportfolioshoots = () => {
   const navigate = useNavigate();
@@ -54,11 +62,7 @@ const Businessportfolioshoots = () => {
           description: SEO.businessPortfolio.description,
           path: SEO.businessPortfolio.path,
         })}
-        breadcrumbs={[
-          { name: "Home", path: "/" },
-          { name: "Services", path: "/services" },
-          { name: "Business Portfolio Shoots", path: SEO.businessPortfolio.path },
-        ]}
+        breadcrumbs={CRUMBS}
       />
 
 
@@ -85,6 +89,8 @@ const Businessportfolioshoots = () => {
 
 
         <div className="relative z-10 w-full max-w-6xl mx-auto px-6 sm:px-10 pb-12 sm:pb-16">
+          <Breadcrumbs items={CRUMBS} className="mb-5 text-white/70" />
+
           <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full mb-5 text-sm font-semibold tracking-widest uppercase" style={{ background: '#C9A22722', color: '#C9A227', border: '1px solid #C9A22744' }}>
             <FaBriefcase /> Photography & Videography
           </div>
@@ -108,9 +114,9 @@ const Businessportfolioshoots = () => {
             <p className="text-slate-600 text-lg leading-relaxed mb-8">
               Tell your brand story through compelling visual narratives. Our comprehensive portfolio service combines team portraits, office culture, work processes, and product documentation to create a cohesive visual identity. Every deliverable is crafted to be pitch-ready, investor-ready, and brand-ready from day one.
             </p>
-            <a href="/contact" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl text-white font-semibold text-base transition-all duration-300 hover:opacity-90 hover:-translate-y-0.5 shadow-lg" style={{ background: '#C9A227' }}>
+            <Link to="/contact" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl text-white font-semibold text-base transition-all duration-300 hover:opacity-90 hover:-translate-y-0.5 shadow-lg" style={{ background: '#C9A227' }}>
               <FaWhatsapp className="text-lg" /> Book This Service
-            </a>
+            </Link>
           </div>
           <div className="rounded-2xl p-8 sm:p-10" style={{ background: '#FAF6E8' }}>
             <h3 className="text-xl font-bold text-slate-800 mb-6">Service Highlights</h3>
@@ -178,9 +184,9 @@ const Businessportfolioshoots = () => {
           </h2>
           <p className="text-white/60 text-lg mb-8">Let's create something remarkable together. Reach out for a free consultation and custom quote.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="/contact" className="px-8 py-3.5 rounded-xl font-bold text-base hover:opacity-90 hover:-translate-y-0.5 transition-all shadow-lg text-white" style={{ background: '#C9A227' }}>
+            <Link to="/contact" className="px-8 py-3.5 rounded-xl font-bold text-base hover:opacity-90 hover:-translate-y-0.5 transition-all shadow-lg text-white" style={{ background: '#C9A227' }}>
               Get a Free Quote
-            </a>
+            </Link>
             <button onClick={() => navigate('/services')} className="px-8 py-3.5 rounded-xl font-bold text-base border border-white/20 text-white/80 hover:bg-white/10 transition-all">
               View All Services
             </button>

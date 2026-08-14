@@ -73,11 +73,15 @@ export default function Seo({
       {description && <meta name="twitter:description" content={description} />}
       <meta name="twitter:image" content={image} />
 
-      {schema && (
-        <script type="application/ld+json">
-          {JSON.stringify(schema)}
-        </script>
-      )}
+      {/* `schema` accepts one object or an array — a page like the podcast one
+          needs both Service and FAQPage, and Google reads multiple ld+json
+          blocks on a page perfectly well. */}
+      {schema &&
+        (Array.isArray(schema) ? schema : [schema]).map((entry, i) => (
+          <script key={i} type="application/ld+json">
+            {JSON.stringify(entry)}
+          </script>
+        ))}
       {breadcrumbSchema && (
         <script type="application/ld+json">
           {JSON.stringify(breadcrumbSchema)}

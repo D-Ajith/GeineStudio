@@ -1,5 +1,5 @@
 import React from 'react'
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   FaBuilding,
   FaCalendarCheck,
@@ -13,6 +13,7 @@ import {
   FaArrowRight
 } from 'react-icons/fa';
 import OptimizedImage from "../components/OptimizedImage";
+import Breadcrumbs from "../components/Breadcrumbs";
 import { useTargetWidth } from "../lib/useResponsiveImage";
 import { bestVariantUrl } from "../lib/imageManifest";
 import Seo from "../components/Seo";
@@ -21,7 +22,6 @@ import { SEO } from "../lib/seoConfig";
 const Services = () => {
   // Hero paints via CSS background-image, which cannot carry a srcSet.
   const targetWidth = useTargetWidth();
-  const navigate = useNavigate();
 
   const services = [
     {
@@ -97,6 +97,11 @@ const Services = () => {
           className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center"
           data-aos="fade-up"
         >
+          <Breadcrumbs
+            items={[{ name: "Home", path: "/" }, { name: "Services", path: "/services" }]}
+            className="mb-5 text-white/70 justify-center [&>ol]:justify-center"
+          />
+
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold mb-6">
             Our Services
           </h1>
@@ -111,18 +116,19 @@ const Services = () => {
         <div className="max-w-[1300px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 md:gap-8 lg:gap-10">
             {services.map((service, index) => (
-              <div
+              <Link
                 key={service.title}
+                to={service.route}
+                aria-label={`${service.title} — view details`}
                 data-aos={index % 2 === 0 ? "fade-right" : "fade-left"}
                 data-aos-delay={index * 100}
                 data-aos-anchor-placement="top-bottom"
-                className="group relative overflow-hidden rounded-xl sm:rounded-2xl bg-white shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer transform hover:-translate-y-2"
-                onClick={() => navigate(service.route)}
+                className="group relative block overflow-hidden rounded-xl sm:rounded-2xl bg-white shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2"
               >
                 <div className="relative overflow-hidden aspect-[4/5] sm:aspect-[3/4]">
                   <OptimizedImage
                     src={service.image}
-                    alt={service.title}
+                    alt={service.alt || `${service.title} by GenieStudio in Visakhapatnam`}
                     className="w-full h-full"
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     imgClassName="group-hover:scale-110 transition-transform duration-700"
@@ -137,13 +143,15 @@ const Services = () => {
                         {service.description}
                       </p>
                       <div className="inline-flex items-center gap-1 text-[10px] sm:text-sm font-medium">
-                        <span>View Details</span>
+                        {/* "View Details" says nothing to a crawler about
+                            where it leads; the service name does. */}
+                        <span>View {service.title}</span>
                         <FaArrowRight className="w-3 h-3 sm:w-4 sm:h-4" />
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

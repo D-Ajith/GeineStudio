@@ -1,0 +1,76 @@
+# GenieStudio — Apache config for Hostinger (public_html)
+#
+# READ THIS BEFORE DEPLOYING
+# -------------------------
+# Vite copies everything in public/ into dist/, so uploading dist/ to
+# public_html will OVERWRITE any .htaccess already there. Deep routes such as
+# /services/podcast-shoots already work on production, which means a rewrite
+# rule exists today. Back the current file up and diff it against this one
+# before replacing it, then load /services/podcast-shoots directly to confirm
+# routing still works.
+#
+# The site is served by Hostinger Apache, NOT Vercel — verified from the
+# response headers (platform: hostinger, panel: hpanel). Frontend/vercel.json
+# has no effect on production; everything that must apply lives here.
+
+# ── SPA routing ─────────────────────────────────────────────────────────
+# React Router owns every path. Without this, opening /services/podcast-shoots
+# directly asks Apache for a directory that does not exist and returns 404 —
+# which would deindex every service page.
+#
+# The two RewriteCond lines are what keep real files working: if the request
+# maps to an existing file or directory (sitemap.xml, robots.txt, /assets/*,
+# /uploads/*), it is served as-is and never rewritten to index.html.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>
+
+# ── MIME types ──────────────────────────────────────────────────────────
+# Hostinger serves .avif as text/plain. Browsers sniff the bytes so the
+# responsive AVIF variants render anyway, but only because no nosniff header
+# is sent — this makes it correct rather than accidental.
+AddType image/avif .avif
+AddType image/webp .webp
+AddType application/xml .xml
+
+# ── Caching ─────────────────────────────────────────────────────────────
+<IfModule mod_headers.c>
+  # Vite fingerprints these filenames, so the content at a given URL can never
+  # change. A returning visitor spends bandwidth on photographs instead of
+  # re-fetching framework code.
+  <FilesMatch "\.(js|css|woff2)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  # Generated image derivatives are content-addressed by name and never rewritten.
+  <FilesMatch "-(400|800|1200|1600|2000)\.(avif|webp)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  # index.html must revalidate, or a cached copy keeps pointing at asset
+  # hashes from a previous deploy and the site breaks after every release.
+  <FilesMatch "^index\.html$">
+    Header set Cache-Control "public, max-age=0, must-revalidate"
+  </FilesMatch>
+
+  # Crawlers re-read these often; a long TTL delays picking up new pages.
+  <FilesMatch "^(robots\.txt|sitemap\.xml)$">
+    Header set Cache-Control "public, max-age=3600"
+  </FilesMatch>
+</IfModule>
+
+# ── Canonical host ──────────────────────────────────────────────────────
+# One canonical origin. Serving the same pages on both www and non-www splits
+# ranking signals across two URLs that Google treats as separate.
+# COMMENTED OUT: enable only after confirming which host is canonical in DNS
+# and that the SSL certificate covers it, or this will take the site offline.
+#
+# <IfModule mod_rewrite.c>
+#   RewriteCond %{HTTP_HOST} ^www\.geniestudio\.in [NC]
+#   RewriteRule ^(.*)$ https://geniestudio.in/$1 [L,R=301]
+# </IfModule>

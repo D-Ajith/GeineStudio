@@ -2,8 +2,16 @@ import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaBuilding, FaArrowLeft, FaCheckCircle, FaWhatsapp } from 'react-icons/fa';
 import OptimizedImage from "../components/OptimizedImage";
+import Breadcrumbs from "../components/Breadcrumbs";
 import Seo from "../components/Seo";
 import { SERVICE_SEO, serviceSchema } from "../lib/seoConfig";
+
+/** Declared once, then used by both <Breadcrumbs> and <Seo>. */
+const CRUMBS = [
+  { name: "Home", path: "/" },
+  { name: "Services", path: "/services" },
+  { name: "Corporate Shoots", path: "/services/corporate-shoots" },
+];
 
 const Corporateshoots = () => {
   const navigate = useNavigate();
@@ -54,11 +62,7 @@ const Corporateshoots = () => {
           description: SERVICE_SEO.corporate.description,
           path: SERVICE_SEO.corporate.path,
         })}
-        breadcrumbs={[
-          { name: "Home", path: "/" },
-          { name: "Services", path: "/services" },
-          { name: "Corporate Shoots", path: SERVICE_SEO.corporate.path },
-        ]}
+        breadcrumbs={CRUMBS}
       />
 
 
@@ -84,6 +88,8 @@ const Corporateshoots = () => {
         />
 
         <div className="relative z-10 w-full max-w-6xl mx-auto px-6 sm:px-10 pb-12 sm:pb-16">
+          <Breadcrumbs items={CRUMBS} className="mb-5 text-white/70" />
+
           <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full mb-5 text-sm font-semibold tracking-widest uppercase" style={{ background: '#1E6FA522', color: '#4A9FD9', border: '1px solid #4A9FD944' }}>
             <FaBuilding /> Photography & Videography
           </div>
@@ -107,9 +113,9 @@ const Corporateshoots = () => {
             <p className="text-slate-600 text-lg leading-relaxed mb-8">
               Our Corporate Shoots service provides comprehensive visual documentation of your business operations. From capturing the essence of your workplace culture to creating professional executive portraits, we deliver high-quality imagery that strengthens your brand identity and attracts top talent. Every frame is intentional, every image tells your business story.
             </p>
-            <a href="/contact" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl text-white font-semibold text-base transition-all duration-300 hover:opacity-90 hover:-translate-y-0.5 shadow-lg" style={{ background: '#4A9FD9' }}>
+            <Link to="/contact" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl text-white font-semibold text-base transition-all duration-300 hover:opacity-90 hover:-translate-y-0.5 shadow-lg" style={{ background: '#4A9FD9' }}>
               <FaWhatsapp className="text-lg" /> Book This Service
-            </a>
+            </Link>
           </div>
           <div className="rounded-2xl p-8 sm:p-10" style={{ background: '#EAF4FC' }}>
             <h3 className="text-xl font-bold text-slate-800 mb-6">Service Highlights</h3>
@@ -177,9 +183,9 @@ const Corporateshoots = () => {
           </h2>
           <p className="text-white/60 text-lg mb-8">Let's create something remarkable together. Reach out for a free consultation and custom quote.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="/contact" className="px-8 py-3.5 rounded-xl font-bold text-base hover:opacity-90 hover:-translate-y-0.5 transition-all shadow-lg text-white" style={{ background: '#4A9FD9' }}>
+            <Link to="/contact" className="px-8 py-3.5 rounded-xl font-bold text-base hover:opacity-90 hover:-translate-y-0.5 transition-all shadow-lg text-white" style={{ background: '#4A9FD9' }}>
               Get a Free Quote
-            </a>
+            </Link>
             <button onClick={() => navigate('/services')} className="px-8 py-3.5 rounded-xl font-bold text-base border border-white/20 text-white/80 hover:bg-white/10 transition-all">
               View All Services
             </button>

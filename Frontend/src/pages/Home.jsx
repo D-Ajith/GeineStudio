@@ -5,7 +5,7 @@ import Headings from "../components/Headings"
 import OptimizedImage from "../components/OptimizedImage";
 import { useTargetWidth } from "../lib/useResponsiveImage";
 import { bestVariantUrl } from "../lib/imageManifest";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import Seo from "../components/Seo";
 import { SEO } from "../lib/seoConfig";
 const Home = () => {
@@ -371,8 +371,8 @@ const Home = () => {
                 and impact.
               </p>
 
-              <button onClick={() => navigate("/about")} className="inline-flex items-center gap-2 sm:gap-3 px-4 py-2 sm:px-6 sm:py-3 text-sm sm:text-base bg-gradient-to-r from-[#6B4A2D] to-[#8B5E3C] text-white rounded-full font-semibold sm:font-bold hover:scale-105 hover:shadow-xl transition-all duration-300 ">
-                Learn More
+              <Link to="/about" className="inline-flex items-center gap-2 sm:gap-3 px-4 py-2 sm:px-6 sm:py-3 text-sm sm:text-base bg-gradient-to-r from-[#6B4A2D] to-[#8B5E3C] text-white rounded-full font-semibold sm:font-bold hover:scale-105 hover:shadow-xl transition-all duration-300 ">
+                About GenieStudio
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 20 20" fill="currentColor" >
                   <path
                     fillRule="evenodd"
@@ -380,7 +380,7 @@ const Home = () => {
                     clipRule="evenodd"
                   />
                 </svg>
-              </button>
+              </Link>
 
             </div>
 
@@ -733,13 +733,13 @@ const Home = () => {
                   </ul>
 
 
-                  <button
+                  <Link
+                    to={service.link}
                     className={` relative z-10 mt-auto sm:mt-6 flex text-xs sm:text-sm ${scheme.text} group-hover:text-white font-semibold items-center gap-1.5 sm:gap-2 lg:group-hover:gap-3 transition-all duration-300 `}
-                    onClick={() => navigate(service.link)}
                   >
-                    Explore more
+                    Explore {service.title}
                     <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
-                  </button>
+                  </Link>
 
                 </div>
               );
