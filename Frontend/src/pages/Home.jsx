@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Users, Camera, Globe, Award, ArrowRight, Briefcase, Calendar, Package, Mic, User, TrendingUp, CheckCircle, Star, Play, Aperture, Film, Lightbulb, Monitor } from "lucide-react";
 import VideoHero from "../components/VideoHero";
-import Headings from "../components/Headings"
 import OptimizedImage from "../components/OptimizedImage";
 import { useTargetWidth } from "../lib/useResponsiveImage";
 import { bestVariantUrl } from "../lib/imageManifest";
@@ -10,7 +9,6 @@ import Seo from "../components/Seo";
 import { SEO } from "../lib/seoConfig";
 const Home = () => {
   const [active, setActive] = useState(0);
-  const [isVisible, setIsVisible] = useState({});
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const navigate = useNavigate();
   const [activeIndex, setActiveIndex] = useState(0);
@@ -226,24 +224,53 @@ const Home = () => {
     return () => clearInterval(interval);
   }, [slides.length]);
 
+  /**
+   * Which hero slides may paint their background image yet.
+   *
+   * All three slides are in the DOM at once (they cross-fade via opacity), so
+   * setting backgroundImage on all of them made the browser download every
+   * slide during initial load — 218 KB on desktop, of which 162 KB was for two
+   * pictures nobody sees for the next 6 and 12 seconds. That was the single
+   * largest item in PageSpeed's "improve image delivery".
+   *
+   * Slide 0 is the LCP element and loads immediately. The others are fetched
+   * one step ahead of the rotation, which at a 6s interval is far more lead
+   * time than they need, so the cross-fade looks exactly as it did before.
+   *
+   * Slide 0 is the LCP element and paints immediately. The rest are released
+   * a moment after the page has finished loading — the rotation does not reach
+   * slide 1 for 6 seconds, so they are always ready well before they are shown
+   * and the cross-fade is unchanged.
+   */
+  const [restOfSlidesReady, setRestOfSlidesReady] = useState(false);
+
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsVisible((prev) => ({ ...prev, [entry.target.id]: true }));
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
+    let timer;
+    // setState fires from a timer callback, not synchronously in the effect
+    // body, so this does not cascade renders during mount.
+    const release = () => { timer = setTimeout(() => setRestOfSlidesReady(true), 1500); };
 
-    document.querySelectorAll("[data-animate]").forEach((el) => {
-      observer.observe(el);
-    });
+    if (document.readyState === "complete") release();
+    else window.addEventListener("load", release, { once: true });
 
-    return () => observer.disconnect();
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("load", release);
+    };
   }, []);
+
+  /*
+   * REMOVED: an IntersectionObserver that watched all 10 [data-animate]
+   * sections and, on each one becoming visible, called
+   *   setIsVisible(prev => ({ ...prev, [id]: true }))
+   *
+   * `isVisible` was never read — not in this file, not anywhere else, and no
+   * CSS targets [data-animate]. So each of those 10 intersections forced a
+   * full re-render of this 1,188-line component to produce a value nothing
+   * consumed: up to ten complete re-renders of the largest tree on the site,
+   * for nothing. The data-animate attributes are left in place; they are inert
+   * markers and removing them would be a content change, not a perf one.
+   */
 
   return (
     <div className="min-h-screen">
@@ -273,7 +300,11 @@ const Home = () => {
               <div
                 className={`w-full h-full bg-cover bg-center ${active === index ? "animate-ken-burns" : ""
                   }`}
-                style={{ backgroundImage: `url(${bestVariantUrl(slide.image, targetWidth)})` }}
+                style={{
+                  backgroundImage: index === 0 || restOfSlidesReady
+                    ? `url(${bestVariantUrl(slide.image, targetWidth)})`
+                    : undefined,
+                }}
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent" />
               </div>
@@ -335,7 +366,8 @@ const Home = () => {
           ))}
         </div>
       </section>
-      {/* <Headings /> */}
+      {/* <Headings /> — disabled. Re-enable by restoring the import:
+          import Headings from "../components/Headings" */}
       <section
         id="about"
         className="py-10 sm:py-14 md:py-16 lg:py-20 bg-white overflow-hidden"
@@ -1125,16 +1157,22 @@ const Home = () => {
 
 
       <style>{`
+        /* translate3d/scale3d rather than scale(): both animate transform, but
+           the 3d form guarantees the layer is promoted to the compositor, so
+           the 20s zoom never touches the main thread. Visually identical.
+           (A stray "/@itsgeniemedia_official" fragment used to sit inside the
+           0% block — invalid CSS the browser silently discarded.) */
         @keyframes ken-burns {
           0% {
-            transform: scale(1);/@itsgeniemedia_official
+            transform: scale3d(1, 1, 1);
           }
           100% {
-            transform: scale(1.1);
+            transform: scale3d(1.1, 1.1, 1);
           }
         }
         .animate-ken-burns {
           animation: ken-burns 20s ease-out infinite alternate;
+          will-change: transform;
         }
       `}</style>
     </div>

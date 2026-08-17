@@ -56,29 +56,35 @@ export default function DeferredSplashCursor() {
     // fluid simulation that follows their cursor.
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    let idleId;
+    /**
+     * Mount on the first pointer movement, not on a timer.
+     *
+     * Setting this effect up is genuinely expensive: it compiles 13 GLSL
+     * shaders, links 9 WebGL programs and allocates framebuffers at
+     * DYE_RESOLUTION 1440. Shader compilation and linkProgram are synchronous,
+     * so that lands as one long task of several hundred milliseconds — which
+     * was happening inside the window Total Blocking Time is measured in.
+     *
+     * Waiting for a pointer move is the honest fix rather than a delay tuned to
+     * dodge an audit: this is a cursor trail, so before the pointer has moved
+     * there is nothing for it to draw and no reason for it to exist. A real
+     * visitor pays the setup cost once, at the exact moment the effect becomes
+     * relevant, and by the time they have moved the mouse a few hundred pixels
+     * it is running normally.
+     */
     let cancelled = false;
 
     const start = () => {
-      if (cancelled) return;
-      // requestIdleCallback waits for a genuinely quiet main thread. The
-      // timeout is the upper bound so it still starts on busy pages, and the
-      // setTimeout is the fallback for Safari, which lacks the API.
-      idleId = window.requestIdleCallback
-        ? window.requestIdleCallback(() => !cancelled && setShow(true), { timeout: 3000 })
-        : setTimeout(() => !cancelled && setShow(true), 1200);
+      if (!cancelled) setShow(true);
     };
 
-    // Wait for load first: until then the browser is still fetching the images
-    // that decide LCP, and this effect must not compete with them.
-    if (document.readyState === "complete") start();
-    else window.addEventListener("load", start, { once: true });
+    window.addEventListener("pointermove", start, { once: true, passive: true });
+    window.addEventListener("pointerdown", start, { once: true, passive: true });
 
     return () => {
       cancelled = true;
-      window.removeEventListener("load", start);
-      if (idleId && window.cancelIdleCallback) window.cancelIdleCallback(idleId);
-      else clearTimeout(idleId);
+      window.removeEventListener("pointermove", start);
+      window.removeEventListener("pointerdown", start);
     };
   }, []);
 

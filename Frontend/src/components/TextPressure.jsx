@@ -115,26 +115,59 @@ const TextPressure = ({
   }, [setSize]);
 
   useEffect(() => {
-    let rafId;
+    /**
+     * Two problems fixed here, both of which showed up in PageSpeed as
+     * "forced reflow" and as main-thread/blocking time.
+     *
+     * 1. LAYOUT THRASHING. The old loop interleaved reads and writes per
+     *    character: read a span's rect, write its style, read the next span's
+     *    rect, write... Each style write invalidates layout, so every
+     *    subsequent read forced the browser to re-run layout synchronously —
+     *    roughly one forced reflow per character, 60 times a second. Reads are
+     *    now all done first, in one pass, and the writes applied afterwards, so
+     *    at most one layout flush happens per frame.
+     *
+     * 2. IT NEVER STOPPED. The loop ran forever even with the pointer
+     *    stationary, recomputing identical values. It now settles once the
+     *    easing has converged and restarts on pointer, scroll or resize input
+     *    (scroll matters because getBoundingClientRect is viewport-relative,
+     *    so scrolling genuinely changes the distances).
+     *
+     * The effect itself is untouched: the same easing, the same distance
+     * falloff, the same font-variation output.
+     */
+    let rafId = null;
+    let settled = false;
+
     const animate = () => {
-      mouseRef.current.x += (cursorRef.current.x - mouseRef.current.x) / 15;
-      mouseRef.current.y += (cursorRef.current.y - mouseRef.current.y) / 15;
+      const dx = cursorRef.current.x - mouseRef.current.x;
+      const dy = cursorRef.current.y - mouseRef.current.y;
+      mouseRef.current.x += dx / 15;
+      mouseRef.current.y += dy / 15;
 
       if (titleRef.current) {
+        // ---- READ PHASE: every measurement first, no writes in between ----
         const titleRect = titleRef.current.getBoundingClientRect();
         const maxDist = titleRect.width / 2;
 
-        spansRef.current.forEach(span => {
-          if (!span) return;
-
+        const spans = spansRef.current;
+        const measurements = [];
+        for (let i = 0; i < spans.length; i++) {
+          const span = spans[i];
+          if (!span) continue;
           const rect = span.getBoundingClientRect();
-          const charCenter = {
-            x: rect.x + rect.width / 2,
-            y: rect.y + rect.height / 2
-          };
+          measurements.push({
+            span,
+            d: dist(mouseRef.current, {
+              x: rect.x + rect.width / 2,
+              y: rect.y + rect.height / 2,
+            }),
+          });
+        }
 
-          const d = dist(mouseRef.current, charCenter);
-
+        // ---- WRITE PHASE ----
+        for (let i = 0; i < measurements.length; i++) {
+          const { span, d } = measurements[i];
           const wdth = width ? Math.floor(getAttr(d, maxDist, 5, 200)) : 100;
           const wght = weight ? Math.floor(getAttr(d, maxDist, 100, 900)) : 400;
           const italVal = italic ? getAttr(d, maxDist, 0, 1).toFixed(2) : 0;
@@ -148,14 +181,39 @@ const TextPressure = ({
           if (alpha && span.style.opacity !== alphaVal) {
             span.style.opacity = alphaVal;
           }
-        });
+        }
+      }
+
+      // Converged on the target and nothing new came in — stop until it does.
+      if (Math.abs(dx) < 0.1 && Math.abs(dy) < 0.1) {
+        settled = true;
+        rafId = null;
+        return;
       }
 
       rafId = requestAnimationFrame(animate);
     };
 
-    animate();
-    return () => cancelAnimationFrame(rafId);
+    const wake = () => {
+      if (!settled) return;
+      settled = false;
+      rafId = requestAnimationFrame(animate);
+    };
+
+    window.addEventListener('mousemove', wake, { passive: true });
+    window.addEventListener('touchmove', wake, { passive: true });
+    window.addEventListener('scroll', wake, { passive: true });
+    window.addEventListener('resize', wake, { passive: true });
+
+    rafId = requestAnimationFrame(animate);
+
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      window.removeEventListener('mousemove', wake);
+      window.removeEventListener('touchmove', wake);
+      window.removeEventListener('scroll', wake);
+      window.removeEventListener('resize', wake);
+    };
   }, [width, weight, italic, alpha]);
 
   const styleElement = useMemo(() => {

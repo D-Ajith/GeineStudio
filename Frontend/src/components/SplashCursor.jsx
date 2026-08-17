@@ -691,15 +691,64 @@ function SplashCursor({
     initFramebuffers();
     let lastUpdateTime = Date.now();
     let colorUpdateTimer = 0.0;
+    // Sleep/wake bookkeeping for the idle check in updateFrame().
+    let lastPointerActivity = Date.now();
+    let sleeping = false;
+    let needsResize = true;
+
+    /**
+     * The simulation sleeps when there is nothing to simulate.
+     *
+     * This loop used to run a full fluid step — 20 pressure iterations plus
+     * advection, curl and divergence, then a full-screen render — every frame
+     * for as long as the page was open, whether or not the pointer had moved.
+     * With DENSITY_DISSIPATION at 3.5 the dye is completely gone about a second
+     * after you stop moving, so the overwhelming majority of those frames were
+     * simulating and painting an empty canvas at 60fps. That was the single
+     * largest contributor to main-thread work on the whole site.
+     *
+     * Now the loop stops IDLE_TIMEOUT_MS after the last pointer input and
+     * restarts the instant the pointer moves again. What a visitor sees is
+     * identical — when the mouse is still there is nothing on screen to draw —
+     * but an idle tab stops burning CPU and GPU.
+     */
+    const IDLE_TIMEOUT_MS = 1500;
 
     function updateFrame() {
       if (!isActive) return;
+
+      // Nothing has happened for long enough that the dye has fully faded.
+      // Stop scheduling frames; wakeUp() below restarts on the next input.
+      if (Date.now() - lastPointerActivity > IDLE_TIMEOUT_MS) {
+        sleeping = true;
+        animationFrameId.current = null;
+        return;
+      }
+
       const dt = calcDeltaTime();
-      if (resizeCanvas()) initFramebuffers();
+      // resizeCanvas() reads canvas.clientWidth/clientHeight, which forces the
+      // browser to flush layout. Doing that once per frame was a guaranteed
+      // forced reflow at 60fps; the canvas only actually changes size when the
+      // window does, so it is driven by the resize listener instead.
+      if (needsResize) {
+        needsResize = false;
+        if (resizeCanvas()) initFramebuffers();
+      }
       updateColors(dt);
       applyInputs();
       step(dt);
       render(null);
+      animationFrameId.current = requestAnimationFrame(updateFrame);
+    }
+
+    /** Restart the loop after it has gone to sleep. */
+    function wakeUp() {
+      lastPointerActivity = Date.now();
+      if (!sleeping || !isActive) return;
+      sleeping = false;
+      // Reset the clock so the first frame back does not integrate the whole
+      // idle period as one enormous timestep.
+      lastUpdateTime = Date.now();
       animationFrameId.current = requestAnimationFrame(updateFrame);
     }
 
@@ -1006,6 +1055,7 @@ function SplashCursor({
 
     // Named event handlers for proper cleanup
     function handleMouseDown(e) {
+      wakeUp();
       let pointer = pointers[0];
       let posX = scaleByPixelRatio(e.clientX);
       let posY = scaleByPixelRatio(e.clientY);
@@ -1015,6 +1065,7 @@ function SplashCursor({
 
     let firstMouseMoveHandled = false;
     function handleMouseMove(e) {
+      wakeUp();
       let pointer = pointers[0];
       let posX = scaleByPixelRatio(e.clientX);
       let posY = scaleByPixelRatio(e.clientY);
@@ -1028,6 +1079,7 @@ function SplashCursor({
     }
 
     function handleTouchStart(e) {
+      wakeUp();
       const touches = e.targetTouches;
       let pointer = pointers[0];
       for (let i = 0; i < touches.length; i++) {
@@ -1038,6 +1090,7 @@ function SplashCursor({
     }
 
     function handleTouchMove(e) {
+      wakeUp();
       const touches = e.targetTouches;
       let pointer = pointers[0];
       for (let i = 0; i < touches.length; i++) {
@@ -1048,6 +1101,7 @@ function SplashCursor({
     }
 
     function handleTouchEnd(e) {
+      wakeUp();
       const touches = e.changedTouches;
       let pointer = pointers[0];
       for (let i = 0; i < touches.length; i++) {
@@ -1056,6 +1110,21 @@ function SplashCursor({
     }
 
     // Add event listeners
+    const handleResize = () => { needsResize = true; wakeUp(); };
+    window.addEventListener('resize', handleResize, { passive: true });
+
+    // A backgrounded tab should not be running a fluid simulation.
+    const handleVisibility = () => {
+      if (document.hidden) {
+        sleeping = true;
+        if (animationFrameId.current) {
+          cancelAnimationFrame(animationFrameId.current);
+          animationFrameId.current = null;
+        }
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
     window.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('touchstart', handleTouchStart);
@@ -1080,6 +1149,8 @@ function SplashCursor({
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('touchend', handleTouchEnd);
+      window.removeEventListener('resize', handleResize);
+      document.removeEventListener('visibilitychange', handleVisibility);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

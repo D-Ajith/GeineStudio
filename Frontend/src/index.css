@@ -148,17 +148,32 @@
 }
 
 /* ── OptimizedImage placeholder shimmer ─────────────────────────────────── */
+/*
+ * The sweep animates transform, not background-position.
+ *
+ * background-position is a paint property, so the browser cannot hand the
+ * animation to the compositor — every shimmering placeholder ran a repaint on
+ * the main thread each frame, and Lighthouse counted each one under "avoid
+ * non-composited animations". Moving a gradient layer with translateX produces
+ * the same visual sweep entirely on the compositor thread.
+ */
 .oi-shimmer {
   position: absolute;
   inset: 0;
+  overflow: hidden;
+  background: #ece9e4;
+}
+.oi-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
   background: linear-gradient(90deg, #ece9e4 25%, #f5f3f0 37%, #ece9e4 63%);
-  background-size: 400% 100%;
   animation: oi-shimmer 1.4s ease infinite;
 }
 @keyframes oi-shimmer {
-  0%   { background-position: 100% 50%; }
-  100% { background-position: 0 50%; }
+  0%   { transform: translate3d(-100%, 0, 0); }
+  100% { transform: translate3d(100%, 0, 0); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .oi-shimmer { animation: none; }
+  .oi-shimmer::after { animation: none; }
 }

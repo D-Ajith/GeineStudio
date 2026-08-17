@@ -27,20 +27,47 @@ export default function VideoHero() {
   const [muted, setMuted] = useState(true);
   const [isPlaying, setIsPlaying] = useState(true);
   const videoRef = useRef(null);
+  const sectionRef = useRef(null);
+
+  /**
+   * This section sits well below the fold, but the <video> had autoPlay, so the
+   * browser began buffering and decoding a remote Pexels clip during initial
+   * page load — competing for bandwidth and main thread with the hero that
+   * actually decides LCP.
+   *
+   * Gate it on visibility instead: nothing is fetched until the section is
+   * near the viewport. To a visitor it is identical, because it starts playing
+   * as they scroll to it, which is the only moment they could ever have seen it.
+   */
+  const [inView, setInView] = useState(false);
+
 
   useEffect(() => {
-    if (!isPlaying) return;
+    if (!isPlaying || !inView) return;
 
     const interval = setInterval(() => {
       setActive((prev) => (prev + 1) % slides.length);
     }, 8000);
 
     return () => clearInterval(interval);
-  }, [isPlaying]);
+  }, [isPlaying, inView]);
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+
+    // 200px of lead-in so playback has started by the time it is on screen.
+    const observer = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { rootMargin: "200px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || !inView) return;
 
     video.load();
     video.muted = muted;
@@ -50,15 +77,21 @@ export default function VideoHero() {
     } else {
       video.pause();
     }
-  }, [active, muted, isPlaying]);
+  }, [active, muted, isPlaying, inView]);
+
+  // Pause when scrolled away so an offscreen video is not decoding frames.
+  useEffect(() => {
+    const video = videoRef.current;
+    if (video && !inView) video.pause();
+  }, [inView]);
 
   return (
-    <section className="relative w-full h-[70vh] sm:h-[80vh] lg:h-[90vh] overflow-hidden bg-black">
+    <section ref={sectionRef} className="relative w-full h-[70vh] sm:h-[80vh] lg:h-[90vh] overflow-hidden bg-black">
       
       <video
         key={slides[active].id}
         ref={videoRef}
-        src={slides[active].video}
+        src={inView ? slides[active].video : undefined}
         playsInline
         preload="metadata"
         autoPlay
