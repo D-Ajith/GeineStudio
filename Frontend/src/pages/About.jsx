@@ -782,9 +782,15 @@ const About = () => {
                     </div>
 
                     <div>
-                      <h4 className="text-xs sm:text-base md:text-lg font-semibold text-slate-900 group-hover:text-[#6B4A2D] leading-tight transition-colors duration-300">
+                      {/* h3, not h4: the nearest heading above is the section's
+                          h2, so an h4 skipped a level ("Heading elements are
+                          not in a sequentially-descending order"). Tailwind
+                          preflight makes all headings inherit their size, and
+                          the classes here set it explicitly, so this renders
+                          pixel-for-pixel the same. */}
+                      <h3 className="text-xs sm:text-base md:text-lg font-semibold text-slate-900 group-hover:text-[#6B4A2D] leading-tight transition-colors duration-300">
                         {testimonial.name}
-                      </h4>
+                      </h3>
                       <p className="text-[10px] sm:text-xs md:text-sm text-slate-500 group-hover:text-orange-600 font-medium transition-colors duration-300">
                         {testimonial.role}
                       </p>

@@ -88,17 +88,33 @@ export default function VideoHero() {
   return (
     <section ref={sectionRef} className="relative w-full h-[70vh] sm:h-[80vh] lg:h-[90vh] overflow-hidden bg-black">
       
+      {/* The <track> is what Lighthouse's "<video> elements contain a <track>
+          element with [kind='captions']" audit looks for. These are b-roll
+          clips with no dialogue, so the VTT describes the audio instead of
+          transcribing speech — see public/captions/video-hero-en.vtt. */}
       <video
         key={slides[active].id}
         ref={videoRef}
         src={inView ? slides[active].video : undefined}
+        aria-label={`Showreel: ${slides[active].title} — ${slides[active].desc}`}
         playsInline
         preload="metadata"
         autoPlay
         loop
         muted={muted}
         className="absolute inset-0 w-full h-full object-cover"
-      />
+      >
+        {/* Deliberately not `default`: the track is available to anyone who
+            turns captions on, but leaving it showing would paint a caption
+            box over the hero. No crossOrigin either — the VTT is same-origin,
+            and putting the video into CORS mode would break the remote clip. */}
+        <track
+          kind="captions"
+          src="/captions/video-hero-en.vtt"
+          srcLang="en"
+          label="English"
+        />
+      </video>
 
       <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/40 to-black/70 z-20" />
 
@@ -120,37 +136,53 @@ export default function VideoHero() {
       <div className="absolute top-6 right-6 z-30 flex gap-3">
         
         <button
+          type="button"
           onClick={() => setIsPlaying(!isPlaying)}
+          aria-label={isPlaying ? "Pause showreel video" : "Play showreel video"}
           className="bg-white/10 hover:bg-white/20 transition p-3 rounded-full backdrop-blur"
         >
           {isPlaying ? (
-            <Pause className="text-white w-5 h-5" />
+            <Pause className="text-white w-5 h-5" aria-hidden="true" />
           ) : (
-            <Play className="text-white w-5 h-5" />
+            <Play className="text-white w-5 h-5" aria-hidden="true" />
           )}
         </button>
 
         <button
+          type="button"
           onClick={() => setMuted(!muted)}
+          aria-label={muted ? "Unmute showreel video" : "Mute showreel video"}
           className="bg-white/10 hover:bg-white/20 transition p-3 rounded-full backdrop-blur"
         >
           {muted ? (
-            <VolumeX className="text-white w-5 h-5" />
+            <VolumeX className="text-white w-5 h-5" aria-hidden="true" />
           ) : (
-            <Volume2 className="text-white w-5 h-5" />
+            <Volume2 className="text-white w-5 h-5" aria-hidden="true" />
           )}
         </button>
       </div>
 
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex gap-2">
-        {slides.map((_, i) => (
+      {/* Each dot was a 10px unnamed button. The button box is now 24px — the
+          WCAG 2.5.8 minimum — with the visual dot unchanged inside it, and the
+          gap is tightened so the row occupies close to the space it did. The
+          -mb keeps the row sitting on the same baseline as before. */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex gap-0 -mb-[7px]">
+        {slides.map((slide, i) => (
           <button
             key={i}
+            type="button"
+            aria-current={active === i ? "true" : undefined}
+            aria-label={`Show slide ${i + 1} of ${slides.length}: ${slide.title}`}
             onClick={() => setActive(i)}
-            className={`w-2.5 h-2.5 rounded-full transition-all ${
-              active === i ? "bg-white scale-125" : "bg-white/40"
-            }`}
-          />
+            className="w-[24px] h-[24px] flex items-center justify-center"
+          >
+            <span
+              aria-hidden="true"
+              className={`w-2.5 h-2.5 rounded-full transition-all ${
+                active === i ? "bg-white scale-125" : "bg-white/40"
+              }`}
+            />
+          </button>
         ))}
       </div>
     </section>

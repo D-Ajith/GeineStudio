@@ -180,7 +180,7 @@ export default function BlogDetail() {
                         d="M12 8v4m0 4v.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <p className="text-slate-600 font-medium text-sm">Blog not found</p>
-                <p className="text-slate-400 text-xs mt-1">
+                <p className="text-slate-500 text-xs mt-1">
                     Slug: <code className="bg-slate-100 px-1 rounded">{slug || "undefined"}</code>
                 </p>
                 <button
@@ -282,6 +282,7 @@ export default function BlogDetail() {
                             </time>
                         </div>
                         <button
+                            type="button"
                             onClick={copyLink}
                             title="Copy link"
                             className="flex items-center gap-2 px-4 py-2 bg-[#6B4A2D] hover:bg-[#5a3f25] text-white text-xs sm:text-sm font-semibold rounded-lg transition-colors w-fit"
@@ -304,7 +305,7 @@ export default function BlogDetail() {
                          Appears when user clicks a keyword pill below              */}
                     {activeKeyword && (
                         <div className="flex items-center gap-2.5 mb-6">
-                            <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-widest flex-shrink-0">
+                            <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-widest flex-shrink-0">
                                 Keyword
                             </span>
                             <span className="inline-flex items-center gap-1.5 pl-2.5 pr-1.5 py-1.5 bg-[#6B4A2D] text-white text-xs font-bold rounded-full shadow-sm">
@@ -312,7 +313,7 @@ export default function BlogDetail() {
                                 <span className="leading-none">{activeKeyword}</span>
                                 <button
                                     onClick={() => setActiveKeyword(null)}
-                                    className="ml-0.5 flex items-center justify-center w-4 h-4 rounded-full bg-white/20 hover:bg-white/40 transition-colors flex-shrink-0"
+                                    className="ml-0.5 flex items-center justify-center w-[24px] h-[24px] -m-[4px] rounded-full bg-white/20 hover:bg-white/40 transition-colors flex-shrink-0"
                                     aria-label="Clear keyword"
                                 >
                                     <X className="w-2.5 h-2.5" strokeWidth={3} />
@@ -355,9 +356,9 @@ export default function BlogDetail() {
               [&_em]:italic [&_em]:text-slate-600
               [&_i]:italic [&_i]:text-slate-600
               [&_u]:underline [&_u]:underline-offset-[3px] [&_u]:decoration-slate-400
-              [&_s]:line-through [&_s]:text-slate-400
-              [&_del]:line-through [&_del]:text-slate-400
-              [&_strike]:line-through [&_strike]:text-slate-400
+              [&_s]:line-through [&_s]:text-slate-500
+              [&_del]:line-through [&_del]:text-slate-500
+              [&_strike]:line-through [&_strike]:text-slate-500
               [&_mark]:bg-amber-100 [&_mark]:text-slate-900 [&_mark]:px-1 [&_mark]:rounded-sm
               [&_a]:text-[#6B4A2D] [&_a]:font-medium [&_a]:underline [&_a]:underline-offset-2
               [&_a]:decoration-[#6B4A2D]/40 [&_a]:transition-colors
@@ -429,7 +430,7 @@ export default function BlogDetail() {
                                                 disabled={!!kwLoading}
                                                 className={`
                                                     inline-flex items-center gap-1
-                                                    px-2.5 py-1
+                                                    min-h-[24px] px-2.5 py-1
                                                     text-[11px] font-medium rounded-md
                                                     border transition-all duration-200
                                                     active:scale-95 select-none cursor-pointer
@@ -447,7 +448,7 @@ export default function BlogDetail() {
                                                         <path d="M12 2a10 10 0 0 1 10 10" strokeWidth="2" />
                                                     </svg>
                                                 ) : (
-                                                    <span className={`leading-none ${isActive ? "text-white/50" : "text-slate-400"}`}>#</span>
+                                                    <span className={`leading-none ${isActive ? "text-white/70" : "text-slate-500"}`}>#</span>
                                                 )}
                                                 <span className="leading-none">{kw}</span>
                                             </button>
@@ -464,7 +465,7 @@ export default function BlogDetail() {
                         <h3 className="text-lg sm:text-xl font-bold text-slate-900 mb-2">
                             ✨ Found This Helpful?
                         </h3>
-                        <p className="text-sm sm:text-base text-slate-500 mb-5 max-w-md mx-auto">
+                        <p className="text-sm sm:text-base text-slate-600 mb-5 max-w-md mx-auto">
                             Share this article with friends and colleagues who might find it useful.
                         </p>
                         <button
@@ -488,7 +489,7 @@ export default function BlogDetail() {
                             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-slate-900 mb-2 tracking-tight">
                                 📚 Related Articles
                             </h2>
-                            <p className="text-sm sm:text-base text-slate-500 max-w-xl mx-auto">
+                            <p className="text-sm sm:text-base text-slate-600 max-w-xl mx-auto">
                                 More from the{" "}
                                 <span className="font-bold text-[#6B4A2D]">{blog.category}</span>{" "}
                                 category
@@ -522,7 +523,7 @@ export default function BlogDetail() {
                                     </div>
                                     <div className="flex flex-col flex-1 p-4 sm:p-5">
                                         {rb.createdAt && (
-                                            <div className="flex items-center gap-1.5 text-[11px] text-slate-400 mb-2">
+                                            <div className="flex items-center gap-1.5 text-[11px] text-slate-500 mb-2">
                                                 <Calendar className="w-3.5 h-3.5 text-[#6B4A2D]" strokeWidth={2} />
                                                 <time>{formatDate(rb.createdAt)}</time>
                                             </div>
@@ -530,7 +531,7 @@ export default function BlogDetail() {
                                         <h3 className="text-sm sm:text-base font-bold text-slate-900 group-hover:text-[#6B4A2D] mb-2 line-clamp-2 transition-colors duration-300 leading-snug">
                                             {rb.title}
                                         </h3>
-                                        <p className="text-[11px] sm:text-xs text-slate-400 line-clamp-2 leading-relaxed mb-3 flex-1">
+                                        <p className="text-[11px] sm:text-xs text-slate-500 line-clamp-2 leading-relaxed mb-3 flex-1">
                                             {rb.metaDescription ||
                                                 rb.description?.replace(/<[^>]+>/g, "").substring(0, 100)}
                                         </p>

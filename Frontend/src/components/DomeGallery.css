@@ -21,7 +21,8 @@
   transform-style: preserve-3d;
 }
 
-main.sphere-main {
+/* Element-agnostic: .sphere-main is a <div> now (one <main> per page). */
+.sphere-main {
   position: absolute;
   inset: 0;
   display: grid;

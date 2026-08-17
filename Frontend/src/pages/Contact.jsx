@@ -227,15 +227,23 @@ const Contact = () => {
                 <p className="text-sm sm:text-base text-slate-600">Fill out the form below and we'll get back to you shortly</p>
               </div>
 
-              <div className="space-y-4 sm:space-y-5">
+              {/* A real <form>, not a <div>. Every label is now tied to its
+                  control by htmlFor/id — previously none of them were, so a
+                  screen reader read each field as an unlabelled edit box —
+                  and submitting with Enter from a field works, which it did
+                  not when the button sat outside a form. handleSubmit already
+                  calls preventDefault, so the network path is unchanged. */}
+              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                   <div className="group">
-                    <label className="block text-sm font-semibold mb-1.5 text-slate-700 group-focus-within:text-slate-900 transition-colors">
+                    <label htmlFor="contact-name" className="block text-sm font-semibold mb-1.5 text-slate-700 group-focus-within:text-slate-900 transition-colors">
                       Full Name *
                     </label>
                     <input
+                      id="contact-name"
                       type="text"
                       name="name"
+                      autoComplete="name"
                       value={formData.name}
                       onChange={handleChange}
                       placeholder="Enter your Name"
@@ -244,12 +252,14 @@ const Contact = () => {
                   </div>
 
                   <div className="group">
-                    <label className="block text-sm font-semibold mb-1.5 text-slate-700 group-focus-within:text-slate-900 transition-colors">
+                    <label htmlFor="contact-email" className="block text-sm font-semibold mb-1.5 text-slate-700 group-focus-within:text-slate-900 transition-colors">
                       Email Address *
                     </label>
                     <input
+                      id="contact-email"
                       type="email"
                       name="email"
+                      autoComplete="email"
                       value={formData.email}
                       placeholder="Enter your Email"
                       onChange={handleChange}
@@ -260,12 +270,14 @@ const Contact = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5" >
                   <div className="group">
-                    <label className="block text-sm font-semibold mb-1.5 text-slate-700 group-focus-within:text-slate-900 transition-colors">
+                    <label htmlFor="contact-phone" className="block text-sm font-semibold mb-1.5 text-slate-700 group-focus-within:text-slate-900 transition-colors">
                       Phone Number *
                     </label>
                     <input
+                      id="contact-phone"
                       type="tel"
                       name="phone"
+                      autoComplete="tel"
                       placeholder="Enter your Phone number"
                       value={formData.phone}
                       onChange={handleChange}
@@ -274,10 +286,11 @@ const Contact = () => {
                   </div>
 
                   <div className="group">
-                    <label className="block text-sm font-semibold mb-1.5 text-slate-700 group-focus-within:text-slate-900 transition-colors">
+                    <label htmlFor="contact-service" className="block text-sm font-semibold mb-1.5 text-slate-700 group-focus-within:text-slate-900 transition-colors">
                       Service *
                     </label>
                     <select
+                      id="contact-service"
                       name="service"
                       value={formData.service}
                       onChange={handleChange}
@@ -301,12 +314,13 @@ const Contact = () => {
                   </div>
                 </div>
                 <div className="group">
-                  <label className="block text-sm font-semibold mb-2 text-slate-700 group-focus-within:text-slate-900 transition-colors">
+                  <label htmlFor="contact-booking-date" className="block text-sm font-semibold mb-2 text-slate-700 group-focus-within:text-slate-900 transition-colors">
                     Booking Date *
                   </label>
 
                   <div className="relative">
                     <input
+                      id="contact-booking-date"
                       type="date"
                       name="bookingDate"
                       value={formData.bookingDate}
@@ -316,17 +330,19 @@ const Contact = () => {
                       className="w-full px-4 py-3 text-sm sm:text-base border-2 border-slate-200 rounded-xl bg-white text-slate-900 cursor-pointer caret-black focus:border-slate-900 focus:ring-4 focus:ring-slate-100 outline-none transition-all duration-300 appearance-none shadow-sm hover:border-slate-300"
                     />
 
-                    {/* Custom Calendar Icon */}
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
+                    {/* Custom Calendar Icon — purely decorative next to a date
+                        input that already announces itself as one. */}
+                    <div aria-hidden="true" className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
                       📅
                     </div>
                   </div>
                 </div>
                 <div className="group">
-                  <label className="block text-sm font-semibold mb-1.5 text-slate-700 group-focus-within:text-slate-900 transition-colors">
+                  <label htmlFor="contact-message" className="block text-sm font-semibold mb-1.5 text-slate-700 group-focus-within:text-slate-900 transition-colors">
                     Message
                   </label>
                   <textarea
+                    id="contact-message"
                     name="message"
                     value={formData.message}
                     placeholder="Enter your Message"
@@ -336,10 +352,14 @@ const Contact = () => {
                   />
                 </div>
 
+                {/* Both outcomes are announced now: success politely via
+                    role="status", failure assertively via role="alert". Before
+                    this, the only feedback was a colour change a screen-reader
+                    user never heard about. */}
                 {status === 'success' && (
-                  <div className="p-3 bg-green-50 border-2 border-green-200 rounded-xl">
+                  <div role="status" className="p-3 bg-green-50 border-2 border-green-200 rounded-xl">
                     <p className="text-sm sm:text-base text-green-700 font-semibold flex items-center gap-2">
-                      <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <svg aria-hidden="true" className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                       </svg>
                       <span>Message sent successfully!</span>
@@ -348,9 +368,9 @@ const Contact = () => {
                 )}
 
                 {status === 'error' && (
-                  <div className="p-3 bg-red-50 border-2 border-red-200 rounded-xl">
+                  <div role="alert" className="p-3 bg-red-50 border-2 border-red-200 rounded-xl">
                     <p className="text-sm sm:text-base text-red-700 font-semibold flex items-center gap-2">
-                      <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <svg aria-hidden="true" className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                       </svg>
                       <span>Failed to send message. Please try again.</span>
@@ -359,23 +379,23 @@ const Contact = () => {
                 )}
 
                 <button
-                  onClick={handleSubmit}
+                  type="submit"
                   disabled={loading}
                   className="w-full px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-base bg-[#6B4A2D] text-white rounded-xl font-semibold flex items-center justify-center gap-3 hover:shadow-2xl hover:shadow-slate-900/30 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98]"
                 >
                   {loading ? (
                     <>
-                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" />
                       <span>Sending...</span>
                     </>
                   ) : (
                     <>
-                      <Send className="w-5 h-5" />
+                      <Send className="w-5 h-5" aria-hidden="true" />
                       <span>Send Message</span>
                     </>
                   )}
                 </button>
-              </div>
+              </form>
             </div>
 
             <div className="space-y-5 sm:space-y-6" data-aos="fade-left">

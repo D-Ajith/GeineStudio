@@ -1,0 +1,11 @@
+WEBVTT
+
+NOTE
+Captions for the showreel clips in the homepage video section. These are
+b-roll clips with no spoken dialogue — the only audio is ambient sound and
+background music — so the track describes the audio rather than transcribing
+speech, which is what WCAG 1.2.2 asks for when there is no dialogue.
+
+1
+00:00:00.000 --> 00:00:30.000
+[No dialogue — ambient location sound and background music]

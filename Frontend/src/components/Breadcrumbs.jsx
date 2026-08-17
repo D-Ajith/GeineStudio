@@ -39,7 +39,10 @@ export default function Breadcrumbs({ items = [], className = "" }) {
                   {item.name}
                 </span>
               ) : (
-                <Link to={item.path} className="hover:underline opacity-80 hover:opacity-100">
+                <Link
+                  to={item.path}
+                  className="inline-block tap-target hover:underline opacity-80 hover:opacity-100"
+                >
                   {item.name}
                 </Link>
               )}

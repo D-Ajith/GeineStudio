@@ -63,7 +63,11 @@ function App() {
       <DeferredSplashCursor />
       <ScrollToTop />
       <Header />
-      <main className="flex-grow">
+      {/* A plain wrapper, not <main>: every route renders its own <main>, and
+          two nested main landmarks make a screen reader's landmark list
+          ambiguous ("Document should not have more than one main landmark").
+          The flex-grow behaviour is identical. */}
+      <div className="flex-grow">
         {/* Only the lazy admin routes can suspend; public routes render
             synchronously exactly as before, so nothing about the visitor-facing
             pages changes. */}
@@ -127,7 +131,7 @@ function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
         </Suspense>
-      </main>
+      </div>
       <FloatingSocial />
       <Footer />
     </div>

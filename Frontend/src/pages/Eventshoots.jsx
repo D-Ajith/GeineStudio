@@ -6,6 +6,17 @@ import Breadcrumbs from "../components/Breadcrumbs";
 import { useTargetWidth } from "../lib/useResponsiveImage";
 import { bestVariantUrl } from "../lib/imageManifest";
 import Seo from "../components/Seo";
+
+/*
+ * ACCENT COLOURS
+ * #A064F0 is the page accent and is unchanged wherever it is decorative — the
+ * section rules, the icons and the tinted panels all still use it.
+ *
+ * White text on it only reached 3.77:1, short of the 4.5:1 WCAG AA asks for, so
+ * the handful of surfaces that carry white text (the pill, the two CTAs and
+ * the numbered step markers) use #905AD8 instead: the same hue with the RGB
+ * scaled down until white clears 4.5:1.
+ */
 import { SERVICE_SEO, serviceSchema } from "../lib/seoConfig";
 
 /** Declared once, then used by both <Breadcrumbs> and <Seo>. */
@@ -118,7 +129,7 @@ const Eventshoots = () => {
           <p className="text-xl sm:text-2xl font-light italic mb-6" style={{ color: '#A064F0' }}>
             Every moment, preserved in full frame.
           </p>
-          <div className="inline-block px-5 py-2 rounded-full text-sm font-bold text-white" style={{ background: '#A064F0' }}>
+          <div className="inline-block px-5 py-2 rounded-full text-sm font-bold text-white" style={{ background: '#905AD8' }}>
             Starting from
           </div>
         </div>
@@ -132,7 +143,7 @@ const Eventshoots = () => {
             <p className="text-slate-600 text-lg leading-relaxed mb-8">
               Capture every important moment at your event. Our professional photographers and videographers provide comprehensive coverage from start to finish, ensuring no critical moment is missed. Perfect for conferences, product launches, and corporate celebrations. We blend into your event seamlessly while capturing the energy and essence of every scene.
             </p>
-            <Link to="/contact" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl text-white font-semibold text-base transition-all duration-300 hover:opacity-90 hover:-translate-y-0.5 shadow-lg" style={{ background: '#A064F0' }}>
+            <Link to="/contact" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl text-white font-semibold text-base transition-all duration-300 hover:opacity-90 hover:-translate-y-0.5 shadow-lg" style={{ background: '#905AD8' }}>
               <FaWhatsapp className="text-lg" /> Book This Service
             </Link>
           </div>
@@ -179,7 +190,7 @@ const Eventshoots = () => {
                 <div className="p-4 sm:p-5 flex items-center gap-3">
                   <div
                     className="w-8 h-8 sm:w-9 sm:h-9 rounded-full flex-shrink-0 flex items-center justify-center text-white font-bold text-xs"
-                    style={{ background: '#A064F0' }}
+                    style={{ background: '#905AD8' }}
                   >
                     {String(i + 1).padStart(2, '0')}
                   </div>
@@ -202,7 +213,7 @@ const Eventshoots = () => {
           </h2>
           <p className="text-white/60 text-lg mb-8">Let's create something remarkable together. Reach out for a free consultation and custom quote.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/contact" className="px-8 py-3.5 rounded-xl font-bold text-base hover:opacity-90 hover:-translate-y-0.5 transition-all shadow-lg text-white" style={{ background: '#A064F0' }}>
+            <Link to="/contact" className="px-8 py-3.5 rounded-xl font-bold text-base hover:opacity-90 hover:-translate-y-0.5 transition-all shadow-lg text-white" style={{ background: '#905AD8' }}>
               Get a Free Quote
             </Link>
             <button onClick={() => navigate('/services')} className="px-8 py-3.5 rounded-xl font-bold text-base border border-white/20 text-white/80 hover:bg-white/10 transition-all">

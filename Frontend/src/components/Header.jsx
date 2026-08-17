@@ -53,7 +53,9 @@ const Header = () => {
             {/* 117×264 WebP rather than the 409×921 PNG the favicon still uses —
                 the logo never renders above 44px tall. width/height are set so
                 the header does not reflow while it loads. */}
-            <img src="https://geniestudio.in/Images%20For%20GenieStudio/GenieStudio.png" alt="Genie Studio" width="30" height="93"
+            {/* alt="" — the adjacent "GenieStudio" wordmark already names the
+                link, so a description here would be read out twice. */}
+            <img src="https://geniestudio.in/Images%20For%20GenieStudio/GenieStudio.png" alt="" width="30" height="93"
               className="h-10 md:h-11 w-cover" fetchPriority="high" decoding="async" />
             <span className="text-lg md:text-2xl lg:text-3xl font-semibold text-white">
               Genie<span className="text-[var(--accent-color)]">Studio</span>
@@ -69,19 +71,33 @@ const Header = () => {
                     className="relative group"
                     onMouseEnter={() => setServiceOpen(true)}
                     onMouseLeave={() => setServiceOpen(false)}
+                    /* focus/blur bubble in React, so tabbing into any child
+                       opens the panel and tabbing past the last one closes it.
+                       Without this the six service links were reachable by
+                       mouse only — the panel is visibility:hidden when shut, so
+                       a keyboard user could never get to them. */
+                    onFocus={() => setServiceOpen(true)}
+                    onBlur={(e) => {
+                      if (!e.currentTarget.contains(e.relatedTarget)) setServiceOpen(false);
+                    }}
                   >
                     <Link
                       to="/services"
+                      aria-expanded={serviceOpen}
+                      aria-controls="services-submenu"
                       className="flex items-center gap-1 cursor-pointer text-sm lg:text-base xl:text-lg font-medium tracking-wide text-white"
                     >
                       Services
                       <ChevronDown
+                        aria-hidden="true"
                         className={`w-4 h-4 transition-transform duration-300 ${serviceOpen ? "rotate-180" : "rotate-0"
                           }`}
                       />
                     </Link>
 
-                    <div className={`absolute top-full left-0 mt-3 w-56 bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 
+                    <div
+                      id="services-submenu"
+                      className={`absolute top-full left-0 mt-3 w-56 bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300
           ${serviceOpen ? "opacity-100 visible translate-y-0" : "opacity-0 invisible -translate-y-2"}`}>
 
                       {serviceItems.map((sub) => (
@@ -120,18 +136,33 @@ const Header = () => {
               </span>
 
               <span className=" w-8 h-8 rounded-full bg-[#6b4a2d] flex items-center justify-center text-white" >
-                <Phone size={14} />
+                <Phone size={14} aria-hidden="true" />
               </span>
             </a>
 
           </div>
 
-          <button onClick={() => setMenuOpen(!menuOpen)} className="lg:hidden text-white" >
-            {menuOpen ? <X size={24} /> : <Menu size={24} />}
+          {/* p-2 with a matching -mr-2 grows the tap area from the icon's bare
+              24px to 40px without moving the icon a pixel. */}
+          <button
+            type="button"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-menu"
+            className="lg:hidden text-white p-2 -mr-2"
+          >
+            {menuOpen ? <X size={24} aria-hidden="true" /> : <Menu size={24} aria-hidden="true" />}
           </button>
         </div>
 
-        <div className={`lg:hidden transition-all duration-300 ${menuOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0 overflow-hidden"}`} >
+        {/* `inert` while collapsed: the panel is only clipped by max-h-0, so
+            every link inside it stayed in the tab order and a keyboard user
+            fell into a menu they could not see. */}
+        <div
+          id="mobile-menu"
+          inert={!menuOpen}
+          className={`lg:hidden transition-all duration-300 ${menuOpen ? "max-h-screen opacity-100" : "max-h-0 opacity-0 overflow-hidden"}`} >
           <div className="bg-black border-t border-white/10 py-4">
             {navItems.map((item) => {
               if (item.name === "Services") {
@@ -148,16 +179,26 @@ const Header = () => {
                         Services
                       </Link>
 
+                      {/* "+" / "-" is not a name a screen reader can act on.
+                          w-8 h-8 with -my-1.5 gives a 32px tap target while
+                          keeping the row exactly as tall as before. */}
                       <button
+                        type="button"
                         onClick={() => setServiceOpen(!serviceOpen)}
-                        className="text-white text-sm"
+                        aria-label={serviceOpen ? "Collapse services submenu" : "Expand services submenu"}
+                        aria-expanded={serviceOpen}
+                        aria-controls="mobile-services-submenu"
+                        className="text-white text-sm w-8 h-8 -my-1.5 flex items-center justify-center"
                       >
-                        {serviceOpen ? "-" : "+"}
+                        <span aria-hidden="true">{serviceOpen ? "-" : "+"}</span>
                       </button>
 
                     </div>
 
-                    <div className={`transition-all duration-300 ${serviceOpen ? "max-h-96" : "max-h-0 overflow-hidden"}`}>
+                    <div
+                      id="mobile-services-submenu"
+                      inert={!serviceOpen}
+                      className={`transition-all duration-300 ${serviceOpen ? "max-h-96" : "max-h-0 overflow-hidden"}`}>
                       {serviceItems.map((sub) => (
                         <Link
                           key={sub.path}

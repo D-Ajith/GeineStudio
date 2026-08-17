@@ -112,26 +112,39 @@ export default function imageCarousel() {
         </div>
 
 
-        <button onClick={prevSlide} className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 z-10 bg-white/10 hover:bg-white/20 backdrop-blur-sm p-3 md:p-4 rounded-full transition-all" aria-label="Previous slide" >
-          <ChevronLeft className="w-6 h-6 md:w-8 md:h-8 text-white" />
+        <button type="button" onClick={prevSlide} className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 z-10 bg-white/10 hover:bg-white/20 backdrop-blur-sm p-3 md:p-4 rounded-full transition-all" aria-label="Previous slide" >
+          <ChevronLeft className="w-6 h-6 md:w-8 md:h-8 text-white" aria-hidden="true" />
         </button>
 
-        <button onClick={nextSlide} className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 z-10 bg-white/10 hover:bg-white/20 backdrop-blur-sm p-3 md:p-4 rounded-full transition-all" aria-label="Next slide">
-          <ChevronRight className="w-6 h-6 md:w-8 md:h-8 text-white" />
+        <button type="button" onClick={nextSlide} className="absolute right-4 md:right-6 top-1/2 -translate-y-1/2 z-10 bg-white/10 hover:bg-white/20 backdrop-blur-sm p-3 md:p-4 rounded-full transition-all" aria-label="Next slide">
+          <ChevronRight className="w-6 h-6 md:w-8 md:h-8 text-white" aria-hidden="true" />
         </button>
 
 
-        <div className="absolute bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 z-10 flex gap-2 md:gap-3">
-          {slides.map((_, index) => (
+        {/* The dots were 6–8px buttons, well under the 24px minimum a pointer
+            target needs. The button box is 24px now with the dot unchanged
+            inside it; the gap is dropped and -mb-[9px] pulls the row back onto
+            its original baseline, so the strip sits where it always did. */}
+        <div className="absolute bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 z-10 flex gap-0 -mb-[9px]">
+          {slides.map((slide, index) => (
             <button
               key={index}
+              type="button"
               onClick={() => goToSlide(index)}
-              className={`transition-all ${index === currentSlide
-                ? 'w-8 md:w-12 h-1.5 md:h-2 bg-white'
-                : 'w-1.5 md:w-2 h-1.5 md:h-2 bg-white/50 hover:bg-white/75'
-                } rounded-full`}
-              aria-label={`Go to slide ${index + 1}`}
-            />
+              /* min-w, not w: the active pill is 32–48px wide and a fixed
+                 24px box would squash it. */
+              className="min-w-[24px] h-[24px] flex items-center justify-center shrink-0"
+              aria-current={index === currentSlide ? "true" : undefined}
+              aria-label={`Go to slide ${index + 1} of ${slides.length}: ${slide.title}`}
+            >
+              <span
+                aria-hidden="true"
+                className={`shrink-0 transition-all ${index === currentSlide
+                  ? 'w-8 md:w-12 h-1.5 md:h-2 bg-white'
+                  : 'w-1.5 md:w-2 h-1.5 md:h-2 bg-white/50 hover:bg-white/75'
+                  } rounded-full`}
+              />
+            </button>
           ))}
         </div>
 

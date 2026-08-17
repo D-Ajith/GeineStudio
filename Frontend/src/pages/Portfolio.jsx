@@ -106,6 +106,15 @@ const Portfolio = () => {
     AOS.refreshHard();
   }, [shownItems.length]);
 
+  // Escape closes the enlarged image. Clicking the backdrop already did, but
+  // that is a mouse-only escape hatch.
+  useEffect(() => {
+    if (!selectedImage) return;
+    const onKey = (e) => { if (e.key === "Escape") setSelectedImage(null); };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [selectedImage]);
+
   useEffect(() => {
     if (!hasMore) return;
     const el = sentinelRef.current;
@@ -169,14 +178,20 @@ const Portfolio = () => {
 
       {selectedImage && (
         <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={selectedImage.title ? `${selectedImage.title} — enlarged` : "Enlarged portfolio image"}
           className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center px-4"
           onClick={() => setSelectedImage(null)}
         >
           <button
+            type="button"
             onClick={() => setSelectedImage(null)}
+            aria-label="Close enlarged image"
             className="absolute top-4 right-4 sm:top-6 sm:right-6 text-white hover:text-slate-300 transition z-10"
           >
             <svg
+              aria-hidden="true"
               className="w-9 h-9"
               fill="none"
               stroke="currentColor"
@@ -257,15 +272,21 @@ const Portfolio = () => {
               ))}
             </div>
           ) : allItems.length === 0 ? (
-            <p className="text-center text-slate-500 py-16">
+            <p className="text-center text-slate-600 py-16">
               No images in this category yet.
             </p>
           ) : (
             <div className=" grid grid-cols-2 md:grid-cols-3 gap-[3px] sm:gap-3 lg:gap-5 " >
+              {/* Was a clickable <div>: no tab stop, no Enter/Space, and
+                  nothing announced it as interactive. A native <button> gives
+                  all three for free. `block w-full text-left` keeps the grid
+                  cell laid out exactly as the div was. */}
               {shownItems.map((item, index) => (
-                <div
+                <button
+                  type="button"
                   key={`${item.category}-${item.id}-${index}`}
                   onClick={() => setSelectedImage(item)}
+                  aria-label={item.title ? `View ${item.title} enlarged` : "View portfolio image enlarged"}
                   data-aos={
                     !isMobile
                       ? index % 2 === 0
@@ -274,7 +295,7 @@ const Portfolio = () => {
                       : undefined
                   }
                   data-aos-delay={!isMobile ? (index % BATCH) * 80 : undefined}
-                  className=" group overflow-hidden rounded-lg sm:rounded-xl bg-black cursor-pointer " >
+                  className=" group block w-full text-left overflow-hidden rounded-lg sm:rounded-xl bg-black cursor-pointer " >
                   <OptimizedImage
                     src={optimizeImage(item.image)}
                     variants={item.variants}
@@ -285,7 +306,7 @@ const Portfolio = () => {
                     sizes="(max-width: 768px) 50vw, (max-width: 1300px) 33vw, 420px"
                     imgClassName="transition-transform duration-500 group-hover:scale-105"
                   />
-                </div>
+                </button>
               ))}
             </div>
           )}
@@ -293,7 +314,7 @@ const Portfolio = () => {
           {/* Pulls in the next batch as it nears the viewport */}
           {!loading && hasMore && (
             <div ref={sentinelRef} className="flex justify-center py-8">
-              <span className="text-xs text-slate-400">Loading more…</span>
+              <span className="text-xs text-slate-600">Loading more…</span>
             </div>
           )}
 

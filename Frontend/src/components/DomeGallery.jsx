@@ -571,6 +571,24 @@ export default function DomeGallery({
     [openItemFromElement]
   );
 
+  /**
+   * The tiles carry role="button" and tabIndex={0} but only ever listened for
+   * pointer events, so a keyboard user could focus a tile and then had no way
+   * to open it. A native <button> is not an option here — the 3D transform
+   * chain in DomeGallery.css targets `.item__image` directly and a button's own
+   * box would sit between it and the <img> — so the missing half of the button
+   * contract is supplied explicitly instead.
+   */
+  const onTileKeyDown = useCallback(
+    e => {
+      if (e.key !== 'Enter' && e.key !== ' ' && e.key !== 'Spacebar') return;
+      e.preventDefault();          // stop Space from scrolling the page
+      if (openingRef.current) return;
+      openItemFromElement(e.currentTarget);
+    },
+    [openItemFromElement]
+  );
+
   const onTilePointerUp = useCallback(
     e => {
       if (e.pointerType !== 'touch') return;
@@ -602,7 +620,10 @@ export default function DomeGallery({
         ['--image-filter']: grayscale ? 'grayscale(1)' : 'none'
       }}
     >
-      <main ref={mainRef} className="sphere-main">
+      {/* Was <main>. The Gallery route already provides the page's main
+          landmark, and a second one nested inside it is a landmark violation.
+          Purely a tag swap — .sphere-main still carries every style. */}
+      <div ref={mainRef} className="sphere-main">
         <div className="stage">
           <div ref={sphereRef} className="sphere">
             {items.map((it, i) => (
@@ -628,8 +649,9 @@ export default function DomeGallery({
                   className="item__image"
                   role="button"
                   tabIndex={0}
-                  aria-label={it.alt || 'Open image'}
+                  aria-label={it.alt ? `View ${it.alt}` : 'View gallery image'}
                   onClick={onTileClick}
+                  onKeyDown={onTileKeyDown}
                   onPointerUp={onTilePointerUp}
                 >
                   {/* Not lazy on purpose: dome tiles are 3D-transformed, and
@@ -658,7 +680,7 @@ export default function DomeGallery({
           <div ref={scrimRef} className="scrim" />
           <div ref={frameRef} className="frame" />
         </div>
-      </main>
+      </div>
     </div>
   );
 }

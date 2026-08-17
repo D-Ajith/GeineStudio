@@ -119,7 +119,11 @@ const Services = () => {
               <Link
                 key={service.title}
                 to={service.route}
-                aria-label={`${service.title} — view details`}
+                /* No aria-label: the card already reads out as
+                   "Podcast Shoots … View Podcast Shoots", which is a better
+                   name than anything added here — and the old label
+                   ("… — view details") did not contain the visible text, so
+                   voice-control users could not say what they could see. */
                 data-aos={index % 2 === 0 ? "fade-right" : "fade-left"}
                 data-aos-delay={index * 100}
                 data-aos-anchor-placement="top-bottom"
@@ -136,9 +140,12 @@ const Services = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900/95 via-slate-900/50 to-transparent">
                     <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 md:p-8 text-white">
                       <service.Icon className="text-2xl sm:text-3xl mb-2 sm:mb-3" />
-                      <h3 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold mb-1.5 sm:mb-2">
+                      {/* h2: the only heading above these cards is the page
+                          h1, so h3 skipped a level. Sizing is set by the
+                          classes, so nothing moves. */}
+                      <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold mb-1.5 sm:mb-2">
                         {service.title}
-                      </h3>
+                      </h2>
                       <p className="hidden sm:block sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300 text-sm sm:text-base md:text-lg text-slate-200 mb-3 sm:mb-4 line-clamp-2">
                         {service.description}
                       </p>

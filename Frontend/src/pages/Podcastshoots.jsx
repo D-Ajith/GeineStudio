@@ -6,6 +6,17 @@ import Breadcrumbs from "../components/Breadcrumbs";
 import { useTargetWidth } from "../lib/useResponsiveImage";
 import { bestVariantUrl } from "../lib/imageManifest";
 import Seo from "../components/Seo";
+
+/*
+ * ACCENT COLOURS
+ * #E8600A is the page accent and is unchanged wherever it is decorative — the
+ * section rules, the icons and the tinted panels all still use it.
+ *
+ * White text on it only reached 3.44:1, short of the 4.5:1 WCAG AA asks for, so
+ * the handful of surfaces that carry white text (the pill, the two CTAs and
+ * the numbered step markers) use #C55209 instead: the same hue with the RGB
+ * scaled down until white clears 4.5:1.
+ */
 import { SERVICE_SEO, serviceSchema } from "../lib/seoConfig";
 
 /** Declared once, then used by both <Breadcrumbs> and <Seo>'s BreadcrumbList. */
@@ -197,7 +208,7 @@ const Podcastshoots = () => {
           <p className="text-xl sm:text-2xl font-light italic mb-6" style={{ color: '#E8600A' }}>
             Sound great. Look even better.
           </p>
-          <div className="inline-block px-5 py-2 rounded-full text-sm font-bold text-white" style={{ background: '#E8600A' }}>
+          <div className="inline-block px-5 py-2 rounded-full text-sm font-bold text-white" style={{ background: '#C55209' }}>
             Starting from
           </div>
         </div>
@@ -211,7 +222,7 @@ const Podcastshoots = () => {
             <p className="text-slate-600 text-lg leading-relaxed mb-8">
               Produce professional-quality podcast episodes with our complete production service. From recording in our state-of-the-art studio to final editing and delivery, we handle every aspect of your podcast production. Whether it's a solo show, interview format, or panel discussion — we make it look and sound world-class.
             </p>
-            <Link to="/contact" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl text-white font-semibold text-base transition-all duration-300 hover:opacity-90 hover:-translate-y-0.5 shadow-lg" style={{ background: '#E8600A' }}>
+            <Link to="/contact" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl text-white font-semibold text-base transition-all duration-300 hover:opacity-90 hover:-translate-y-0.5 shadow-lg" style={{ background: '#C55209' }}>
               <FaWhatsapp className="text-lg" /> Book a Podcast Shoot
             </Link>
           </div>
@@ -258,7 +269,7 @@ const Podcastshoots = () => {
                 <div className="p-4 sm:p-5 flex items-center gap-3">
                   <div
                     className="w-8 h-8 sm:w-9 sm:h-9 rounded-full flex-shrink-0 flex items-center justify-center text-white font-bold text-xs"
-                    style={{ background: '#E8600A' }}
+                    style={{ background: '#C55209' }}
                   >
                     {String(i + 1).padStart(2, '0')}
                   </div>
@@ -315,7 +326,7 @@ const Podcastshoots = () => {
               >
                 <div
                   className="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-xs mb-4"
-                  style={{ background: '#E8600A' }}
+                  style={{ background: '#C55209' }}
                 >
                   {String(i + 1).padStart(2, '0')}
                 </div>
@@ -402,7 +413,7 @@ const Podcastshoots = () => {
           </h2>
           <p className="text-white/60 text-lg mb-8">Let's create something remarkable together. Reach out for a free consultation and custom quote.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/contact" className="px-8 py-3.5 rounded-xl font-bold text-base hover:opacity-90 hover:-translate-y-0.5 transition-all shadow-lg text-white" style={{ background: '#E8600A' }}>
+            <Link to="/contact" className="px-8 py-3.5 rounded-xl font-bold text-base hover:opacity-90 hover:-translate-y-0.5 transition-all shadow-lg text-white" style={{ background: '#C55209' }}>
               Get a Free Quote
             </Link>
             <button onClick={() => navigate('/services')} className="px-8 py-3.5 rounded-xl font-bold text-base border border-white/20 text-white/80 hover:bg-white/10 transition-all">

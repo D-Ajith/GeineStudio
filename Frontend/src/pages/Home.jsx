@@ -11,10 +11,13 @@ const Home = () => {
   const [active, setActive] = useState(0);
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const navigate = useNavigate();
-  const [activeIndex, setActiveIndex] = useState(0);
-  const handleSlideChange = (index) => {
-    setActiveIndex(index);
-  };
+  /*
+   * `activeIndex` / `handleSlideChange` used to live here. handleSlideChange
+   * was never called by anything, so activeIndex was stuck at 0 — and the hero
+   * CTA read its label from slides[activeIndex] while navigating to
+   * slides[active].route. Now that the button takes both from the slide it
+   * belongs to, the pair is dead and gone. `active` is the real slide index.
+   */
 
   // The hero and parallax sections paint through CSS background-image, which
   // cannot carry a srcSet — so pick the right pre-generated file for this
@@ -273,7 +276,9 @@ const Home = () => {
    */
 
   return (
-    <div className="min-h-screen">
+    // <main>, not <div>: App renders a plain wrapper now, so each route
+    // supplies the page's single main landmark.
+    <main className="min-h-screen">
       <Seo
         {...SEO.home}
         breadcrumbs={[{ name: "Home", path: "/" }]}
@@ -291,8 +296,14 @@ const Home = () => {
 
       <section className="relative h-[70vh] sm:h-[80vh] lg:h-screen overflow-hidden">
         {slides.map((slide, index) => (
+          // All three slides sit in the DOM at once and cross-fade on opacity,
+          // so the two hidden ones kept their CTA in the tab order — a keyboard
+          // user tabbed into buttons that were not on screen. `inert` takes the
+          // inactive slides out of the tab order and off the accessibility
+          // tree; the visual cross-fade is untouched.
           <div
             key={slide.id}
+            inert={active !== index}
             className={`absolute inset-0 transition-opacity duration-1000 ${active === index ? "opacity-100" : "opacity-0"
               }`}
           >
@@ -340,12 +351,19 @@ const Home = () => {
                     <p className=" text-base sm:text-lg lg:text-xl text-gray-200 mb-6 sm:mb-8 leading-relaxed">
                       {slide.description}
                     </p>
+                    {/* Label and destination now come from the same slide.
+                        They did not: the text read slides[activeIndex] (an
+                        index that never changes, so always "Explore Services")
+                        while the click went to slides[active].route — so on
+                        slides 2 and 3 the button's accessible name described
+                        somewhere other than where it went. */}
                     <button
+                      type="button"
                       className="group px-6 sm:px-8 py-3 sm:py-4 bg-white text-sm sm:text-base text-gray-900 rounded-full font-semibold hover:bg-gradient-to-r hover:from-blue-500 hover:to-purple-500 hover:text-white transition-all duration-300 flex items-center gap-2 sm:gap-3 shadow-xl hover:shadow-2xl hover:scale-105"
-                      onClick={() => navigate(slides[active].route)}
+                      onClick={() => navigate(slide.route)}
                     >
-                      {slides[activeIndex].buttonText}
-                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                      {slide.buttonText}
+                      <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
                     </button>
 
                   </div>
@@ -355,14 +373,26 @@ const Home = () => {
           </div>
         ))}
 
-        <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex gap-3 z-10">
-          {slides.map((_, index) => (
+        {/* The bars were 4px-tall unnamed buttons. Wrapping each bar in a
+            24px-tall button gives it a real name and a WCAG-sized tap target;
+            -mb-2.5 cancels the extra height so the bars stay on exactly the
+            same line as before. Widths and colours are unchanged. */}
+        <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex gap-3 z-10 -mb-[10px]">
+          {slides.map((slide, index) => (
             <button
               key={index}
+              type="button"
               onClick={() => setActive(index)}
-              className={`h-1 rounded-full transition-all duration-300 ${active === index ? "w-12 bg-white" : "w-8 bg-white/50"
-                }`}
-            />
+              aria-current={active === index ? "true" : undefined}
+              aria-label={`Show slide ${index + 1} of ${slides.length}: ${slide.title}`}
+              className="h-[24px] flex items-center"
+            >
+              <span
+                aria-hidden="true"
+                className={`h-1 rounded-full transition-all duration-300 ${active === index ? "w-12 bg-white" : "w-8 bg-white/50"
+                  }`}
+              />
+            </button>
           ))}
         </div>
       </section>
@@ -429,7 +459,7 @@ const Home = () => {
                       imgClassName="transition-transform duration-500 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-6 flex flex-col justify-end pointer-events-none">
-                      <span className="bg-orange-500 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
+                      <span className="bg-orange-700 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
                         Podcast
                       </span>
                       <h3 className="text-white text-lg font-extrabold uppercase leading-tight">
@@ -446,7 +476,7 @@ const Home = () => {
                       imgClassName="transition-transform duration-500 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-6 flex flex-col justify-end pointer-events-none">
-                      <span className="bg-orange-500 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
+                      <span className="bg-orange-700 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
                         Product
                       </span>
                       <h3 className="text-white text-lg font-extrabold uppercase leading-tight">
@@ -463,7 +493,7 @@ const Home = () => {
                       imgClassName="transition-transform duration-500 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-6 flex flex-col justify-end pointer-events-none">
-                      <span className="bg-orange-500 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
+                      <span className="bg-orange-700 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
                         Corporate
                       </span>
                       <h3 className="text-white text-lg font-extrabold uppercase leading-tight">
@@ -481,7 +511,7 @@ const Home = () => {
                       imgClassName="transition-transform duration-500 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-6 flex flex-col justify-end pointer-events-none">
-                      <span className="bg-orange-500 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
+                      <span className="bg-orange-700 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
                         Events
                       </span>
                       <h3 className="text-white text-lg font-extrabold uppercase leading-tight">
@@ -499,7 +529,7 @@ const Home = () => {
                       imgClassName="transition-transform duration-500 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-6 flex flex-col justify-end pointer-events-none">
-                      <span className="bg-orange-500 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
+                      <span className="bg-orange-700 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
                         Professional
                       </span>
                       <h3 className="text-white text-lg font-extrabold uppercase leading-tight">
@@ -517,7 +547,7 @@ const Home = () => {
                       imgClassName="transition-transform duration-500 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-6 flex flex-col justify-end pointer-events-none">
-                      <span className="bg-orange-500 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
+                      <span className="bg-orange-700 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
                         Portfolio
                       </span>
                       <h3 className="text-white text-lg font-extrabold uppercase leading-tight">
@@ -535,7 +565,7 @@ const Home = () => {
                       imgClassName="transition-transform duration-500 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-6 flex flex-col justify-end pointer-events-none">
-                      <span className="bg-orange-500 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
+                      <span className="bg-orange-700 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
                         Corporate
                       </span>
                       <h3 className="text-white text-lg font-extrabold uppercase leading-tight">
@@ -553,7 +583,7 @@ const Home = () => {
                       imgClassName="transition-transform duration-500 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-6 flex flex-col justify-end pointer-events-none">
-                      <span className="bg-orange-500 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
+                      <span className="bg-orange-700 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
                         Events
                       </span>
                       <h3 className="text-white text-lg font-extrabold uppercase leading-tight">
@@ -571,7 +601,7 @@ const Home = () => {
                       imgClassName="transition-transform duration-500 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-6 flex flex-col justify-end pointer-events-none">
-                      <span className="bg-orange-500 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
+                      <span className="bg-orange-700 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
                         Product
                       </span>
                       <h3 className="text-white text-lg font-extrabold uppercase leading-tight">
@@ -589,7 +619,7 @@ const Home = () => {
                       imgClassName="transition-transform duration-500 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-6 flex flex-col justify-end pointer-events-none">
-                      <span className="bg-orange-500 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
+                      <span className="bg-orange-700 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
                         Podcast
                       </span>
                       <h3 className="text-white text-lg font-extrabold uppercase leading-tight">
@@ -607,7 +637,7 @@ const Home = () => {
                       imgClassName="transition-transform duration-500 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-6 flex flex-col justify-end pointer-events-none">
-                      <span className="bg-orange-500 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
+                      <span className="bg-orange-700 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
                         Professional
                       </span>
                       <h3 className="text-white text-lg font-extrabold uppercase leading-tight">
@@ -625,7 +655,7 @@ const Home = () => {
                       imgClassName="transition-transform duration-500 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-6 flex flex-col justify-end pointer-events-none">
-                      <span className="bg-orange-500 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
+                      <span className="bg-orange-700 text-white text-xs font-bold uppercase tracking-wide px-3 py-1.5 rounded-full w-fit mb-2">
                         Portfolio
                       </span>
                       <h3 className="text-white text-lg font-extrabold uppercase leading-tight">
@@ -711,7 +741,7 @@ const Home = () => {
                   hoverBg: 'group-hover:from-green-500 group-hover:via-green-400 group-hover:to-emerald-300',
                   icon: 'bg-green-100 text-green-600 group-hover:bg-green-600 group-hover:text-white',
                   circle: 'bg-green-400',
-                  text: 'text-green-600',
+                  text: 'text-green-700',
                   overlay: 'group-hover:bg-green-500/90'
                 },
                 {
@@ -725,7 +755,7 @@ const Home = () => {
                   hoverBg: 'group-hover:from-orange-600 group-hover:via-orange-500 group-hover:to-amber-400',
                   icon: 'bg-orange-100 text-orange-600 group-hover:bg-orange-700 group-hover:text-white',
                   circle: 'bg-orange-500',
-                  text: 'text-orange-600',
+                  text: 'text-orange-700',
                   overlay: 'group-hover:bg-orange-600/90'
                 }
               ];
@@ -792,16 +822,18 @@ const Home = () => {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 w-full ">
+          {/* "photo-0" told a screen-reader user nothing. Each tile now says
+              what the photograph actually shows. */}
           {[
-            "https://geniestudio.in/uploads/1786522543_1786522542888-63592060.webp",
-            "https://geniestudio.in/uploads/1786520942_1786520939456-72574430.webp",
-            "https://geniestudio.in/uploads/1786530714_1786530711205-339283661.jpg",
-            "https://geniestudio.in/uploads/1786519472_1786519472788-977568825.jpg",
-            "https://geniestudio.in/uploads/1786522544_1786522544183-789140313.webp",
-            "https://geniestudio.in/uploads/1786522551_1786522551131-390094297.webp",
-          ].map((src, i) => (
+            { src: "https://geniestudio.in/uploads/1786522543_1786522542888-63592060.webp", alt: "Corporate event coverage by Genie Studio" },
+            { src: "https://geniestudio.in/uploads/1786520942_1786520939456-72574430.webp", alt: "Professional portrait session in the Genie Studio space" },
+            { src: "https://geniestudio.in/uploads/1786530714_1786530711205-339283661.jpg", alt: "Cinema camera and video rig on a Genie Studio production" },
+            { src: "https://geniestudio.in/uploads/1786519472_1786519472788-977568825.jpg", alt: "Business portfolio shoot for a Genie Studio client" },
+            { src: "https://geniestudio.in/uploads/1786522544_1786522544183-789140313.webp", alt: "Conference photography by Genie Studio" },
+            { src: "https://geniestudio.in/uploads/1786522551_1786522551131-390094297.webp", alt: "Product launch event captured by Genie Studio" },
+          ].map(({ src, alt }, i) => (
             <div key={i} className="aspect-square w-full overflow-hidden group relative" onMouseEnter={() => setHoveredIndex(i)} onMouseLeave={() => setHoveredIndex(null)} >
-              <OptimizedImage src={src} alt={`photo-${i}`}
+              <OptimizedImage src={src} alt={alt}
                 className="w-full h-full"
                 sizes="(max-width: 640px) 50vw, 33vw"
                 imgClassName={`transition-all duration-700 ${hoveredIndex === i ? 'scale-110 brightness-75' : 'scale-100 brightness-100'}`} />
@@ -1138,16 +1170,20 @@ const Home = () => {
                 <ArrowRight className="w-4 h-4 sm:w-6 sm:h-6 lg:group-hover:translate-x-1 transition-transform" />
               </button>
 
+              {/* Was a <button> nested inside the <a>. Two interactive
+                  elements one inside the other is invalid HTML and gives
+                  assistive tech two overlapping controls for one action; the
+                  link now carries the button's styling directly, so it looks
+                  and behaves exactly the same. */}
               <a
                 href="https://www.youtube.com/@itsgeniemedia_official"
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label="Watch Showreel on YouTube (opens in a new tab)"
+                className=" px-6 sm:px-10  py-3 sm:py-5  bg-white/10 backdrop-blur-lg text-white rounded-full text-sm sm:text-base font-bold transition-all duration-300 border border-white/30 flex items-center justify-center gap-2 sm:gap-3  lg:hover:bg-white/20"
               >
-                <button
-                  className=" px-6 sm:px-10  py-3 sm:py-5  bg-white/10 backdrop-blur-lg text-white rounded-full text-sm sm:text-base font-bold transition-all duration-300 border border-white/30 flex items-center justify-center gap-2 sm:gap-3  lg:hover:bg-white/20" >
-                  <Play className="w-4 h-4 sm:w-6 sm:h-6" />
-                  Watch Showreel
-                </button>
+                <Play className="w-4 h-4 sm:w-6 sm:h-6" aria-hidden="true" />
+                Watch Showreel
               </a>
             </div>
 
@@ -1175,7 +1211,7 @@ const Home = () => {
           will-change: transform;
         }
       `}</style>
-    </div>
+    </main>
   );
 };
 

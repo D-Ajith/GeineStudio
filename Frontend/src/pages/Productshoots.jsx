@@ -6,6 +6,17 @@ import Breadcrumbs from "../components/Breadcrumbs";
 import { useTargetWidth } from "../lib/useResponsiveImage";
 import { bestVariantUrl } from "../lib/imageManifest";
 import Seo from "../components/Seo";
+
+/*
+ * ACCENT COLOURS
+ * #4CAF50 is the page accent and is unchanged wherever it is decorative — the
+ * section rules, the icons and the tinted panels all still use it.
+ *
+ * White text on it only reached 2.78:1, short of the 4.5:1 WCAG AA asks for, so
+ * the handful of surfaces that carry white text (the pill, the two CTAs and
+ * the numbered step markers) use #3A853D instead: the same hue with the RGB
+ * scaled down until white clears 4.5:1.
+ */
 import { SERVICE_SEO, serviceSchema } from "../lib/seoConfig";
 
 /** Declared once, then used by both <Breadcrumbs> and <Seo>. */
@@ -118,7 +129,7 @@ const Productshoots = () => {
           <p className="text-xl sm:text-2xl font-light italic mb-6" style={{ color: '#4CAF50' }}>
             Visuals that sell before words can.
           </p>
-          <div className="inline-block px-5 py-2 rounded-full text-sm font-bold text-white" style={{ background: '#4CAF50' }}>
+          <div className="inline-block px-5 py-2 rounded-full text-sm font-bold text-white" style={{ background: '#3A853D' }}>
             Starting from
           </div>
         </div>
@@ -133,7 +144,7 @@ const Productshoots = () => {
             <p className="text-slate-600 text-lg leading-relaxed mb-8">
               Showcase your products in their best light. We specialize in studio product photography and lifestyle shots that highlight features, quality, and appeal. Perfect for e-commerce, advertising, and marketing campaigns. Our meticulous attention to lighting and composition ensures every product looks irresistible to your customers.
             </p>
-            <Link to="/contact" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl text-white font-semibold text-base transition-all duration-300 hover:opacity-90 hover:-translate-y-0.5 shadow-lg" style={{ background: '#4CAF50' }}>
+            <Link to="/contact" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl text-white font-semibold text-base transition-all duration-300 hover:opacity-90 hover:-translate-y-0.5 shadow-lg" style={{ background: '#3A853D' }}>
               <FaWhatsapp className="text-lg" /> Book This Service
             </Link>
           </div>
@@ -203,7 +214,7 @@ const Productshoots = () => {
           </h2>
           <p className="text-white/60 text-lg mb-8">Let's create something remarkable together. Reach out for a free consultation and custom quote.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/contact" className="px-8 py-3.5 rounded-xl font-bold text-base hover:opacity-90 hover:-translate-y-0.5 transition-all shadow-lg text-white" style={{ background: '#4CAF50' }}>
+            <Link to="/contact" className="px-8 py-3.5 rounded-xl font-bold text-base hover:opacity-90 hover:-translate-y-0.5 transition-all shadow-lg text-white" style={{ background: '#3A853D' }}>
               Get a Free Quote
             </Link>
             <button onClick={() => navigate('/services')} className="px-8 py-3.5 rounded-xl font-bold text-base border border-white/20 text-white/80 hover:bg-white/10 transition-all">

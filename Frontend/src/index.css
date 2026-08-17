@@ -6,6 +6,14 @@
   --bg-color: #ffffff;
   --text-color: #000000;
   --accent-color: #facc15;
+  /*
+   * The same gold, dark enough to read on the light surfaces.
+   * #facc15 lands at ~1.3:1 against the footer's #f7f6f3, which makes the
+   * "Studio" half of the wordmark all but invisible there. It stays exactly
+   * as it is everywhere it sits on dark (the header, the accent underline,
+   * the WhatsApp hover state) — this token is only for light backgrounds.
+   */
+  --accent-color-on-light: #8a5a00;
 }
 
 .dark {
@@ -122,6 +130,44 @@
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
+
+  /*
+   * Small inline links (footer columns, breadcrumbs) render below the 24×24
+   * CSS-pixel minimum WCAG 2.5.8 asks of a pointer target — at the mobile
+   * breakpoint `text-xs` is 11.25px on a 15px root, so the link box is ~15px
+   * tall. This raises only the hit area; font size, colour and weight are
+   * untouched, and at ≥640px the type is already tall enough that the
+   * min-height never applies.
+   *
+   * min-height needs a block-level box, so pair this with `inline-block` (or
+   * an existing `block`) on the element itself rather than forcing a display
+   * value here — some of these links must stay block-level.
+   */
+  .tap-target {
+    min-height: 24px;
+    line-height: 24px;
+  }
+}
+
+/* ── Keyboard focus ──────────────────────────────────────────────────────
+ * Several controls set Tailwind's `outline-none` (which is really a
+ * transparent 2px outline) and replace it with a focus ring — but a few
+ * replaced it with nothing, leaving keyboard users with no idea where they
+ * are. This restores a visible indicator for keyboard navigation only;
+ * :focus-visible never fires for mouse or touch, so nothing about the
+ * pointer experience changes. The `:focus-visible` pseudo-class outranks
+ * the `.outline-none` utility, so it also shows through on those inputs.
+ */
+a:focus-visible,
+button:focus-visible,
+select:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+summary:focus-visible,
+[role="button"]:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
 }
 
 .kenburns {

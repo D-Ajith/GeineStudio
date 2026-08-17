@@ -161,7 +161,7 @@ export default function Blogs() {
               <p className="text-slate-600 font-medium text-sm sm:text-base md:text-lg">
                 No blogs found in this category
               </p>
-              <p className="text-slate-500 text-xs sm:text-sm mt-2">
+              <p className="text-slate-600 text-xs sm:text-sm mt-2">
                 Check back soon for new content!
               </p>
             </div>

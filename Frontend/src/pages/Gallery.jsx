@@ -5,7 +5,7 @@ import { SEO } from "../lib/seoConfig";
 
 const Gallery = () => {
   return (
-    <div style={{ width: '100vw', height: '100vh' ,backgroundColor: 'white'}}>
+    <main style={{ width: '100vw', height: '100vh' ,backgroundColor: 'white'}}>
       <Seo
         {...SEO.gallery}
         breadcrumbs={[
@@ -30,7 +30,7 @@ const Gallery = () => {
   dragDampening={2}
   grayscale={false}
 />
-    </div>
+    </main>
   )
 }
 
